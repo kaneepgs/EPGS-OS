@@ -4,7 +4,7 @@ EP Intelligence is a frontend-only AI Executive Operating System prototype for E
 
 It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
 
-Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intelligence** release, so the business can now read live website demand and live YouTube authority together through a clearer executive marketing layer, a proper Marketing Health Score, a packaged Marketing Intelligence Report, and provider-independent memory milestones — while still falling back safely to demo data.
+The formal shipped release is still **v1.1 — Marketing Intelligence**, but the platform now also has post-v1.1 **Executive Inbox** and **Operations Calendar** extensions, so leadership can read live website demand, live YouTube authority, inbox pressure, and scheduling capacity together through one executive shell while still falling back safely to demo data.
 
 ## Release & Roadmap
 
@@ -186,6 +186,18 @@ Added the first operational communications provider without breaking the wider a
 - kept all inbox actions **approval-first** by staging Reply, Archive, Label, Forward, Create Task, and Schedule Follow-up cards without executing anything automatically
 - preserved safe demo fallback when Gmail credentials are missing, rejected, or the generated snapshot is unavailable
 
+### Sprint 14 — Google Calendar Provider v1.0
+
+Added the first operational scheduling provider without breaking the wider architecture:
+
+- introduced a dedicated `CalendarProvider` bound through the existing provider registry for the `operations`, `timeline`, and approval-overlay flow
+- added `scripts/sync-calendar-snapshot.mjs` plus `npm run calendar:sync` to fetch Google Calendar metadata through OAuth, then write a generated local snapshot that never ships to the browser
+- added a new **Operations Calendar** route with deterministic sections for fittings, meetings, deadlines, staff availability, travel, free capacity, week utilisation, and approval-first scheduling actions
+- added CEO-facing operations widgets, schedule-aware executive briefing summaries, operations timeline events, search coverage, and provider-independent Executive Memory milestones
+- extended deterministic intelligence, recommendations, Settings integration status, provider architecture, and AI Assistant prompts with Google Calendar-derived operational signals
+- kept all scheduling actions **approval-first** by staging Reschedule, Extend Fitting, Block Time, Accept Invitation, and Decline Invitation cards without executing anything automatically
+- preserved safe demo fallback when Google Calendar credentials are missing, rejected, or the generated snapshot is unavailable
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -193,7 +205,7 @@ This prototype intentionally remains:
 - **HTML + CSS + Vanilla JavaScript only**
 - **frontend-only in the browser**
 - **no browser-side secrets or direct GA4 calls from the UI**
-- **mostly demo-mode**, with Website Analytics, YouTube, and Executive Inbox eligible for optional local snapshot hydration
+- **mostly demo-mode**, with Website Analytics, YouTube, Executive Inbox, and Operations Calendar eligible for optional local snapshot hydration
 - **without backend services, databases, authentication, or automation inside the product itself**
 
 ## Project Structure

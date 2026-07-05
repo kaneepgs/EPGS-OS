@@ -26,7 +26,7 @@ export const APP_CONFIG = Object.freeze({
   releaseVersion: RELEASE_CONFIG.version,
   releaseLabel: RELEASE_CONFIG.releaseLabel,
   releaseCodename: RELEASE_CONFIG.codename,
-  notes: 'Sprint 13 adds a Gmail-backed Executive Inbox path through the existing provider/service/intelligence architecture, preserving demo-first behaviour while allowing selective GA4, YouTube, and Gmail snapshot overlays when local generated data is available.'
+  notes: 'Sprint 14 adds a Google Calendar-backed Operations Calendar path through the existing provider/service/intelligence architecture, preserving demo-first behaviour while allowing selective GA4, YouTube, Gmail, and Google Calendar snapshot overlays when local generated data is available.'
 });
 
 export function currentModeConfig() {

@@ -2,7 +2,7 @@ import { formatCurrency, parseRangeMidpoint } from './engine-utils.js';
 
 export function createRecommendationEngine({ priorityEngine }) {
   return Object.freeze({
-    evaluate({ finance, marketing, communications, approvals }, { correlations }) {
+    evaluate({ finance, marketing, communications, operations, approvals }, { correlations }) {
       const lookup = Object.fromEntries(correlations.map((item) => [item.id, item]));
       const base = [
         {
@@ -112,6 +112,42 @@ export function createRecommendationEngine({ priorityEngine }) {
           estimatedValue: `${communications?.metrics?.financeEmails || 0} finance emails triaged`,
           suggestedOwner: 'CFO',
           priorityFactors: { financialImpact: 79, customerImpact: 38, strategicImportance: 76, timeSensitivity: 82, confidence: lookup['gmail-finance-approval-outstanding']?.confidence?.score || 76 }
+        },
+        {
+          id: 'calendar-capacity-protect',
+          recommendation: 'Protect the next high-pressure schedule block before adding more demand',
+          why: lookup['calendar-capacity-pressure']?.executiveSummary || 'Operating capacity is moving into a pressure zone.',
+          expectedBenefit: 'Preserves service quality, reduces overtime risk, and keeps premium bookings from eroding the experience they are meant to create.',
+          risk: 'Low–Medium',
+          confidence: lookup['calendar-capacity-pressure']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['calendar-capacity-pressure']?.confidence?.score || 78,
+          estimatedValue: `${operations?.metrics?.capacityTodayPct || 0}% day capacity protected`,
+          suggestedOwner: 'CEO / COO / Operations',
+          priorityFactors: { financialImpact: 76, customerImpact: 88, strategicImportance: 84, timeSensitivity: 90, confidence: lookup['calendar-capacity-pressure']?.confidence?.score || 78 }
+        },
+        {
+          id: 'calendar-booking-slot-convert',
+          recommendation: 'Convert the best visible free fitting slot into booking revenue this week',
+          why: lookup['calendar-free-fitting-opportunity']?.executiveSummary || 'The schedule still contains selective room for high-value fitting demand.',
+          expectedBenefit: 'Improves short-term revenue capture without adding acquisition cost or overloading the operating day.',
+          risk: 'Low',
+          confidence: lookup['calendar-free-fitting-opportunity']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['calendar-free-fitting-opportunity']?.confidence?.score || 77,
+          estimatedValue: `${operations?.metrics?.availableBookingSlots || 0} visible slot${operations?.metrics?.availableBookingSlots === 1 ? '' : 's'} ready for monetisation`,
+          suggestedOwner: 'Sales / Operations',
+          priorityFactors: { financialImpact: 81, customerImpact: 73, strategicImportance: 75, timeSensitivity: 79, confidence: lookup['calendar-free-fitting-opportunity']?.confidence?.score || 77 }
+        },
+        {
+          id: 'calendar-compression-fix',
+          recommendation: 'Reshape the most compressed part of today’s schedule before it causes delivery drag',
+          why: lookup['calendar-schedule-compression']?.executiveSummary || 'Schedule compression is now visible enough to justify intervention.',
+          expectedBenefit: 'Reduces rushed handoffs, protects staff energy, and lowers the chance of avoidable customer friction later in the day.',
+          risk: 'Low',
+          confidence: lookup['calendar-schedule-compression']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['calendar-schedule-compression']?.confidence?.score || 76,
+          estimatedValue: `${operations?.metrics?.schedulingRisks || 0} scheduling risk${operations?.metrics?.schedulingRisks === 1 ? '' : 's'} clarified`,
+          suggestedOwner: 'COO / Operations',
+          priorityFactors: { financialImpact: 70, customerImpact: 84, strategicImportance: 78, timeSensitivity: 88, confidence: lookup['calendar-schedule-compression']?.confidence?.score || 76 }
         }
       ];
 

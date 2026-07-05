@@ -6,9 +6,9 @@
 
 It has now moved from a CFO-first prototype into a broader **Executive Operating System** with a true **CEO Intelligence Dashboard** at the centre.
 
-Today it is still primarily a **demo product**, but it now has two controlled live-data paths: **Website Analytics** can hydrate from a locally generated GA4 snapshot and **YouTube** can hydrate from a locally generated channel snapshot.
+Today it is still primarily a **demo product**, but it now has four controlled live-data paths: **Website Analytics** can hydrate from a locally generated GA4 snapshot, **YouTube** can hydrate from a locally generated channel snapshot, **Executive Inbox** can hydrate from a locally generated Gmail snapshot, and **Operations Calendar** can hydrate from a locally generated Google Calendar snapshot.
 
-Sprint 11 packages those into **EP Intelligence v1.1 — Marketing Intelligence**.
+The formal shipped release remains **EP Intelligence v1.1 — Marketing Intelligence**, with Gmail and Google Calendar currently layered on top as post-v1.1 platform extensions.
 
 ## Release and roadmap references
 
@@ -32,10 +32,12 @@ Release metadata is now centralised in `assets/config/release-config.js`, so the
 - the first **Google Analytics 4 live-provider path** for CMO Website Analytics, using a local sync script and generated snapshot file
 - a live-capable **YouTube provider path** for channel totals, recent uploads, visibility, and content-library items
 - a live-capable **Gmail provider path** for Executive Inbox triage, communications intelligence, and approval-first inbox actions
+- a live-capable **Google Calendar provider path** for Operations Calendar, capacity visibility, scheduling-risk detection, timeline events, search coverage, and approval-first operational actions
 - a reusable **Marketing Intelligence Report** that packages GA4 + YouTube into one executive report
 - a proper **Marketing Health Score** with score, trend, confidence, and source status
 - provider-independent **Executive Memory** that now stores marketing milestones as part of the business timeline
 - a dedicated **Executive Inbox** with deterministic business email classification and CEO-ready summaries
+- a dedicated **Operations Calendar** with fittings, meetings, staff utilisation, free capacity, travel, deadlines, and all-day event visibility
 - placeholder module landing pages for:
   - COO
   - Sales
@@ -55,11 +57,9 @@ Release metadata is now centralised in `assets/config/release-config.js`, so the
 - no backend
 - no databases
 - no automation
-- no live financial or operational data
+- no live financial data yet
 
-The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics** and **YouTube** when credentials are added and snapshots are synced.
-
-Sprint 13 extends that same pattern to **Gmail / Executive Inbox**, so business email can be surfaced as executive intelligence without turning the product into an email client.
+The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics**, **YouTube**, **Gmail / Executive Inbox**, and **Google Calendar / Operations Calendar** when credentials are added and snapshots are synced.
 
 ## How to open it locally
 
@@ -96,10 +96,11 @@ Start with these in order:
 7. **CMO → Website Analytics** — shows the live GA4 path and conversion visibility clearly
 8. **CMO → YouTube** — shows the live YouTube path, recent uploads, and authority-channel momentum
 9. **Executive Inbox** — shows deterministic inbox triage, approval-first communications actions, and CEO-ready email summaries
-10. **Approvals** — shows Gmail-derived reply, archive, label, forward, task, and follow-up actions staged without automation
-11. **Reports → Marketing Intelligence Report / Board Meeting Mode** — shows packaged reporting plus communications-aware executive narrative
-12. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
-13. **CEO Dashboard marketing intelligence / cross-department intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
+10. **Operations Calendar** — shows fittings, capacity, scheduling risks, free booking slots, and operational deadlines without becoming a calendar client
+11. **Approvals** — shows Gmail-derived and Calendar-derived actions staged without automation
+12. **Reports → Marketing Intelligence Report / Board Meeting Mode / Executive Timeline** — shows packaged reporting plus communications-aware and operations-aware executive narrative
+13. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
+14. **CEO Dashboard marketing intelligence / inbox intelligence / operations intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
 
 ## Key pages to show
 
@@ -109,6 +110,7 @@ Start with these in order:
 - **CMO Marketing Dashboard** — executive marketing command centre
 - **CMO Social Media Overview / YouTube / Website Analytics / AI Marketing Advisor** — strongest marketing examples
 - **Executive Inbox** — business email converted into executive triage rather than raw inbox volume
+- **Operations Calendar** — executive scheduling intelligence, capacity, and fitting workload visibility
 - **Reports → Marketing Intelligence Report** — packaged v1.1 marketing output
 - **Approvals** — centralised business-wide approval centre
 - **Reports** — shared reporting structure
@@ -121,10 +123,10 @@ This is intentionally still a prototype.
 
 - almost all data is still mock/demo data
 - charts are illustrative, not connected to real systems
-- most non-finance / non-marketing modules are still placeholders
+- most non-finance / non-marketing modules are still placeholders, though Operations now has a real executive scheduling surface
 - no save/sync between users or devices
 - no real approvals or workflow execution
-- only Website Analytics, YouTube, and Executive Inbox are live-capable today, all through manual local snapshot sync
+- only Website Analytics, YouTube, Executive Inbox, and Operations Calendar are live-capable today, all through manual local snapshot sync
 - no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
 
 ## Current roadmap position
@@ -133,25 +135,25 @@ The product roadmap is now managed in `Roadmap.md`.
 
 Current **Now** focus:
 
-- Sprint 13 — Gmail Provider v1.0
-- Executive Inbox
-- Gmail Intelligence
-- Executive Communications
-- Approval-first email workflows
+- Sprint 15 — Accounting Provider v1.0
+- Live Finance
+- Accounting-backed CFO replacement beneath the service layer
+- Deterministic finance forecasting from provider data
+- Demo fallback preserved
 
 Current **Next** priorities:
 
-1. Google Calendar Provider
-2. QuickBooks/Xero Provider
-3. Mailchimp Provider
-4. Booking Intelligence
+1. Booking Intelligence
+2. Mailchimp Provider
+3. Instagram / Facebook Provider
+4. LinkedIn Provider
 
 ## Suggested positioning when presenting it
 
 Describe it as:
 
-> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance, Marketing, and executive communications.”
+> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance, Marketing, executive communications, and business operations scheduling.”
 
-You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a dedicated **Executive Inbox**, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube + Gmail** provider paths, with the rest of the business architecture prepared for future module builds.
+You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a dedicated **Executive Inbox**, a dedicated **Operations Calendar**, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube + Gmail + Google Calendar** provider paths, with the rest of the business architecture prepared for future module builds.
 
 After each completed release, update `CHANGELOG.md` for the formal release summary, then advance `Roadmap.md`, then move detailed sprint notes into `changelog/CHANGELOG.md`.

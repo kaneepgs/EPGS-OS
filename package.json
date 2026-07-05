@@ -3,14 +3,15 @@
   "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, provider architecture, deterministic intelligence engine, executive memory, and Marketing Intelligence built from GA4 website analytics plus YouTube live channel overlays for EP Golf Studios.",
+  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, provider architecture, deterministic intelligence engine, executive memory, Executive Inbox, and Operations Calendar overlays built from local GA4, YouTube, Gmail, and Google Calendar snapshots for EP Golf Studios.",
   "scripts": {
     "serve": "python3 -m http.server 3012",
     "validate:js": "node --check assets/app.js",
     "vendor:chart": "mkdir -p assets/vendor && cp node_modules/chart.js/dist/chart.umd.js assets/vendor/chart.umd.js",
     "ga4:sync": "node scripts/sync-ga4-snapshot.mjs",
     "youtube:sync": "node scripts/sync-youtube-snapshot.mjs",
-    "gmail:sync": "node scripts/sync-gmail-snapshot.mjs"
+    "gmail:sync": "node scripts/sync-gmail-snapshot.mjs",
+    "calendar:sync": "node scripts/sync-calendar-snapshot.mjs"
   },
   "keywords": [
     "executive-workspace",

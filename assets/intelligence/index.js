@@ -16,8 +16,17 @@ export function createExecutiveIntelligenceEngine(config) {
   const insightEngine = createInsightEngine();
   const narrativeEngine = createNarrativeEngine();
 
-  function createTimelineEvents({ finance, marketing, communications }, { correlations, recommendations }) {
+  function createTimelineEvents({ finance, marketing, communications, operations }, { correlations, recommendations }) {
     const events = [];
+    if (operations?.providerSummary?.state === 'live-calendar') {
+      events.push({
+        id: 'timeline-calendar-live-sync',
+        time: 'Now',
+        type: 'Calendar live data',
+        title: 'Operations Calendar snapshot is live',
+        body: operations.providerSummary?.body || 'Live Google Calendar data is now available.'
+      });
+    }
     if (communications?.providerSummary?.state === 'live-gmail') {
       events.push({
         id: 'timeline-gmail-live-sync',
@@ -69,6 +78,15 @@ export function createExecutiveIntelligenceEngine(config) {
         body: item.body
       });
     });
+    (operations?.timelineEvents || []).slice(0, 4).forEach((item, index) => {
+      events.push({
+        id: item.id || `timeline-calendar-${index + 1}`,
+        time: item.time || item.startTime || 'Today',
+        type: item.category || 'Operations Calendar',
+        title: item.title,
+        body: item.body
+      });
+    });
     return events;
   }
 
@@ -91,7 +109,7 @@ export function createExecutiveIntelligenceEngine(config) {
     };
   }
 
-  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [], communications = {} }) {
+  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [], communications = {}, operations = {} }) {
     const prompts = [
       {
         question: 'What happened across the business this week?',
@@ -128,6 +146,12 @@ export function createExecutiveIntelligenceEngine(config) {
         answer: communications?.summary?.dailySummary || 'Executive Inbox summary is not currently available.',
         confidence: communications?.providerSummary?.state === 'live-gmail' ? 'High' : 'Medium',
         rationale: 'Built from Gmail-derived inbox metrics, deterministic classification, and communications triage rules.'
+      },
+      {
+        question: 'What does today’s schedule need from me first?',
+        answer: operations?.summary?.dailySummary || 'Operations Calendar summary is not currently available.',
+        confidence: operations?.providerSummary?.state === 'live-calendar' ? 'High' : 'Medium',
+        rationale: 'Built from Operations Calendar capacity, bookings, meetings, deadlines, and deterministic scheduling risk rules.'
       }
     ];
 
@@ -139,7 +163,8 @@ export function createExecutiveIntelligenceEngine(config) {
         'Where is the biggest conversion leak right now?',
         'How fragile is our cash position if collections slip?',
         'Which department needs intervention first?',
-        'Which inbox conversations should be cleared today?'
+        'Which inbox conversations should be cleared today?',
+        'Which schedule changes would improve today the fastest?'
       ]
     };
   }
@@ -152,9 +177,10 @@ export function createExecutiveIntelligenceEngine(config) {
       const approvals = services.approval.getWorkspace();
       const reports = services.report.getWorkspace();
       const communications = services.communications?.getWorkspace?.() || {};
+      const operations = services.timeline?.getOperationsWorkspace?.() || {};
       const timeline = services.timeline.getBusinessTimeline();
-      const memory = services.memory?.getContext?.({ finance, marketing, communications }) || { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] };
-      const context = { executive, finance, marketing, communications, approvals, reports, timeline, memory };
+      const memory = services.memory?.getContext?.({ finance, marketing, communications, operations }) || { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] };
+      const context = { executive, finance, marketing, communications, operations, approvals, reports, timeline, memory };
 
       const health = healthEngine.evaluate(context);
       const correlations = correlationEngine.evaluate(context, { health });
@@ -163,7 +189,7 @@ export function createExecutiveIntelligenceEngine(config) {
       const insights = insightEngine.evaluate(context, { correlations, recommendations, health });
       const narratives = narrativeEngine.evaluate(context, { insights, recommendations, health });
       const timelineEvents = createTimelineEvents(context, { correlations, recommendations });
-      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.deterministic, communications });
+      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.deterministic, communications, operations });
 
       const ceoCommentary = toCommentary('AI Executive Briefing', insights.executive[0], recommendations[0], {
         risks: insights.executive.slice(1, 3).map((item) => item.executiveSummary).join(' '),
@@ -200,7 +226,8 @@ export function createExecutiveIntelligenceEngine(config) {
           narratives,
           prompts: askWorkspace.prompts,
           memoryContext: memory.deterministic,
-          communications
+          communications,
+          operations
         },
         cfo: {
           commentary: {

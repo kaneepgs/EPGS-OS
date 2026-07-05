@@ -127,13 +127,13 @@ export const ROUTE_META = {
   '/coo': { title: 'COO Module', subtitle: 'Future operating execution, delivery capacity, and process performance.', module: 'COO', sidebarKey: '/coo', parentLabel: 'COO' },
   '/sales': { title: 'Sales Module', subtitle: 'Future pipeline, conversion, and commercial performance intelligence.', module: 'Sales', sidebarKey: '/sales', parentLabel: 'Sales' },
   '/customer-success': { title: 'Customer Success Module', subtitle: 'Future retention, experience, and customer health intelligence.', module: 'Customer Success', sidebarKey: '/customer-success', parentLabel: 'Customer Success' },
-  '/operations': { title: 'Operations Module', subtitle: 'Future workflow, fulfilment, and service delivery intelligence.', module: 'Operations', sidebarKey: '/operations', parentLabel: 'Operations' },
+  '/operations': { title: 'Operations Calendar', subtitle: 'Executive operational intelligence for today’s schedule, capacity, workload, deadlines, and scheduling risk.', module: 'Operations', sidebarKey: '/operations', parentLabel: 'Operations' },
   '/hr': { title: 'HR Module', subtitle: 'Future staffing, capability, and people operations intelligence.', module: 'HR', sidebarKey: '/hr', parentLabel: 'HR' },
   '/projects': { title: 'Projects Module', subtitle: 'Future roadmap, ownership, and execution tracking.', module: 'Projects', sidebarKey: '/projects', parentLabel: 'Projects' },
 
   '/ai-assistant': { title: 'AI Assistant', subtitle: 'The executive AI layer for questions, reasoning, assumptions, and follow-up.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/ask': { title: 'Ask EP Intelligence', subtitle: 'A conversational executive workspace for business questions and AI reasoning.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/executive-briefing': { title: 'Executive Briefing', subtitle: 'A placeholder for AI-compiled leadership briefings.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
+  '/ai-assistant/executive-briefing': { title: 'Executive Briefing', subtitle: 'A compiled leadership briefing spanning finance, marketing, communications, and operations scheduling.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/follow-up-questions': { title: 'Follow-up Questions', subtitle: 'A placeholder for deeper AI-led executive questioning.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/suggested-actions': { title: 'Suggested Actions', subtitle: 'A placeholder for staged AI recommendations awaiting approval.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/assumptions': { title: 'Assumptions', subtitle: 'A placeholder for the assumptions driving AI output.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
@@ -221,6 +221,18 @@ export const QUESTION_SETS = {
     why: ['Approval-first governance protects quality', 'The operating system is designed to stage decisions before any future automation exists.'],
     matters: ['Yes, because governance quality is strategic', 'A single approval centre gives leadership one calm place to review decisions that matter.'],
     next: ['Prioritise high-impact approvals', 'Review the approvals most likely to affect cash, growth quality, content output, or executive confidence.']
+  },
+  '/operations': {
+    what: ['The operating day is now visible, not guessed', 'Operations Calendar converts today’s schedule, fittings, meetings, travel, deadlines, and free capacity into one CEO-ready operating surface.'],
+    why: ['Live scheduling data reveals workload shape', 'Capacity, back-to-back bookings, utilisation, and deadline pressure now come from deterministic calendar logic rather than placeholder copy.'],
+    matters: ['Yes, because schedule quality affects commercial quality', 'A busy diary is not automatically good. Leadership needs to see when demand is healthy, when capacity is under-used, and when service quality is about to be squeezed.'],
+    next: ['Protect the best schedule decisions first', 'Use this view to reschedule compression, protect buffers, and convert free fitting capacity into revenue without creating avoidable operating strain.']
+  },
+  '/ai-assistant/executive-briefing': {
+    what: ['The AI layer now packages a real executive briefing', 'This briefing combines deterministic signals from finance, marketing, the Executive Inbox, and the Operations Calendar into one leadership readout.'],
+    why: ['Cross-functional signals are stronger when read together', 'Scheduling pressure, communications backlog, margin watchpoints, and marketing momentum often matter more in combination than in isolation.'],
+    matters: ['Yes, because leadership needs synthesis not tabs', 'The CEO should understand the operating week, risks, and opportunities without manually stitching routes together.'],
+    next: ['Use the briefing to choose the next approvals', 'Challenge the key risks, approve the best actions, and decide which route deserves deeper review next.']
   },
   '/reports': {
     what: ['Executive reporting is now memory-backed', 'Reports package current performance alongside historical context, goal progress, and prior decisions.'],

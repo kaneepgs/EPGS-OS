@@ -169,6 +169,48 @@ function communicationsMilestones(runtime = {}) {
   return [...events, ...memoryCandidates.map((item) => normalizeMemoryEvent(item))];
 }
 
+function operationsMilestones(runtime = {}) {
+  const operations = runtime.operations || {};
+  const providerState = operations.providerSummary?.state;
+  const metrics = operations.metrics || {};
+  const memoryCandidates = operations.memoryCandidates || [];
+  const events = [];
+
+  if (providerState === 'live-calendar') {
+    events.push(normalizeMemoryEvent({
+      id: 'mem-operations-live-calendar',
+      date: String(operations.providerSummary?.syncedAt || new Date().toISOString()).slice(0, 10),
+      time: 'Live sync',
+      title: 'Operations Calendar is now live through Google Calendar',
+      body: operations.providerSummary?.body || 'Live Google Calendar snapshot active.',
+      category: 'Operations milestone',
+      department: 'Operations Calendar',
+      impact: 'High',
+      relatedEntities: ['goal-booking-conversion'],
+      status: 'Active',
+      route: '/operations'
+    }));
+  }
+
+  if ((metrics.capacityThisWeekPct || 0) >= 90) {
+    events.push(normalizeMemoryEvent({
+      id: 'mem-operations-capacity-peak',
+      date: String((operations.weekCapacity || [])[0]?.date || new Date().toISOString()).slice(0, 10),
+      time: 'This week',
+      title: 'Operating utilisation entered a high-capacity zone',
+      body: `Weekly peak capacity is now ${metrics.capacityThisWeekPct}% with ${metrics.availableBookingSlots || 0} visible booking slot${metrics.availableBookingSlots === 1 ? '' : 's'} still open.`,
+      category: 'Capacity milestone',
+      department: 'Operations',
+      impact: 'Medium',
+      relatedEntities: ['goal-booking-conversion'],
+      status: 'Watchpoint',
+      route: '/operations'
+    }));
+  }
+
+  return [...events, ...memoryCandidates.map((item) => normalizeMemoryEvent(item))];
+}
+
 export function createMemoryService() {
   const memoryStore = new MemoryStore();
   const eventStore = new EventStore(memoryStore);
@@ -184,7 +226,7 @@ export function createMemoryService() {
       return memoryStore.getRetention();
     },
     getTimeline(runtime = {}) {
-      return sortTimeline(dedupeById([...eventStore.all(), ...marketingMilestones(runtime), ...communicationsMilestones(runtime)]));
+      return sortTimeline(dedupeById([...eventStore.all(), ...marketingMilestones(runtime), ...communicationsMilestones(runtime), ...operationsMilestones(runtime)]));
     },
     getDecisions() {
       return decisionStore.all();
@@ -222,7 +264,8 @@ export function createMemoryService() {
         ...this.getGoals().map((item) => ({ id: `search-${item.id}`, type: 'Goal', title: item.title, body: item.summary, route: item.route || '/reports/strategic-goals', meta: `${item.progress}% · ${item.status}` })),
         ...context.deterministic.map((item) => ({ id: `search-${item.id}`, type: 'Historical Context', title: item.title, body: item.summary, route: item.route || '/ai-assistant/memory-context', meta: item.department || 'Executive Memory' })),
         ...(runtime.recommendations || []).map((item) => ({ id: `search-${item.id}`, type: 'Recommendation', title: item.recommendation, body: item.why, route: '/ceo', meta: `${item.priority} · ${item.suggestedOwner}` })),
-        ...((runtime.communications?.searchIndex || []).map((item) => ({ ...item, id: item.id || `search-communications-${Math.random().toString(36).slice(2, 8)}` })))
+        ...((runtime.communications?.searchIndex || []).map((item) => ({ ...item, id: item.id || `search-communications-${Math.random().toString(36).slice(2, 8)}` }))),
+        ...((runtime.operations?.searchIndex || []).map((item) => ({ ...item, id: item.id || `search-operations-${Math.random().toString(36).slice(2, 8)}` })))
       ];
       return entries;
     },
@@ -265,7 +308,8 @@ export function createMemoryService() {
           { label: 'Decisions tracked', value: String(decisionSummary.total), body: `${decisionSummary.active} still active in memory.` },
           { label: 'Goals tracked', value: String(goalSummary.total), body: `${goalSummary.averageProgress}% average progress.` },
           { label: 'Recurring issues', value: String(context.recurringIssues.length), body: 'Cross-period themes now persist beyond the current dashboard state.' },
-          { label: 'Inbox priorities', value: String(runtime.communications?.metrics?.needsReply || 0), body: 'Executive Inbox items currently requiring direct attention.' }
+          { label: 'Inbox priorities', value: String(runtime.communications?.metrics?.needsReply || 0), body: 'Executive Inbox items currently requiring direct attention.' },
+          { label: 'Schedule risks', value: String(runtime.operations?.metrics?.schedulingRisks || 0), body: 'Operations Calendar items currently requiring direct schedule attention.' }
         ],
         retention: this.getRetention(),
         graphNote: `Knowledge graph currently maps ${this.getKnowledgeGraph(runtime).summary.nodeCount} nodes and ${this.getKnowledgeGraph(runtime).summary.edgeCount} relationships.`

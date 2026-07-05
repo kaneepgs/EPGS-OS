@@ -30,6 +30,10 @@ Then add:
 
 > “In v1.1, the CEO can also see a proper Marketing Intelligence layer — not just separate pages for website and YouTube, but a combined executive marketing readout with score, source status, and cross-channel findings.”
 
+Then add:
+
+> “Post-v1.1, that same shell now also surfaces Executive Inbox and Operations Calendar intelligence, so communications pressure and schedule capacity sit beside finance and marketing instead of being hidden in separate tools.”
+
 ## 3) Open the CFO module
 
 Say:
@@ -102,6 +106,29 @@ Say:
 
 > “Approvals are now centralised across the business, not just finance. Gmail now feeds reply, archive, label, forward, task, and follow-up cards into the same approval-first system, with no automated actions executing on their own.”
 
+Then add:
+
+> “Google Calendar now feeds reschedule, extend fitting, block time, accept invitation, and decline invitation cards into that same approval-first layer — still no automatic actions.”
+
+## 7B) Open Operations Calendar
+
+Say:
+
+> “Operations Calendar is not trying to recreate Google Calendar. It translates scheduling into executive operational intelligence — fittings, capacity, workload, deadlines, and scheduling risk.”
+
+Show:
+
+- today’s fittings
+- meetings and deadlines
+- staff availability
+- free capacity
+- week capacity
+- operational intelligence cards
+
+Then add:
+
+> “The provider follows the same local generated-snapshot pattern as GA4, YouTube, and Gmail, so credentials stay local and the browser only sees safe operational output.”
+
 ## 8) Open Reports
 
 Show:
@@ -113,33 +140,33 @@ Show:
 
 Say:
 
-> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report is the first example of a proper packaged functional report, and Board Meeting Mode now also has communications-aware executive context rather than ignoring the inbox.”
+> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report is the first example of a proper packaged functional report, and Board Meeting Mode now also has communications-aware and operations-aware executive context rather than ignoring the inbox or the schedule.”
 
 ## 9) Open AI Assistant
 
 Say:
 
-> “The AI Assistant section is now the conversational workspace for executive questions. It shows how EP Intelligence can answer leadership questions directly, including what the Executive Inbox needs from the CEO first, not just display cards.”
+> “The AI Assistant section is now the conversational workspace for executive questions. It shows how EP Intelligence can answer leadership questions directly, including what the Executive Inbox and today’s schedule need from the CEO first, not just display cards.”
 
 ## 10) Show one placeholder module
 
 Recommended:
 
-- **Operations** or **Sales**
+- **Sales**
 
 Say:
 
-> “This shows how future modules will slot into the same shell using the same executive design language.”
+> “This shows how future modules will slot into the same shell using the same executive design language. Operations is no longer just a placeholder — it now has a real executive scheduling surface.”
 
 ## 11) Close with the positioning
 
-> “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance, Marketing, and executive communications, the working CFO and CMO modules, the Executive Inbox, and the platform direction for the rest of the business.”
+> “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance, Marketing, executive communications, and scheduling operations, the working CFO and CMO modules, the Executive Inbox, the Operations Calendar, and the platform direction for the rest of the business.”
 
 ## 12) Close with roadmap context
 
 Say:
 
-> “The current formal release is still v1.1 — Marketing Intelligence. The product has now also grown a Gmail-backed Executive Inbox path, while the active roadmap in Roadmap.md keeps the wider Business Operations layer in focus.”
+> “The current formal release is still v1.1 — Marketing Intelligence. The product has now also grown Gmail-backed Executive Inbox and Google Calendar-backed Operations Calendar paths, while the active roadmap in Roadmap.md now points toward live accounting beneath the CFO layer.”
 
 Then add:
 

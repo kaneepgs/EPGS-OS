@@ -25,7 +25,7 @@ export function createHealthEngine(config) {
   const weights = config.weights.health;
 
   return Object.freeze({
-    evaluate({ executive, finance, marketing, approvals }) {
+    evaluate({ executive, finance, marketing, approvals, operations = {} }) {
       const revenueGrowth = parsePercent(finance.metrics?.find((item) => item.key === 'revenue')?.trend);
       const profitTrend = parsePercent(finance.metrics?.find((item) => item.key === 'profit')?.trend);
       const grossMargin = parsePercent(finance.kpis?.groups?.[1]?.[1]?.[0]?.[1]);
@@ -109,9 +109,15 @@ export function createHealthEngine(config) {
 
       const businessModules = executive.businessHealthScore?.modules || [];
       const customerTrust = businessModules.find((item) => item.module === 'Customer Experience')?.score || 84;
-      const operations = average([
+      const operationsCapacity = Number(operations.metrics?.capacityTodayPct || 72);
+      const operationsWeekCapacity = Number(operations.metrics?.capacityThisWeekPct || 81);
+      const operationsRisks = Number(operations.metrics?.schedulingRisks || 0);
+      const openBookingSlots = Number(operations.metrics?.availableBookingSlots || 0);
+      const operationsScore = average([
         businessModules.find((item) => item.module === 'Operations')?.score || 80,
-        businessModules.find((item) => item.module === 'Projects')?.score || 77
+        businessModules.find((item) => item.module === 'Projects')?.score || 77,
+        clamp(88 - Math.max(operationsCapacity - 70, 0) * 0.7 - operationsRisks * 4 + Math.min(openBookingSlots * 3, 8)),
+        clamp(86 - Math.max(operationsWeekCapacity - 80, 0) * 0.5 - operationsRisks * 3)
       ]);
       const governance = clamp(86 - approvalCount * 0.8);
 
@@ -119,7 +125,7 @@ export function createHealthEngine(config) {
         finance: cfoScore,
         marketing: cmoScore,
         customerTrust,
-        operationsDelivery: operations,
+        operationsDelivery: operationsScore,
         governance
       };
       const ceoScore = weightedScore(Object.entries(ceoComponents), weights.ceo);

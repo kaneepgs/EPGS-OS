@@ -5,8 +5,13 @@ export function createApprovalService(registry) {
     getWorkspace() {
       const provider = registry.getDomainProvider('approval');
       const raw = provider.getApprovalWorkspace();
+      const calendarRaw = registry.getProvider('calendar')?.getApprovalWorkspace?.() || {};
+      const mergedGroups = {
+        ...(raw.groups || {}),
+        ...(calendarRaw.groups || {})
+      };
       const groups = Object.fromEntries(
-        Object.entries(raw.groups || {}).map(([name, entries]) => [name, entries.map((entry) => normalizeApproval(entry))])
+        Object.entries(mergedGroups).map(([name, entries]) => [name, entries.map((entry) => normalizeApproval(entry))])
       );
       return {
         ...raw,

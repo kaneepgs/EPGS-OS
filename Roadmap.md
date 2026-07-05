@@ -20,15 +20,15 @@ Only one major initiative should normally appear here.
 
 ### Current
 
-- Sprint 13 — Gmail Provider v1.0
-- Executive Inbox
-- Gmail Intelligence
-- Executive Communications
-- Approval-first email workflows
+- Sprint 15 — Accounting Provider v1.0
+- Live Finance
+- Accounting-backed CFO replacement beneath the service layer
+- Deterministic finance forecasting from provider data
+- Demo fallback preserved
 
 ### Status
 
-🟢 In Progress
+🟡 Ready
 
 ## NEXT
 
@@ -36,18 +36,15 @@ The **Next** section contains the next two to four planned initiatives.
 
 These should be considered committed priorities unless changed by the product owner.
 
-1. Google Calendar Provider
-2. QuickBooks/Xero Provider
-3. Mailchimp Provider
-4. Booking Intelligence
+1. Booking Intelligence
+2. Mailchimp Provider
+3. Instagram / Facebook Provider
+4. LinkedIn Provider
 
 ## LATER
 
 The **Later** section contains larger initiatives that are planned but intentionally scheduled after the Next items.
 
-- Instagram Provider
-- Facebook Provider
-- LinkedIn Provider
 - X Provider
 - CRM Provider
 - Staff Portal

@@ -4,23 +4,25 @@ import { MockProvider } from './mock-provider.js';
 import { AnalyticsProvider } from './analytics-provider.js';
 import { YouTubeProvider } from './youtube-provider.js';
 import { GmailProvider } from './gmail-provider.js';
+import { CalendarProvider } from './calendar-provider.js';
 import { createFutureProviders } from './future-providers.js';
 
-export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snapshot = null, youtubeSnapshot = null, gmailSnapshot = null } = {}) {
+export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snapshot = null, youtubeSnapshot = null, gmailSnapshot = null, calendarSnapshot = null } = {}) {
   const mockProvider = new MockProvider({ source, mode });
   const analyticsProvider = new AnalyticsProvider({ source, mode, ga4Snapshot });
   const youtubeProvider = new YouTubeProvider({ provider: analyticsProvider, source, mode, youtubeSnapshot });
   const gmailProvider = new GmailProvider({ provider: mockProvider, source, mode, gmailSnapshot });
+  const calendarProvider = new CalendarProvider({ provider: mockProvider, source, mode, calendarSnapshot });
   const futureProviders = createFutureProviders();
   const catalog = {
     mock: mockProvider,
     analytics: analyticsProvider,
     youtube: youtubeProvider,
     gmail: gmailProvider,
+    calendar: calendarProvider,
     finance: futureProviders.finance,
     marketing: futureProviders.marketing,
     crm: futureProviders.crm,
-    calendar: futureProviders.calendar,
     ai: futureProviders.ai
   };
 
@@ -29,9 +31,10 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
     finance: mockProvider,
     marketing: youtubeProvider,
     communications: gmailProvider,
+    operations: calendarProvider,
     approval: gmailProvider,
     report: mockProvider,
-    timeline: mockProvider,
+    timeline: calendarProvider,
     ai: mockProvider,
     settings: mockProvider
   };
@@ -48,7 +51,8 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
         liveData: {
           ga4: analyticsProvider.describeGoogleAnalyticsIntegration(),
           youtube: youtubeProvider.describeYouTubeIntegration(),
-          gmail: gmailProvider.describeGmailIntegration()
+          gmail: gmailProvider.describeGmailIntegration(),
+          calendar: calendarProvider.describeCalendarIntegration()
         }
       };
     },
@@ -83,6 +87,10 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
           return gmailProvider.describeGmailIntegration();
         }
 
+        if (entry.id === 'google-calendar') {
+          return calendarProvider.describeCalendarIntegration();
+        }
+
         return {
           ...entry,
           mode,
@@ -94,7 +102,8 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
       return {
         ga4: analyticsProvider.describeGoogleAnalyticsIntegration(),
         youtube: youtubeProvider.describeYouTubeIntegration(),
-        gmail: gmailProvider.describeGmailIntegration()
+        gmail: gmailProvider.describeGmailIntegration(),
+        calendar: calendarProvider.describeCalendarIntegration()
       };
     }
   });

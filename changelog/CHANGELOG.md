@@ -94,3 +94,8 @@
 - Added CEO-facing inbox widgets, Gmail-aware recommendations, approvals, executive summaries, Board Meeting context, AI Assistant prompts, timeline events, and provider-independent memory milestones.
 - Extended integration status, provider architecture documentation, and search coverage so Gmail now appears as a first-class communications provider rather than a placeholder future integration.
 - Documented Gmail provider setup, OAuth scope, security model, lifecycle, and troubleshooting guidance.
+- Added Sprint 14 and introduced `CalendarProvider` plus `scripts/sync-calendar-snapshot.mjs` so Operations Calendar can hydrate from a generated local Google Calendar snapshot while preserving demo fallback and keeping credentials out of the browser.
+- Added a new `/operations` route with deterministic sections for today’s fittings, upcoming meetings, staff availability, free capacity, travel, deadlines, all-day events, week-capacity pressure, and approval-first operational actions.
+- Added CEO-facing operations widgets, Google Calendar-aware recommendations, executive briefing schedule summaries, operations timeline events, search coverage, and provider-independent memory milestones.
+- Extended integration status, provider architecture documentation, approval routing, and AI Assistant prompts so Google Calendar now appears as a first-class operations provider rather than a placeholder future integration.
+- Documented Google Calendar provider setup, OAuth scope, security model, lifecycle, and troubleshooting guidance.

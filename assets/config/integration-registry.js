@@ -32,8 +32,8 @@ export const INTEGRATION_REGISTRY = Object.freeze([
     provider: 'CalendarProvider',
     service: 'TimelineService',
     group: 'Calendar & Timeline',
-    status: 'Demo Mode',
-    notes: 'Reserved for executive planning, events, and timing-sensitive priorities.'
+    status: 'Live-capable',
+    notes: 'Operations Calendar, executive scheduling intelligence, timeline enrichment, and approval-first calendar actions can now hydrate from a generated local Google Calendar snapshot while safely falling back to demo data.'
   },
   {
     id: 'mailchimp',

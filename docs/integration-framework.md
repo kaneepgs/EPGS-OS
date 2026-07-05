@@ -238,8 +238,23 @@ This pattern now exists for:
 - `scripts/sync-ga4-snapshot.mjs` → `AnalyticsProvider`
 - `scripts/sync-youtube-snapshot.mjs` → `YouTubeProvider`
 - `scripts/sync-gmail-snapshot.mjs` → `GmailProvider`
+- `scripts/sync-calendar-snapshot.mjs` → `CalendarProvider`
 
-Sprint 11 proves that new executive value can be added by composing on top of those snapshots and providers, rather than by adding new APIs or bypassing the architecture. Sprint 13 extends the same pattern into communications so Executive Inbox can remain approval-first and browser-safe.
+Sprint 11 proves that new executive value can be added by composing on top of those snapshots and providers, rather than by adding new APIs or bypassing the architecture. Sprint 13 extends the same pattern into communications so Executive Inbox can remain approval-first and browser-safe. Sprint 14 extends it again into operations so schedule intelligence can stay browser-safe, approval-first, and architecturally isolated from the presentation layer.
+
+## Calendar Provider Lifecycle
+
+`CalendarProvider` overlays operational scheduling intelligence without turning EP Intelligence into a calendar client.
+
+Its lifecycle is:
+
+1. `scripts/sync-calendar-snapshot.mjs` exchanges the stored refresh token for a short-lived Google Calendar access token using read-only calendar scope
+2. the script fetches the selected calendar, reads upcoming events, classifies fittings, meetings, travel, deadlines, and all-day holds using deterministic business rules, and writes a generated local snapshot
+3. `assets/data/live-data-loader.js` loads that snapshot at runtime and falls back safely if it is missing, invalid, or stale
+4. `CalendarProvider` shapes Operations Calendar, provider health, timeline events, search entries, approval cards, and Google Calendar integration status from that snapshot
+5. `TimelineService` exposes the operations workspace and business timeline coverage while `ApprovalService` merges calendar-derived actions into the central approval workspace
+6. the intelligence layer, executive briefing, CEO widgets, reports, and provider-independent memory consume those operations outputs without talking to Google Calendar directly
+7. all schedule actions remain approval cards only; nothing executes automatically
 
 ## Gmail Provider Lifecycle
 

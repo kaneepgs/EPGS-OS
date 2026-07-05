@@ -81,6 +81,7 @@ function currentSubnav() {
   if (key === '/executive-inbox') return SUBNAV.executiveInbox;
   if (key === '/cfo') return SUBNAV.cfo;
   if (key === '/cmo') return SUBNAV.cmo;
+  if (key === '/operations') return [['/operations', 'Operations Calendar']];
   if (key === '/reports') return SUBNAV.reports;
   if (key === '/ai-assistant') return SUBNAV.aiAssistant;
   if (key === '/settings') return SUBNAV.settings;
@@ -204,7 +205,8 @@ function globalSearchEntries(query = '') {
   }));
   const memoryEntries = WORKSPACE_DATA.memory.searchIndex || [];
   const communicationsEntries = WORKSPACE_DATA.communications.searchIndex || [];
-  const combined = [...routeEntries, ...communicationsEntries, ...memoryEntries];
+  const operationsEntries = WORKSPACE_DATA.operations.searchIndex || [];
+  const combined = [...routeEntries, ...communicationsEntries, ...operationsEntries, ...memoryEntries];
   if (!needle) return combined.slice(0, 12);
   return combined.filter((item) => [item.title, item.body, item.meta, item.type, item.route].join(' ').toLowerCase().includes(needle)).slice(0, 12);
 }
@@ -326,6 +328,7 @@ function toneFromPriority(priority = '') {
 function boardSlides() {
   const ceo = WORKSPACE_DATA.ceo;
   const intelligence = WORKSPACE_DATA.intelligence;
+  const operations = WORKSPACE_DATA.operations;
   return [
     {
       key: 'summary',
@@ -396,6 +399,20 @@ function boardSlides() {
         </div>
         <div class="grid-2">
           ${WORKSPACE_DATA.communications.sections.slice(0, 2).map((section) => insightCard({ eyebrow: section.title, title: section.items[0]?.subject || 'No urgent items', body: section.items[0]?.aiSummary || section.body, tone: section.items[0]?.priority === 'High' ? 'warn' : 'info' })).join('')}
+        </div>
+      `
+    },
+    {
+      key: 'operations',
+      eyebrow: 'Operations Calendar',
+      title: 'Capacity, workload, and scheduling risk are now visible',
+      body: operations.summary.boardSummary,
+      html: `
+        <div class="grid-3">
+          ${operations.widgets.slice(0, 6).map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+        </div>
+        <div class="grid-2">
+          ${operations.insightCards.slice(0, 2).map((item) => insightCard({ eyebrow: item.eyebrow, title: item.title, body: item.body, tone: item.tone || 'info' })).join('')}
         </div>
       `
     },
@@ -687,6 +704,7 @@ function ceoDashboardView() {
   const youtube = data.youtubeIntelligence;
   const marketing = data.marketingIntelligence;
   const communications = data.executiveInbox;
+  const operations = WORKSPACE_DATA.operations;
   return {
     html: `
       <div class="page-grid">
@@ -769,6 +787,20 @@ function ceoDashboardView() {
           </div>
           <div class="tile-grid">
             ${communications.sections.slice(0, 4).map((section) => insightCard({ eyebrow: section.title, title: section.items[0]?.subject || 'No active items', body: section.items[0]?.aiSummary || section.body, tone: section.items[0]?.priority === 'High' ? 'warn' : 'neutral' })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Operations Calendar', title: operations.summary.headline, body: operations.providerSummary.body })}
+          <div class="grid-3">
+            ${operations.widgets.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+          </div>
+          <div class="grid-2">
+            ${insightCard({ eyebrow: 'Schedule summary', title: operations.summary.headline, body: operations.summary.dailySummary, tone: operations.providerSummary.tone || 'info' })}
+            ${insightCard({ eyebrow: 'Provider health', title: operations.providerSummary.health || operations.providerSummary.label, body: `${operations.providerSummary.calendarName || 'Calendar'}${operations.providerSummary.syncedAt ? ` · synced ${operations.providerSummary.syncedAt}` : ''}`, tone: operations.providerSummary.tone || 'info' })}
+          </div>
+          <div class="tile-grid">
+            ${operations.insightCards.slice(0, 4).map((item) => insightCard({ eyebrow: item.eyebrow, title: item.title, body: item.body, tone: item.tone || 'info' })).join('')}
           </div>
         </section>
 
@@ -2284,6 +2316,7 @@ function placeholderModuleView(route) {
 function approvalsView() {
   const groups = Object.entries(WORKSPACE_DATA.approvals.groups);
   const communications = WORKSPACE_DATA.communications;
+  const operations = WORKSPACE_DATA.operations;
   return {
     html: `
       <div class="page-grid">
@@ -2295,6 +2328,7 @@ function approvalsView() {
           </div>
           <div class="grid-3">
             ${communications.widgets.slice(0, 3).map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+            ${operations.widgets.slice(0, 3).map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
           </div>
         </section>
         ${pageQuestions('/approvals')}
@@ -2320,6 +2354,7 @@ function reportsOverviewView() {
   const memory = WORKSPACE_DATA.reports.memory;
   const memoryRoutes = [
     { title: 'Executive Inbox', body: 'Communications intelligence, approval-first inbox triage, and executive email summaries.', route: '/executive-inbox' },
+    { title: 'Operations Calendar', body: 'Operations capacity, fittings, deadlines, scheduling risks, and free capacity in one executive operations surface.', route: '/operations' },
     { title: 'Executive Timeline', body: 'Permanent business chronology of launches, milestones, and structural changes.', route: '/reports/executive-timeline' },
     { title: 'Decision Journal', body: 'Structured executive decision memory with reasons, outcomes, and linked KPIs.', route: '/reports/decision-journal' },
     { title: 'Strategic Goals', body: 'Persistent goals linked to metrics, decisions, and owners.', route: '/reports/strategic-goals' },
@@ -2378,6 +2413,7 @@ function reportsOverviewView() {
 function weeklyBriefingsView() {
   const data = WORKSPACE_DATA.reports.intelligence.weeklyBriefing;
   const memory = WORKSPACE_DATA.reports.memory;
+  const operations = WORKSPACE_DATA.operations;
   return {
     html: `
       <div class="page-grid">
@@ -2397,6 +2433,7 @@ function weeklyBriefingsView() {
             ${insightCard({ eyebrow: 'Risks', title: 'What needs watching', body: data.risks.join(' '), tone: 'risk' })}
             ${insightCard({ eyebrow: 'Recommendations', title: 'What to do', body: data.recommendations.join(' '), tone: 'warn' })}
             ${insightCard({ eyebrow: 'Executive Inbox', title: 'Communications summary', body: WORKSPACE_DATA.communications.summary.dailySummary, tone: WORKSPACE_DATA.communications.providerSummary.tone || 'info' })}
+            ${insightCard({ eyebrow: 'Operations Calendar', title: 'Schedule summary', body: operations.summary.dailySummary, tone: operations.providerSummary.tone || 'info' })}
             ${insightCard({ eyebrow: 'Questions Worth Asking', title: 'The right board questions', body: data.questions.join(' '), tone: 'neutral' })}
           </div>
         </section>
@@ -2436,7 +2473,7 @@ function executiveTimelineView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Executive Timeline', title: 'Permanent business timeline', body: 'This timeline now persists independently of any provider and holds milestones, launches, purchases, decisions, structural changes, and executive inbox events.' })}
+          ${sectionHeader({ eyebrow: 'Executive Timeline', title: 'Permanent business timeline', body: 'This timeline now persists independently of any provider and holds milestones, launches, purchases, decisions, structural changes, executive inbox events, and operations calendar events.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
         </section>
         ${pageQuestions('/reports/executive-timeline')}
@@ -2698,6 +2735,103 @@ function marketingIntelligenceReportView() {
   };
 }
 
+function operationsCalendarView() {
+  const data = WORKSPACE_DATA.operations;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="hero-grid">
+          <div class="hero-block">
+            <section class="summary-banner">
+              <div class="eyebrow">Operations Calendar</div>
+              <div class="hero-title">Scheduling translated into executive operational intelligence.</div>
+              <p class="hero-summary">${escapeHtml(data.summary.body)}</p>
+            </section>
+          </div>
+          <div class="hero-side">
+            <section class="snapshot-panel">
+              <div class="label">Provider state</div>
+              <h3>${escapeHtml(data.providerSummary.label)}</h3>
+              <p>${escapeHtml(data.providerSummary.body)}</p>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Operations summary', title: data.summary.headline, body: 'The goal is to make schedule quality, workload, and capacity visible without turning EP Intelligence into a calendar client.' })}
+          ${renderRoutePillbar([['/operations', 'Operations Calendar']])}
+          <div class="grid-3">
+            ${data.widgets.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+          </div>
+        </section>
+
+        ${pageQuestions('/operations')}
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Today\'s fittings', title: 'Revenue-relevant appointments first', body: 'These are the calendar items most directly tied to commercial output.' })}
+            <div class="section-stack">
+              ${data.todaySchedule.filter((item) => item.type === 'Fitting').map((item) => registerRow({ kicker: `${pill(item.startTime, 'info')}${pill(item.location, 'neutral')}${pill(item.priority, toneFromPriority(item.priority))}`, title: item.title, body: `${item.body} Staff: ${item.staff}. Status: ${item.status}.`, extra: `<div class="mini-list"><li>${escapeHtml(`Customer: ${item.customer || '—'}`)}</li><li>${escapeHtml(`Duration: ${item.durationMinutes} minutes`)}</li></div>` })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Upcoming meetings', title: 'Coordination points and deadlines', body: 'Operational meetings, reviews, and near-term timing commitments.' })}
+            <div class="section-stack">
+              ${[...data.upcomingMeetings, ...data.deadlines].slice(0, 6).map((item) => registerRow({ kicker: `${pill(item.startTime || item.due || 'Upcoming', 'info')}${pill(item.location || item.owner || 'Operations', 'neutral')}`, title: item.title, body: item.body || item.note || 'Timing-sensitive operating item.', extra: item.customer ? `<div class="mini-list"><li>${escapeHtml(`Customer: ${item.customer}`)}</li></div>` : '' })).join('')}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Staff availability', title: 'Who can absorb more work safely', body: 'Staff utilisation should stay commercially useful without drifting into avoidable compression.' })}
+            <div class="section-stack">
+              ${data.staffAvailability.map((item) => insightCard({ eyebrow: `${item.role} · ${item.status}`, title: item.name, body: `${item.availability} ${item.detail}`, tone: item.status === 'Tight' ? 'warn' : item.status === 'Conditional' ? 'info' : 'good' })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Free capacity', title: 'Where more demand can fit', body: 'These windows are the clearest opportunities to convert spare capacity into bookings.' })}
+            <div class="section-stack">
+              ${data.freeCapacity.map((item) => registerRow({ kicker: `${pill(item.duration, 'good')}${pill(item.suitability, 'neutral')}`, title: item.label, body: item.note })).join('')}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Travel and all-day events', title: 'Non-meeting schedule pressure', body: 'Travel and all-day holds still shape real operating capacity.' })}
+            <div class="section-stack">
+              ${[...data.travel, ...data.allDayEvents].map((item) => registerRow({ kicker: `${pill(item.time || item.date || 'All day', 'info')}${pill(item.location || item.owner || 'Operations', 'neutral')}`, title: item.title, body: item.note })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Operational intelligence', title: 'Deterministic scheduling insights', body: 'These insights are generated from utilisation, free capacity, back-to-back items, and workload shape.' })}
+            <div class="tile-grid">
+              ${data.insightCards.map((item) => insightCard({ eyebrow: item.eyebrow, title: item.title, body: item.body, tone: item.tone || 'info' })).join('')}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Week capacity', title: 'Where the week gets tight', body: 'Capacity today matters, but the week shape matters more for planning.' })}
+            <div class="section-stack">
+              ${data.weekCapacity.map((item) => registerRow({ kicker: `${pill(item.day, 'info')}${pill(item.utilisation, toneFromSeverity(Number.parseInt(item.utilisation, 10) >= 90 ? 'high' : Number.parseInt(item.utilisation, 10) >= 75 ? 'medium' : 'low'))}`, title: `${item.day} utilisation`, body: item.note })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Approval-first actions', title: 'What leadership could stage next', body: 'No scheduling action executes automatically. These cards only prepare decisions.' })}
+            <div class="section-stack">
+              ${data.approvalCards.map((item) => approvalCard(item)).join('')}
+            </div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
 function reportPlaceholderView(route, title, items) {
   return {
     html: `
@@ -2772,6 +2906,7 @@ function aiAssistantOverviewView() {
 
 function aiAssistantAskView() {
   const data = WORKSPACE_DATA.aiAssistant.askWorkspace;
+  const operations = WORKSPACE_DATA.operations;
   return {
     html: `
       <div class="page-grid">
@@ -2798,8 +2933,48 @@ function aiAssistantAskView() {
           <div class="section-stack">${WORKSPACE_DATA.communications.sections.slice(0, 2).flatMap((section) => section.items.slice(0, 2)).map((item) => registerRow({ kicker: `${pill(item.category, 'info')}${pill(item.priority, toneFromPriority(item.priority))}`, title: item.subject, body: item.aiSummary })).join('')}</div>
         </section>
         <section class="panel">
+          ${sectionHeader({ eyebrow: 'Operations Calendar', title: 'What the schedule needs from the CEO', body: operations.summary.dailySummary })}
+          <div class="section-stack">${operations.todaySchedule.slice(0, 4).map((item) => registerRow({ kicker: `${pill(item.startTime, 'info')}${pill(item.type, 'neutral')}${pill(item.priority, toneFromPriority(item.priority))}`, title: item.title, body: item.body })).join('')}</div>
+        </section>
+        <section class="panel">
           ${sectionHeader({ eyebrow: 'Business memory', title: 'What the business memory says', body: 'These are the durable context prompts now available to the executive reasoning layer.' })}
           <div class="section-stack">${WORKSPACE_DATA.aiAssistant.memory.context.deterministic.map((item) => registerRow({ kicker: pill(item.department || 'Executive Memory', 'info'), title: item.title, body: item.summary })).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function aiAssistantExecutiveBriefingView() {
+  const intelligence = WORKSPACE_DATA.intelligence;
+  const communications = WORKSPACE_DATA.communications;
+  const operations = WORKSPACE_DATA.operations;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'AI Assistant', title: 'Executive Briefing', body: intelligence.narratives.dailyBriefing.summary })}
+          ${renderRoutePillbar(SUBNAV.aiAssistant)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'pulse', label: 'Overall health', value: String(intelligence.health.overall.score), body: intelligence.health.overall.label })}
+            ${statCard({ iconName: 'book-open', label: 'Inbox priorities', value: String(communications.metrics.needsReply || 0), body: communications.summary.headline })}
+            ${statCard({ iconName: 'calendar', label: "Today's schedule", value: String(operations.metrics.todaysSchedule || 0), body: operations.summary.headline })}
+            ${statCard({ iconName: 'target', label: 'Open booking slots', value: String(operations.metrics.availableBookingSlots || 0), body: 'Visible capacity that could still be turned into revenue.' })}
+          </div>
+        </section>
+        ${pageQuestions('/ai-assistant/executive-briefing')}
+        <div class="grid-2">
+          ${insightCard({ eyebrow: 'Top insight', title: intelligence.insights.topInsight.title, body: intelligence.insights.topInsight.executiveSummary, tone: toneFromPriority(intelligence.insights.topInsight.priority) })}
+          ${insightCard({ eyebrow: 'Top recommendation', title: intelligence.recommendations[0].recommendation, body: intelligence.recommendations[0].expectedBenefit, tone: toneFromPriority(intelligence.recommendations[0].priority) })}
+          ${insightCard({ eyebrow: 'Operations summary', title: operations.summary.headline, body: operations.summary.dailySummary, tone: operations.providerSummary.tone || 'info' })}
+          ${insightCard({ eyebrow: 'Communications summary', title: communications.summary.headline, body: communications.summary.dailySummary, tone: communications.providerSummary.tone || 'info' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Suggested schedule improvements', title: 'What leadership should change next', body: 'These recommendations stay approval-first and deterministic.' })}
+          <div class="section-stack">
+            ${intelligence.recommendations.filter((item) => /Operations|COO|Sales/.test(item.suggestedOwner)).slice(0, 4).map((item) => registerRow({ kicker: `${pill(item.priority, toneFromPriority(item.priority))}${pill(item.suggestedOwner, 'neutral')}`, title: item.recommendation, body: item.why })).join('')}
+          </div>
         </section>
       </div>
     `,
@@ -2959,6 +3134,7 @@ function settingsIntegrationStatusView() {
   const ga4 = APP_RUNTIME.config.liveData.ga4;
   const youtube = APP_RUNTIME.config.liveData.youtube;
   const gmail = APP_RUNTIME.config.liveData.gmail;
+  const calendar = APP_RUNTIME.config.liveData.calendar;
   const groups = Object.entries(
     WORKSPACE_DATA.settings.integrationStatus.reduce((acc, entry) => {
       acc[entry.group] = acc[entry.group] || [];
@@ -2970,14 +3146,15 @@ function settingsIntegrationStatusView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics, YouTube, and Executive Inbox can now hydrate from generated local snapshots when configured.' })}
+          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics, YouTube, Executive Inbox, and Operations Calendar can now hydrate from generated local snapshots when configured.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'check-circle', label: 'GA4 state', value: ga4.status, body: ga4.detail })}
             ${statCard({ iconName: 'sparkles', label: 'YouTube state', value: youtube.status, body: youtube.detail })}
             ${statCard({ iconName: 'book-open', label: 'Gmail state', value: gmail.status, body: gmail.detail })}
+            ${statCard({ iconName: 'calendar', label: 'Calendar state', value: calendar.status, body: calendar.detail })}
             ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Every future integration still has a status surface.' })}
-            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider, YouTubeProvider, and GmailProvider now support selective live overlays with safe fallback to demo data.' })}
+            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider, YouTubeProvider, GmailProvider, and CalendarProvider now support selective live overlays with safe fallback to demo data.' })}
           </div>
         </section>
 
@@ -2986,7 +3163,7 @@ function settingsIntegrationStatusView() {
             .map(
               ([group, entries]) => `
                 <section class="panel">
-                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics, YouTube, and Gmail may now be live on their specific provider paths; every other entry remains in Demo Mode.' })}
+                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics, YouTube, Gmail, and Google Calendar may now be live on their specific provider paths; every other entry remains in Demo Mode.' })}
                   <div class="section-stack">
                     ${entries
                       .map((entry) =>
@@ -3017,27 +3194,28 @@ function settingsConfigurationView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics, YouTube, and Gmail are hydrated from locally generated snapshots, while Executive Memory persists separately.' })}
+          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics, YouTube, Gmail, and Google Calendar are hydrated from locally generated snapshots, while Executive Memory persists separately.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'settings', label: 'Active mode', value: config.activeMode.label, body: config.activeMode.description })}
-            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider, YouTubeProvider, and GmailProvider now selectively override their domains.' })}
+            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider, YouTubeProvider, GmailProvider, and CalendarProvider now selectively override their domains.' })}
             ${statCard({ iconName: 'shield', label: 'GA4 state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.notes || APP_RUNTIME.config.liveData.ga4.detail })}
             ${statCard({ iconName: 'sparkles', label: 'YouTube state', value: APP_RUNTIME.config.liveData.youtube.status, body: APP_RUNTIME.config.liveData.youtube.notes || APP_RUNTIME.config.liveData.youtube.detail })}
             ${statCard({ iconName: 'book-open', label: 'Gmail state', value: APP_RUNTIME.config.liveData.gmail.status, body: APP_RUNTIME.config.liveData.gmail.notes || APP_RUNTIME.config.liveData.gmail.detail })}
+            ${statCard({ iconName: 'calendar', label: 'Calendar state', value: APP_RUNTIME.config.liveData.calendar.status, body: APP_RUNTIME.config.liveData.calendar.notes || APP_RUNTIME.config.liveData.calendar.detail })}
           </div>
         </section>
 
         <div class="grid-2">
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but selective GA4, YouTube, and Gmail overlays can still enrich the executive workspace while Future Live Mode remains reserved.' })}
+            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but selective GA4, YouTube, Gmail, and Google Calendar overlays can still enrich the executive workspace while Future Live Mode remains reserved.' })}
             <div class="section-stack">
               ${config.availableModes
                 .map((mode) =>
                   insightCard({
                     eyebrow: mode.available ? 'Available now' : 'Reserved for later',
                     title: mode.label,
-                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available || APP_RUNTIME.config.liveData.youtube.available || APP_RUNTIME.config.liveData.gmail.available ? `Current overlays: ${[APP_RUNTIME.config.liveData.ga4.available ? 'GA4 Website Analytics' : null, APP_RUNTIME.config.liveData.youtube.available ? 'YouTube channel data' : null, APP_RUNTIME.config.liveData.gmail.available ? 'Gmail Executive Inbox' : null].filter(Boolean).join(' + ')}.` : 'No live snapshot is currently active.'}` : mode.description,
+                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available || APP_RUNTIME.config.liveData.youtube.available || APP_RUNTIME.config.liveData.gmail.available || APP_RUNTIME.config.liveData.calendar.available ? `Current overlays: ${[APP_RUNTIME.config.liveData.ga4.available ? 'GA4 Website Analytics' : null, APP_RUNTIME.config.liveData.youtube.available ? 'YouTube channel data' : null, APP_RUNTIME.config.liveData.gmail.available ? 'Gmail Executive Inbox' : null, APP_RUNTIME.config.liveData.calendar.available ? 'Google Calendar operations' : null].filter(Boolean).join(' + ')}.` : 'No live snapshot is currently active.'}` : mode.description,
                     tone: mode.available ? 'good' : 'warn'
                   })
                 )
@@ -3045,7 +3223,7 @@ function settingsConfigurationView() {
             </div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while Sprint 13 now lets communications bind to GmailProvider and marketing bind to YouTubeProvider on top of AnalyticsProvider without forcing dashboard rewrites.' })}
+            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while communications bind to GmailProvider, operations/timeline bind to CalendarProvider, and marketing binds to YouTubeProvider on top of AnalyticsProvider without forcing dashboard rewrites.' })}
             <div class="section-stack">
               ${config.domainBindings
                 .map((binding) =>
@@ -3207,7 +3385,7 @@ const routeRenderers = {
   '/coo': () => placeholderModuleView('/coo'),
   '/sales': () => placeholderModuleView('/sales'),
   '/customer-success': () => placeholderModuleView('/customer-success'),
-  '/operations': () => placeholderModuleView('/operations'),
+  '/operations': operationsCalendarView,
   '/hr': () => placeholderModuleView('/hr'),
   '/projects': () => placeholderModuleView('/projects'),
   '/approvals': approvalsView,
@@ -3224,7 +3402,7 @@ const routeRenderers = {
   '/reports/ceo-reports': () => reportPlaceholderView('/reports/ceo-reports', 'CEO Reports', WORKSPACE_DATA.reports.ceoReports),
   '/ai-assistant': aiAssistantOverviewView,
   '/ai-assistant/ask': aiAssistantAskView,
-  '/ai-assistant/executive-briefing': () => aiAssistantPlaceholderView('/ai-assistant/executive-briefing'),
+  '/ai-assistant/executive-briefing': aiAssistantExecutiveBriefingView,
   '/ai-assistant/follow-up-questions': () => aiAssistantPlaceholderView('/ai-assistant/follow-up-questions'),
   '/ai-assistant/suggested-actions': () => aiAssistantPlaceholderView('/ai-assistant/suggested-actions'),
   '/ai-assistant/assumptions': () => aiAssistantPlaceholderView('/ai-assistant/assumptions'),

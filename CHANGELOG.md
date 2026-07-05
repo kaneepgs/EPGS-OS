@@ -46,13 +46,17 @@ Included milestones:
 - Executive Inbox
 - Approval-first executive communications
 - Gmail-derived timeline, memory, and search coverage
+- Google Calendar Provider v1.0
+- Operations Calendar
+- Operational scheduling intelligence
+- Approval-first scheduling actions
 
 ## v1.2 — Business Operations
 
 Planned:
 
-- Google Calendar Provider
 - Unified Business Operations release packaging
+- Executive Inbox + Operations Calendar consolidation
 - Operational Intelligence
 - Approval Centre Improvements
 - Cross-provider operational workflows

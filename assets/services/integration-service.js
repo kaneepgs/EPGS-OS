@@ -15,7 +15,7 @@ export function createIntegrationService(registry, { executiveService, financeSe
         layers: [
           { title: 'Presentation Layer', body: 'Routes and views render stable executive UI components and never talk directly to raw data sources.', tone: 'info' },
           { title: 'Business Logic Layer', body: 'Services shape dashboard-ready data, enforce contracts, and hide provider-specific detail from the UI.', tone: 'good' },
-          { title: 'Data Provider Layer', body: 'Providers expose interchangeable domain data. Sprint 13 now lets GmailProvider overlay executive communications data alongside the existing GA4 and YouTube snapshot paths while preserving demo fallback.', tone: 'warn' }
+          { title: 'Data Provider Layer', body: 'Providers expose interchangeable domain data. GmailProvider and CalendarProvider now overlay executive communications and operations scheduling data alongside the existing GA4 and YouTube snapshot paths while preserving demo fallback.', tone: 'warn' }
         ],
         flow: [
           'UI route → service method',
@@ -30,9 +30,9 @@ export function createIntegrationService(registry, { executiveService, financeSe
           { title: 'FinanceService', body: 'Owns CFO-facing finance workspace data and normalised finance-specific contracts.' },
           { title: 'MarketingService', body: 'Owns CMO-facing marketing workspace data and normalised marketing-specific contracts.' },
           { title: 'CommunicationsService', body: 'Owns Executive Inbox data, communications triage, Gmail-derived summary metrics, and inbox search coverage.' },
+          { title: 'TimelineService', body: 'Owns reusable executive timeline shaping and now also exposes Operations Calendar workspace data for scheduling intelligence.' },
           { title: 'ApprovalService', body: 'Owns grouped approval data and approval contract normalization.' },
           { title: 'ReportService', body: 'Owns reporting-route datasets and report contract normalization.' },
-          { title: 'TimelineService', body: 'Owns reusable executive timeline shaping for CEO and future modules.' },
           { title: 'MemoryService', body: 'Owns persistent executive memory, decision history, strategic goals, deterministic historical context, and knowledge graph relationships.' },
           { title: 'IntelligenceService', body: 'Owns deterministic insight generation, health scoring, recommendations, and narratives on top of provider-backed service data.' }
         ],
@@ -42,7 +42,7 @@ export function createIntegrationService(registry, { executiveService, financeSe
           'Views import shell config and runtime data, not raw mock datasets.',
           'Services are responsible for shaping contract-safe workspace data.',
           'Providers may change in the future without requiring route rewrites.',
-          'Gmail follows the same generated-snapshot pattern as GA4 and YouTube so credentials never reach the browser.',
+          'Gmail and Google Calendar follow the same generated-snapshot pattern as GA4 and YouTube so credentials never reach the browser.',
           'Demo mode remains the only executable mode until future integrations are explicitly built.'
         ],
         health: {
@@ -50,6 +50,7 @@ export function createIntegrationService(registry, { executiveService, financeSe
           cfo: financeService?.getWorkspace?.()?.welcome?.score ?? 0,
           cmo: marketingService?.getWorkspace?.()?.dashboard?.healthScore ?? 0,
           communications: communicationsService?.getWorkspace?.()?.counts?.visible ?? 0,
+          operations: timelineService?.getOperationsWorkspace?.()?.todaySchedule?.length || 0,
           approvals: Object.keys(approvalService?.getWorkspace?.()?.groups || {}).length,
           reports: (reportService?.getWorkspace?.()?.overview || []).length,
           timeline: (timelineService?.getBusinessTimeline?.() || []).length,

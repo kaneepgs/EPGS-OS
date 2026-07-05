@@ -7,17 +7,18 @@ export function createNarrativeEngine() {
     evaluate(context, { insights, recommendations, health }) {
       const memorySummary = context?.memory?.deterministic?.[0]?.summary || '';
       const inboxSummary = context?.communications?.summary?.dailySummary || '';
+      const operationsSummary = context?.operations?.summary?.dailySummary || '';
       const topRecommendations = recommendations.slice(0, 3);
       const dailyBriefing = {
         headline: insights.topInsight.title,
-        summary: `${insights.topInsight.executiveSummary}${memorySummary ? ` Historical context: ${memorySummary}` : ''}${inboxSummary ? ` Inbox summary: ${inboxSummary}` : ''} Next, leadership should focus on ${topRecommendations.map((item) => item.recommendation.toLowerCase()).join('; ')}.`,
+        summary: `${insights.topInsight.executiveSummary}${memorySummary ? ` Historical context: ${memorySummary}` : ''}${inboxSummary ? ` Inbox summary: ${inboxSummary}` : ''}${operationsSummary ? ` Operations summary: ${operationsSummary}` : ''} Next, leadership should focus on ${topRecommendations.map((item) => item.recommendation.toLowerCase()).join('; ')}.`,
         actions: topRecommendations.map((item) => item.recommendation),
         confidence: insights.topInsight.confidence,
         boardOpening: `${insights.topInsight.executiveSummary} Overall business health is ${health.overall.score}/100 (${health.overall.label.toLowerCase()}).`
       };
 
       const weeklyBriefing = {
-        summary: `${insights.executive[0]?.executiveSummary || ''} ${insights.executive[1]?.executiveSummary || ''} ${memorySummary} ${inboxSummary}`.trim(),
+        summary: `${insights.executive[0]?.executiveSummary || ''} ${insights.executive[1]?.executiveSummary || ''} ${memorySummary} ${inboxSummary} ${operationsSummary}`.trim(),
         wins: insights.executive.filter((item) => item.priority !== 'Low').slice(0, 2).map((item) => item.title),
         risks: insights.executive.filter((item) => item.businessImpact.toLowerCase().includes('cash') || item.businessImpact.toLowerCase().includes('profit') || item.priority === 'High').slice(0, 3).map((item) => item.title),
         recommendations: topRecommendations.map((item) => item.recommendation),
@@ -37,6 +38,7 @@ export function createNarrativeEngine() {
           insights.executive[1]?.executiveSummary,
           memorySummary,
           inboxSummary,
+          operationsSummary,
           `Top recommendations: ${topRecommendations.map((item) => item.recommendation).join('; ')}.`
         ].filter(Boolean)
       };

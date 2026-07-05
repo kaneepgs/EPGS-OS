@@ -592,6 +592,121 @@ export const RAW_MOCK_DATA = {
       integrations: ['YouTube', 'Instagram', 'Facebook', 'LinkedIn', 'X', 'Google Analytics', 'Mailchimp', 'Gmail']
     }
   },
+  operations: {
+    providerSummary: {
+      label: 'Demo fallback active',
+      body: 'Operations Calendar is currently using structured demo Google Calendar data until a local OAuth-backed snapshot is available.',
+      tone: 'warn',
+      state: 'demo-fallback',
+      calendarName: 'EP Golf Studios Operations',
+      syncedAt: null,
+      health: 'Awaiting configuration',
+      mode: 'demo',
+      syncInterval: '15 minutes'
+    },
+    summary: {
+      headline: 'Today includes 4 fittings, 3 meetings, and 3 open booking slots.',
+      body: 'Today includes 4 fittings, 3 meetings, one deadline, and one travel block. Capacity is healthy overall, but the afternoon has one back-to-back pressure point.',
+      dailySummary: 'First appointment starts at 08:30, last appointment ends at 18:15, with 4 fittings, 3 meetings, 3 open booking slots, and one scheduling conflict to watch.',
+      boardSummary: 'Operations are stable overall. Today carries 4 fittings, 3 meetings, 3 open booking slots, and one late-afternoon capacity risk that should be watched closely.'
+    },
+    metrics: {
+      todaysSchedule: 8,
+      totalMeetings: 3,
+      totalFittings: 4,
+      capacityTodayPct: 72,
+      capacityThisWeekPct: 81,
+      availableBookingSlots: 3,
+      schedulingRisks: 2,
+      freeCapacityHours: 3.5,
+      backToBackCount: 2,
+      largeGaps: 1,
+      deadlines: 2,
+      staffAvailable: 3
+    },
+    widgets: [
+      { iconName: 'calendar', label: "Today's Schedule", value: '8 items', body: 'Four fittings, three meetings, and one travel/admin block are visible today.', meta: 'Operations' },
+      { iconName: 'arrowRight', label: 'Next Appointment', value: '08:30 Driver fitting', body: 'James Archer arrives first, so the studio day starts with revenue-relevant demand rather than internal admin.', meta: 'Studio Bay 1' },
+      { iconName: 'pulse', label: 'Capacity Today', value: '72%', body: 'Today is busy but still leaves controlled room for one to three more high-value bookings.', meta: '3.5h free' },
+      { iconName: 'grid', label: 'Capacity This Week', value: '81%', body: 'This week is commercially healthy, though Thursday and Saturday are now close to full.', meta: '2 high-load days' },
+      { iconName: 'target', label: 'Available Booking Slots', value: '3', body: 'Three viable booking windows are still available without damaging service quality.', meta: 'Today + tomorrow' },
+      { iconName: 'alert-triangle', label: 'Scheduling Risks', value: '2', body: 'One back-to-back stretch and one compressed late finish are the main operating watchpoints.', meta: 'Ops watchlist' }
+    ],
+    todaySchedule: [
+      { id: 'ops-demo-1', title: 'Driver fitting — James Archer', type: 'Fitting', startAt: '2026-07-05T08:30:00.000Z', endAt: '2026-07-05T09:45:00.000Z', startTime: '08:30', endTime: '09:45', date: '2026-07-05', durationMinutes: 75, location: 'Studio Bay 1', staff: 'Kane', customer: 'James Archer', priority: 'High', status: 'Confirmed', body: 'Premium driver fitting with clear booking intent and strong revenue relevance.', route: '/operations' },
+      { id: 'ops-demo-2', title: 'Daily leadership huddle', type: 'Meeting', startAt: '2026-07-05T10:00:00.000Z', endAt: '2026-07-05T10:30:00.000Z', startTime: '10:00', endTime: '10:30', date: '2026-07-05', durationMinutes: 30, location: 'Office', staff: 'Kane / Ops', customer: '', priority: 'Medium', status: 'Scheduled', body: 'Operations, finance, and marketing check-in to align the day.', route: '/operations' },
+      { id: 'ops-demo-3', title: 'Iron fitting — Noah Bennett', type: 'Fitting', startAt: '2026-07-05T11:00:00.000Z', endAt: '2026-07-05T12:15:00.000Z', startTime: '11:00', endTime: '12:15', date: '2026-07-05', durationMinutes: 75, location: 'Studio Bay 2', staff: 'Kane', customer: 'Noah Bennett', priority: 'High', status: 'Confirmed', body: 'After-work customer moved into a daytime slot; high booking value and likely equipment follow-up.', route: '/operations' },
+      { id: 'ops-demo-4', title: 'Supplier service call — TrackMan', type: 'Meeting', startAt: '2026-07-05T12:30:00.000Z', endAt: '2026-07-05T13:00:00.000Z', startTime: '12:30', endTime: '13:00', date: '2026-07-05', durationMinutes: 30, location: 'Video call', staff: 'Kane', customer: '', priority: 'Medium', status: 'Scheduled', body: 'Service continuity and contract timing review.', route: '/operations' },
+      { id: 'ops-demo-5', title: 'Gap fitting — Charlotte Dean', type: 'Fitting', startAt: '2026-07-05T14:00:00.000Z', endAt: '2026-07-05T15:00:00.000Z', startTime: '14:00', endTime: '15:00', date: '2026-07-05', durationMinutes: 60, location: 'Studio Bay 1', staff: 'Kane', customer: 'Charlotte Dean', priority: 'High', status: 'Confirmed', body: 'Shorter fitting slot with strong same-week commercial intent.', route: '/operations' },
+      { id: 'ops-demo-6', title: 'Travel block — supplier pickup', type: 'Travel', startAt: '2026-07-05T15:15:00.000Z', endAt: '2026-07-05T15:45:00.000Z', startTime: '15:15', endTime: '15:45', date: '2026-07-05', durationMinutes: 30, location: 'Off-site', staff: 'Ops runner', customer: '', priority: 'Low', status: 'Planned', body: 'Short supplier-related travel block that slightly reduces free afternoon capacity.', route: '/operations' },
+      { id: 'ops-demo-7', title: 'Executive review — weekly operating cadence', type: 'Meeting', startAt: '2026-07-05T16:00:00.000Z', endAt: '2026-07-05T16:45:00.000Z', startTime: '16:00', endTime: '16:45', date: '2026-07-05', durationMinutes: 45, location: 'Office', staff: 'Kane', customer: '', priority: 'High', status: 'Scheduled', body: 'Key executive meeting on workload, bookings, and next-week staffing shape.', route: '/operations' },
+      { id: 'ops-demo-8', title: 'Driver fitting follow-up — Amelia Fraser', type: 'Fitting', startAt: '2026-07-05T17:00:00.000Z', endAt: '2026-07-05T18:15:00.000Z', startTime: '17:00', endTime: '18:15', date: '2026-07-05', durationMinutes: 75, location: 'Studio Bay 2', staff: 'Kane', customer: 'Amelia Fraser', priority: 'High', status: 'Tentative', body: 'Late-day premium fitting creates useful revenue potential but pushes the day toward an overtime edge.', route: '/operations' }
+    ],
+    upcomingMeetings: [
+      { id: 'ops-meeting-1', title: 'Weekend staffing review', type: 'Meeting', startAt: '2026-07-06T09:30:00.000Z', endAt: '2026-07-06T10:00:00.000Z', startTime: '09:30', endTime: '10:00', date: '2026-07-06', durationMinutes: 30, location: 'Office', staff: 'Kane / Ops', priority: 'Medium', status: 'Scheduled', body: 'Align staffing with expected fitting demand.', route: '/operations' },
+      { id: 'ops-meeting-2', title: 'Customer fitting debrief — James Archer', type: 'Meeting', startAt: '2026-07-06T13:00:00.000Z', endAt: '2026-07-06T13:20:00.000Z', startTime: '13:00', endTime: '13:20', date: '2026-07-06', durationMinutes: 20, location: 'Phone', staff: 'Kane', customer: 'James Archer', priority: 'Medium', status: 'Planned', body: 'Follow-up on premium fitting recommendation and equipment options.', route: '/operations' }
+    ],
+    staffAvailability: [
+      { id: 'ops-staff-1', name: 'Kane', role: 'Lead fitter', availability: 'Core schedule full with 3.5h controlled capacity remaining.', status: 'Available', detail: 'One late-day stretch should be watched for overtime risk.' },
+      { id: 'ops-staff-2', name: 'Studio support', role: 'Operations support', availability: 'Available for admin, bay turnover, and customer handoff support.', status: 'Available', detail: 'Can protect flow if one extra booking is added.' },
+      { id: 'ops-staff-3', name: 'Weekend cover', role: 'Flexible support', availability: 'Sunday support is currently on hold pending demand confirmation.', status: 'Conditional', detail: 'Useful if late-week bookings continue to rise.' }
+    ],
+    freeCapacity: [
+      { id: 'ops-capacity-1', label: '12:15–12:30', duration: '15 mins', suitability: 'Admin / buffer only', note: 'Too short for a booking but useful for reset.' },
+      { id: 'ops-capacity-2', label: '13:00–14:00', duration: '60 mins', suitability: 'Short fitting / review slot', note: 'Best same-day revenue opportunity.' },
+      { id: 'ops-capacity-3', label: '15:45–16:00', duration: '15 mins', suitability: 'Buffer only', note: 'Protects travel compression.' },
+      { id: 'ops-capacity-4', label: 'Tomorrow 11:30–12:45', duration: '75 mins', suitability: 'Premium fitting slot', note: 'Best next-day booking window.' }
+    ],
+    travel: [
+      { id: 'ops-travel-1', title: 'Supplier pickup route', time: '15:15–15:45', location: 'Off-site', note: 'Short travel block reduces free afternoon capacity.' }
+    ],
+    deadlines: [
+      { id: 'ops-deadline-1', title: 'Confirm weekend bay coverage', due: 'Today 18:00', owner: 'Operations', severity: 'High', note: 'Needed before weekend demand is fully locked.' },
+      { id: 'ops-deadline-2', title: 'Accept TrackMan service window', due: 'Tomorrow 12:00', owner: 'Kane', severity: 'Medium', note: 'Impacts scheduling confidence next week.' }
+    ],
+    allDayEvents: [
+      { id: 'ops-allday-1', title: 'Staff holiday — assistant fitter', date: '2026-07-06', owner: 'HR / Operations', note: 'Reduces optional weekend flexibility.' }
+    ],
+    weekCapacity: [
+      { day: 'Mon', utilisation: '76%', note: 'Healthy balance of fittings and admin.' },
+      { day: 'Tue', utilisation: '68%', note: 'Room for short-notice fitting demand.' },
+      { day: 'Wed', utilisation: '83%', note: 'Good revenue density without overload.' },
+      { day: 'Thu', utilisation: '92%', note: 'Near full; protect buffers carefully.' },
+      { day: 'Fri', utilisation: '81%', note: 'Stable operating day.' },
+      { day: 'Sat', utilisation: '94%', note: 'Highest-risk day for compression and overtime.' }
+    ],
+    insightCards: [
+      { eyebrow: 'Fully booked days', title: 'Thursday and Saturday are close to full', body: 'Both days are above 90% utilisation, so any extra booking should be accepted only if service quality and bay turnover remain protected.', tone: 'warn' },
+      { eyebrow: 'Free fitting opportunity', title: 'One same-day slot can still be monetised', body: 'The 13:00–14:00 window is currently the cleanest same-day fitting opportunity.', tone: 'good' },
+      { eyebrow: 'Back-to-back pressure', title: 'Late afternoon has one compressed stretch', body: 'Travel, executive review, and a tentative premium fitting create the main overtime risk in the current schedule.', tone: 'risk' },
+      { eyebrow: 'Under-utilised capacity', title: 'Tuesday still has room for premium demand', body: 'The week remains commercially healthy, but Tuesday can still absorb one more high-value fitting without strain.', tone: 'info' }
+    ],
+    approvalCards: [
+      { id: 'ops-approval-1', title: 'Reschedule appointment — Amelia Fraser fitting follow-up', why: 'The tentative late-day fitting currently creates the clearest overtime risk in the schedule.', impact: 'Protects delivery quality and staff energy', risk: 'Medium', confidence: 'High' },
+      { id: 'ops-approval-2', title: 'Extend fitting — James Archer driver session', why: 'A premium session may justify an extra 15-minute follow-up block if conversion quality remains strong.', impact: 'Higher booking value / customer experience', risk: 'Low', confidence: 'Medium' },
+      { id: 'ops-approval-3', title: 'Block calendar time — Thursday buffer protection', why: 'Thursday is near full, so protecting a recovery buffer may prevent downstream service drift.', impact: 'Operational resilience', risk: 'Low', confidence: 'High' },
+      { id: 'ops-approval-4', title: 'Accept invitation — TrackMan service window review', why: 'Accepting now keeps next-week service continuity visible rather than reactive.', impact: 'Supplier continuity', risk: 'Low', confidence: 'Medium' },
+      { id: 'ops-approval-5', title: 'Decline invitation — low-priority partner catch-up', why: 'A low-value calendar hold is currently stealing one of the few useful operating gaps.', impact: 'Capacity preservation', risk: 'Low', confidence: 'Medium' }
+    ],
+    timelineEvents: [
+      { id: 'ops-event-1', date: '2026-07-05', time: '08:30', title: 'Busy day reached', body: 'Today crossed the threshold for a commercially strong but operationally sensitive schedule.', category: 'Operational milestone', department: 'Operations', impact: 'Medium', relatedEntities: ['goal-booking-conversion'], status: 'Active', route: '/operations' },
+      { id: 'ops-event-2', date: '2026-07-05', time: '11:00', title: 'Key customer fitting', body: 'Noah Bennett moved into a confirmed iron fitting slot with high conversion relevance.', category: 'Customer appointment', department: 'Sales / Operations', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Confirmed', route: '/operations' },
+      { id: 'ops-event-3', date: '2026-07-05', time: '16:00', title: 'Executive meeting', body: 'Leadership operating cadence review scheduled to align workload, bookings, and staffing.', category: 'Executive meeting', department: 'Leadership / Operations', impact: 'Medium', relatedEntities: ['goal-booking-conversion'], status: 'Scheduled', route: '/operations' },
+      { id: 'ops-event-4', date: '2026-07-06', time: 'All day', title: 'Staff holiday', body: 'Assistant fitter holiday reduces optional weekend flexibility.', category: 'Staff holiday', department: 'HR / Operations', impact: 'Medium', relatedEntities: ['goal-booking-conversion'], status: 'Upcoming', route: '/operations' },
+      { id: 'ops-event-5', date: '2026-07-10', time: 'All day', title: 'Record utilisation risk on Saturday', body: 'Saturday is currently tracking as the heaviest utilisation day of the week.', category: 'Record utilisation', department: 'Operations', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Watchpoint', route: '/operations' }
+    ],
+    memoryCandidates: [
+      { id: 'ops-memory-1', date: '2026-07-05', time: '11:00', title: 'Premium iron fitting moved into the live operating schedule', body: 'Noah Bennett confirmed into a high-value fitting slot, making scheduling capacity directly relevant to revenue quality.', category: 'Customer appointment', department: 'Sales / Operations', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Confirmed', route: '/operations' },
+      { id: 'ops-memory-2', date: '2026-07-05', time: '16:00', title: 'Executive operating cadence review added to the calendar', body: 'A formal operating review is now part of the schedule so workload and staffing risks are surfaced before they become reactive.', category: 'Executive meeting', department: 'Leadership / Operations', impact: 'Medium', relatedEntities: ['goal-booking-conversion'], status: 'Scheduled', route: '/operations' },
+      { id: 'ops-memory-3', date: '2026-07-06', time: 'All day', title: 'Staff holiday reduced weekend flexibility', body: 'A staff holiday now affects optional support capacity and should remain visible in operating memory.', category: 'Operational milestone', department: 'HR / Operations', impact: 'Medium', relatedEntities: ['goal-booking-conversion'], status: 'Upcoming', route: '/operations' }
+    ],
+    searchIndex: [
+      { id: 'search-ops-1', type: 'Calendar event', title: 'Driver fitting — James Archer', body: 'Customer: James Archer. Location: Studio Bay 1. 2026-07-05 08:30–09:45. Premium driver fitting.', route: '/operations', meta: 'Fitting · Studio Bay 1 · 2026-07-05' },
+      { id: 'search-ops-2', type: 'Calendar event', title: 'Executive review — weekly operating cadence', body: 'Meeting name: weekly operating cadence. Location: Office. 2026-07-05 16:00–16:45.', route: '/operations', meta: 'Meeting · Office · 2026-07-05' },
+      { id: 'search-ops-3', type: 'Calendar event', title: 'Staff holiday — assistant fitter', body: 'All-day event on 2026-07-06 affecting weekend capacity.', route: '/operations', meta: 'All day · HR / Operations · 2026-07-06' },
+      { id: 'search-ops-4', type: 'Calendar event', title: 'TrackMan service window review', body: 'Meeting name: TrackMan service window review. Location: Video call. Deadline tomorrow 12:00.', route: '/operations', meta: 'Deadline · Video call · 2026-07-06' }
+    ]
+  },
   communications: {
     providerSummary: {
       label: 'Demo fallback active',
