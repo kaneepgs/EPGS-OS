@@ -1,20 +1,27 @@
 import { APP_CONFIG, APP_MODES, currentModeConfig } from '../config/app-config.js';
 import { INTEGRATION_REGISTRY } from '../config/integration-registry.js';
 import { MockProvider } from './mock-provider.js';
+import { AnalyticsProvider } from './analytics-provider.js';
 import { createFutureProviders } from './future-providers.js';
 
-export function createProviderRegistry({ source, mode = APP_CONFIG.mode } = {}) {
+export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snapshot = null } = {}) {
   const mockProvider = new MockProvider({ source, mode });
+  const analyticsProvider = new AnalyticsProvider({ source, mode, ga4Snapshot });
   const futureProviders = createFutureProviders();
   const catalog = {
     mock: mockProvider,
-    ...futureProviders
+    analytics: analyticsProvider,
+    finance: futureProviders.finance,
+    marketing: futureProviders.marketing,
+    crm: futureProviders.crm,
+    calendar: futureProviders.calendar,
+    ai: futureProviders.ai
   };
 
   const domainBindings = {
     executive: mockProvider,
     finance: mockProvider,
-    marketing: mockProvider,
+    marketing: analyticsProvider,
     approval: mockProvider,
     report: mockProvider,
     timeline: mockProvider,
@@ -30,7 +37,10 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode } = {}) 
         availableModes: Object.values(APP_MODES),
         defaultProviderKey: APP_CONFIG.defaultProviderKey,
         providerStrategy: APP_CONFIG.providerStrategy,
-        notes: APP_CONFIG.notes
+        notes: APP_CONFIG.notes,
+        liveData: {
+          ga4: analyticsProvider.describeGoogleAnalyticsIntegration()
+        }
       };
     },
     getDomainProvider(domain) {
@@ -47,15 +57,26 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode } = {}) 
         domain,
         provider: provider.label,
         providerKey: provider.key,
-        mode: provider.mode || mode
+        mode: provider.bindingMode || provider.mode || mode
       }));
     },
     listIntegrations() {
-      return INTEGRATION_REGISTRY.map((entry) => ({
-        ...entry,
-        mode,
-        status: mode === APP_MODES.demo.key ? 'Demo Mode' : 'Not Configured'
-      }));
+      return INTEGRATION_REGISTRY.map((entry) => {
+        if (entry.id === 'google-analytics') {
+          return analyticsProvider.describeGoogleAnalyticsIntegration();
+        }
+
+        return {
+          ...entry,
+          mode,
+          status: mode === APP_MODES.demo.key ? 'Demo Mode' : 'Not Configured'
+        };
+      });
+    },
+    getLiveDataSummary() {
+      return {
+        ga4: analyticsProvider.describeGoogleAnalyticsIntegration()
+      };
     }
   });
 }

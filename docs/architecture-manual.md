@@ -6,13 +6,13 @@ EP Intelligence is intended to become an AI Executive Operating System for EP Go
 
 The system will eventually coordinate executive agents, connected business data, decision memory, approval workflows, and recurring briefings.
 
-Sprint 6 introduced the first real integration framework for that future direction, and Sprint 7 now adds the first deterministic Executive Intelligence Engine on top of it:
+Sprint 6 introduced the first real integration framework for that future direction, Sprint 7 added the first deterministic Executive Intelligence Engine on top of it, and Sprint 8 now proves the first live-capable provider path:
 
 - presentation routes remain stable
 - business logic sits behind reusable services
 - data access sits behind interchangeable providers
 - executive reasoning now sits in dedicated intelligence engines
-- the whole application still runs entirely in Demo Mode using mock data only
+- the wider application still runs in Demo Mode, with only Website Analytics eligible for a generated GA4 overlay
 
 ## Proposed System Layers
 
@@ -27,12 +27,13 @@ Future inputs may include:
 - payment systems such as Stripe
 - future OpenClaw executive context and workflow metadata
 
-Sprint 6 does not connect any of them live.
+Sprint 8 still avoids direct browser-side live integrations.
 
-Instead, the new provider architecture introduces:
+Instead, the provider architecture now includes:
 
-- `MockProvider` as the active source in Demo Mode
-- placeholder providers for Analytics, Finance, Marketing, CRM, Calendar, and AI domains
+- `MockProvider` as the baseline source in Demo Mode
+- `AnalyticsProvider` as the first live-capable provider, reading from a locally generated GA4 snapshot file
+- placeholder providers for Finance, Marketing, CRM, Calendar, and AI domains
 - a provider registry that decides which provider each business domain uses
 
 ### 2. Business Logic Layer
@@ -117,7 +118,7 @@ Sprint 6 moved report access behind `ReportService`, and Sprint 7 now lets repor
 
 ## Architectural Rules for This Sprint
 
-1. No live integrations.
+1. No direct browser-side live integrations or embedded secrets.
 2. No direct access to financial accounts.
 3. No automation without explicit approval.
 4. All executive recommendations must be explainable.
@@ -125,7 +126,8 @@ Sprint 6 moved report access behind `ReportService`, and Sprint 7 now lets repor
 6. Services should request data only through providers.
 7. Intelligence engines should consume service-backed data, not call raw data sources directly.
 8. Provider swaps should happen in the registry before any UI rewrite is considered.
-9. Future LLM integrations should augment deterministic reasoning rather than replace it outright.
+9. Demo fallback should remain first-class whenever live provider inputs are missing or invalid.
+10. Future LLM integrations should augment deterministic reasoning rather than replace it outright.
 
 ## Current Integration Build Sequence
 

@@ -2,7 +2,7 @@ export const APP_MODES = Object.freeze({
   demo: {
     key: 'demo',
     label: 'Demo Mode',
-    description: 'All executive workspaces run from structured mock providers only.',
+    description: 'The wider executive workspace stays demo-first, with optional provider-level overlays such as the Sprint 8 GA4 Website Analytics snapshot path.',
     allowLiveIntegrations: false,
     available: true
   },
@@ -19,9 +19,9 @@ export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
   shellName: 'EP Intelligence',
-  architectureVersion: 'v0.2',
+  architectureVersion: 'v0.3',
   providerStrategy: 'provider-service-intelligence-contract',
-  notes: 'Sprint 7 adds a deterministic executive intelligence engine on top of the Demo Mode integration framework without any live external connections.'
+  notes: 'Sprint 8 keeps the wider product in Demo Mode while allowing Website Analytics to hydrate from a generated GA4 snapshot when credentials and a local sync are available.'
 });
 
 export function currentModeConfig() {

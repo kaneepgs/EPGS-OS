@@ -1,4 +1,4 @@
-export function createIntegrationService(registry, { executiveService, financeService, marketingService, approvalService, reportService, timelineService } = {}) {
+export function createIntegrationService(registry, { executiveService, financeService, marketingService, approvalService, reportService, timelineService, intelligenceService } = {}) {
   return Object.freeze({
     getConfiguration() {
       const modeSummary = registry.getModeSummary();
@@ -15,14 +15,15 @@ export function createIntegrationService(registry, { executiveService, financeSe
         layers: [
           { title: 'Presentation Layer', body: 'Routes and views render stable executive UI components and never talk directly to raw data sources.', tone: 'info' },
           { title: 'Business Logic Layer', body: 'Services shape dashboard-ready data, enforce contracts, and hide provider-specific detail from the UI.', tone: 'good' },
-          { title: 'Data Provider Layer', body: 'Providers expose interchangeable domain data. In Sprint 6, every active provider still resolves to demo-mode mock data.', tone: 'warn' }
+          { title: 'Data Provider Layer', body: 'Providers expose interchangeable domain data. Sprint 8 adds the first live-capable path by letting AnalyticsProvider overlay GA4 Website Analytics data while preserving demo fallback.', tone: 'warn' }
         ],
         flow: [
           'UI route → service method',
           'service method → domain provider',
-          'provider → structured dataset',
+          'provider → structured dataset or generated GA4 snapshot',
           'service → contract normalization',
-          'normalized result → executive workspace UI'
+          'normalized result → intelligence/runtime composition',
+          'runtime result → executive workspace UI'
         ],
         services: [
           { title: 'ExecutiveService', body: 'Composes CEO dashboard, AI assistant, shell-level brand data, and placeholder modules.' },
@@ -30,7 +31,8 @@ export function createIntegrationService(registry, { executiveService, financeSe
           { title: 'MarketingService', body: 'Owns CMO-facing marketing workspace data and normalised marketing-specific contracts.' },
           { title: 'ApprovalService', body: 'Owns grouped approval data and approval contract normalization.' },
           { title: 'ReportService', body: 'Owns reporting-route datasets and report contract normalization.' },
-          { title: 'TimelineService', body: 'Owns reusable executive timeline shaping for CEO and future modules.' }
+          { title: 'TimelineService', body: 'Owns reusable executive timeline shaping for CEO and future modules.' },
+          { title: 'IntelligenceService', body: 'Owns deterministic insight generation, health scoring, recommendations, and narratives on top of provider-backed service data.' }
         ],
         providerBindings: registry.describeBindings(),
         providers: registry.listProviders(),
@@ -46,7 +48,8 @@ export function createIntegrationService(registry, { executiveService, financeSe
           cmo: marketingService?.getWorkspace?.()?.dashboard?.healthScore ?? 0,
           approvals: Object.keys(approvalService?.getWorkspace?.()?.groups || {}).length,
           reports: (reportService?.getWorkspace?.()?.overview || []).length,
-          timeline: (timelineService?.getBusinessTimeline?.() || []).length
+          timeline: (timelineService?.getBusinessTimeline?.() || []).length,
+          intelligence: intelligenceService?.getWorkspace?.()?.insights?.executive?.length || 0
         }
       };
     },

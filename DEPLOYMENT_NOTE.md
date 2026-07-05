@@ -6,7 +6,7 @@ It does **not** need:
 
 - a backend
 - a database
-- APIs
+- always-on APIs inside the browser
 - authentication
 - automation
 
@@ -40,6 +40,7 @@ npm run serve
 - this is the quickest route for a shareable demo
 - no server framework is required
 - keep it positioned as a prototype, not a live product
+- if you want live Website Analytics, run `npm run ga4:sync` locally first and deploy the generated `assets/data/generated/ga4-live-snapshot.json` file with the build output
 
 ## Hostinger Static Hosting
 
@@ -64,6 +65,7 @@ Do **not** just open `index.html` directly from a local file path.
 - `index.html` uploaded
 - `assets/` uploaded
 - `assets/vendor/chart.umd.js` uploaded
+- optional: `assets/data/generated/ga4-live-snapshot.json` uploaded if you want live Website Analytics
 - no backend setup required
 - no database setup required
 

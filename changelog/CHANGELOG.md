@@ -58,3 +58,10 @@
 - Upgraded the CEO Dashboard, CFO commentary, CMO commentary, Weekly Briefings, Board Meeting Mode, and Ask EP Intelligence to consume generated intelligence outputs instead of static placeholder commentary.
 - Added documentation for the engine architecture, reasoning flow, scoring, recommendation generation, and future AI augmentation path in `docs/intelligence-engine.md`.
 - Captured Sprint 7 validation screenshots for CEO Dashboard with generated insights, Cross-Department Intelligence, Executive Recommendations, Health Engine, and Board Meeting Mode.
+- Added Sprint 8 and introduced the first live-capable provider path with `AnalyticsProvider` for Google Analytics 4 Website Analytics data.
+- Added `assets/data/live-data-loader.js` and `scripts/sync-ga4-snapshot.mjs` so EP Intelligence can read a locally generated GA4 snapshot without exposing credentials to the browser.
+- Kept the wider provider/service/intelligence/UI architecture unchanged while allowing only the CMO Website Analytics route to hydrate from live GA4 data when available.
+- Preserved automatic Demo Mode fallback when credentials are missing, incomplete, invalid, or when no local snapshot has been generated yet.
+- Updated Integration Status, Demo Mode Configuration, and Provider Architecture views so the hybrid Sprint 8 runtime state is visible in-product.
+- Added local GA4 configuration guidance in `.env.example`, updated deployment/demo docs, and documented the new live-data path across the architecture references.
+- Captured Sprint 8 validation screenshots for Website Analytics, Integration Status, Demo Mode Configuration, and Provider Architecture.

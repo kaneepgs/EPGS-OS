@@ -14,8 +14,8 @@ export const INTEGRATION_REGISTRY = Object.freeze([
     provider: 'AnalyticsProvider',
     service: 'MarketingService',
     group: 'Marketing & Analytics',
-    status: 'Demo Mode',
-    notes: 'Reserved for website sessions, engagement, conversion, and acquisition data.'
+    status: 'Live-capable',
+    notes: 'Website Analytics can now hydrate from a generated GA4 snapshot while safely falling back to demo data when credentials or snapshot files are missing.'
   },
   {
     id: 'gmail',

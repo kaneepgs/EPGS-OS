@@ -43,8 +43,9 @@ This is the intended switch point.
 
 Example idea:
 
-- current: `marketing → MockProvider`
-- future: `marketing → AnalyticsProvider` or `MarketingProvider`
+- Sprint 7 and earlier: `marketing → MockProvider`
+- Sprint 8 now: `marketing → AnalyticsProvider` with internal demo fallback for Website Analytics
+- future: `marketing → MarketingProvider` or a broader live analytics stack
 
 ## Step 4 — Update the Service Only If Needed
 
@@ -76,10 +77,10 @@ When an integration changes state:
 
 Suggested status progression:
 
-- Demo Mode
+- Demo fallback
 - Not Configured
 - Configured
-- Connected
+- Live website analytics
 - Warning
 - Error
 
@@ -124,3 +125,4 @@ A future integration is successful when:
 - a provider can be swapped in
 - the service still returns contract-safe data
 - the dashboard route does not need rewriting
+- demo fallback remains safe when credentials, API access, or generated files are missing

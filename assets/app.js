@@ -23,7 +23,7 @@ import {
 } from './ui/components.js';
 import { renderCharts, destroyCharts } from './ui/charts.js';
 
-const STORAGE_KEY = 'ep-intelligence.workspace.v0.5c';
+const STORAGE_KEY = 'ep-intelligence.workspace.v0.8';
 const VALID_ROUTES = new Set(Object.keys(ROUTE_META));
 
 const appShell = document.getElementById('app-shell');
@@ -1537,7 +1537,7 @@ function cmoWebsiteAnalyticsView() {
         <section class="panel">
           ${sectionHeader({ eyebrow: 'CMO Module', title: 'Website analytics', body: 'A Google Analytics-style executive dashboard focused on traffic quality, engagement, and conversion relevance.' })}
           ${renderRoutePillbar(SUBNAV.cmo)}
-          <div class="grid-4">${pairStats(data.metrics, 'Website analytics placeholder metric.')}</div>
+          <div class="grid-4">${pairStats(data.metrics, 'Website analytics metric.')}</div>
         </section>
 
         ${pageQuestions('/cmo/website-analytics')}
@@ -1545,14 +1545,14 @@ function cmoWebsiteAnalyticsView() {
         <div class="chart-grid">
           ${chartCard({ eyebrow: 'Website Traffic', title: 'Traffic trend', canvasId: 'chart-website-traffic', meta: 'How website attention has moved over time.' })}
           ${chartCard({ eyebrow: 'Website Conversions', title: 'Bookings, enquiries, and sign-ups', canvasId: 'chart-website-conversions', meta: 'The clearest current conversion outputs.' })}
-          ${chartCard({ eyebrow: 'Visitor Mix', title: 'Users vs new vs returning visitors', canvasId: 'chart-website-visitors-mix', meta: 'A quick view of visitor composition in the current demo scenario.' })}
+          ${chartCard({ eyebrow: 'Visitor Mix', title: 'Users vs new vs returning visitors', canvasId: 'chart-website-visitors-mix', meta: 'A quick view of visitor composition in the current scenario.' })}
         </div>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Executive readout', title: 'What this traffic means', body: 'Website traffic only matters if it leads to better-quality business outcomes.' })}
+          ${sectionHeader({ eyebrow: 'Data source', title: data.dataSource?.label || 'Demo fallback active', body: data.dataSource?.body || 'Website Analytics is still using demo data until a local GA4 snapshot is synced.' })}
           <div class="grid-3">
             ${insightCard({ eyebrow: 'Summary', title: 'Traffic quality is improving', body: data.summary, tone: 'info' })}
-            ${insightCard({ eyebrow: 'Commercial relevance', title: 'Bookings and enquiries matter most', body: 'This page keeps attention on the conversion signals most likely to matter commercially for EP Golf Studios.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Commercial relevance', title: 'Bookings and enquiries matter most', body: 'This page keeps attention on the conversion signals most likely to matter commercially for EP Golf Studios.', tone: data.dataSource?.tone === 'good' ? 'good' : 'neutral' })}
             ${insightCard({ eyebrow: 'Next step', title: 'Optimise conversion before chasing more traffic', body: 'The clearest next action is to improve booking and enquiry pathways around already-healthy attention.', tone: 'warn' })}
           </div>
         </section>
@@ -1561,7 +1561,7 @@ function cmoWebsiteAnalyticsView() {
     charts: [
       entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteTraffic, 'chart-website-traffic', 'Website traffic'),
       entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteConversions, 'chart-website-conversions', 'Website conversions'),
-      { id: 'chart-website-visitors-mix', type: 'bar', labels: ['Users', 'New Users', 'Returning'], values: [18.9, 12.4, 6.5], label: 'Visitor mix', suffix: 'k' }
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteVisitorMix || { type: 'bar', labels: ['Users', 'New Users', 'Returning'], values: [18.9, 12.4, 6.5], label: 'Visitor mix', suffix: 'k' }, 'chart-website-visitors-mix', 'Visitor mix')
     ]
   };
 }
@@ -2361,13 +2361,13 @@ function settingsIntegrationStatusView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'Everything is still running in Demo Mode, but every future integration now has a registration point and status surface.' })}
+          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics can now hydrate from a generated GA4 snapshot when configured.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
-            ${statCard({ iconName: 'check-circle', label: 'Current state', value: 'Demo Mode', body: 'No network requests, credentials, or external systems are active in this sprint.' })}
-            ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Placeholder status cards now exist for every future integration target.' })}
-            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'MockProvider is active; future providers are registered as placeholders.' })}
-            ${statCard({ iconName: 'sparkles', label: 'Goal', value: 'Plug-in ready', body: 'Future live connections should swap providers without requiring UI rewrites.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Current state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.detail })}
+            ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Every future integration still has a status surface.' })}
+            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider is now active for marketing with safe fallback to demo data.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Goal', value: 'Selective live data', body: 'Only Website Analytics is eligible for live GA4 hydration in Sprint 8.' })}
           </div>
         </section>
 
@@ -2376,7 +2376,7 @@ function settingsIntegrationStatusView() {
             .map(
               ([group, entries]) => `
                 <section class="panel">
-                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Every entry remains in Demo Mode until a future live provider is implemented.' })}
+                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics may now be live for Website Analytics only; every other entry remains in Demo Mode.' })}
                   <div class="section-stack">
                     ${entries
                       .map((entry) =>
@@ -2406,13 +2406,13 @@ function settingsConfigurationView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode and provider bindings', body: 'The app can now distinguish between demo architecture and future live architecture without changing the UI.' })}
+          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode and provider bindings', body: 'The wider app stays in Demo Mode even when Website Analytics is hydrated from a locally generated GA4 snapshot.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'settings', label: 'Active mode', value: config.activeMode.label, body: config.activeMode.description })}
-            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'Every active domain currently resolves to the mock provider.' })}
-            ${statCard({ iconName: 'shield', label: 'Live integrations', value: config.activeMode.allowLiveIntegrations ? 'Allowed' : 'Disabled', body: 'Live connections remain intentionally disabled in Sprint 6.' })}
-            ${statCard({ iconName: 'book-open', label: 'Architecture version', value: APP_RUNTIME.config.architectureVersion, body: 'This sprint introduces the first provider/service/config abstraction layer.' })}
+            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider selectively overrides marketing website analytics.' })}
+            ${statCard({ iconName: 'shield', label: 'GA4 state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.notes || APP_RUNTIME.config.liveData.ga4.detail })}
+            ${statCard({ iconName: 'book-open', label: 'Architecture version', value: APP_RUNTIME.config.architectureVersion, body: 'Sprint 8 adds the first live-capable provider path without changing the wider UI architecture.' })}
           </div>
         </section>
 
@@ -2425,7 +2425,7 @@ function settingsConfigurationView() {
                   insightCard({
                     eyebrow: mode.available ? 'Available now' : 'Reserved for later',
                     title: mode.label,
-                    body: mode.description,
+                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available ? 'A selective GA4 overlay is currently available for Website Analytics only.' : 'No live snapshot is currently active.'}` : mode.description,
                     tone: mode.available ? 'good' : 'warn'
                   })
                 )
@@ -2433,7 +2433,7 @@ function settingsConfigurationView() {
             </div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'In Demo Mode, every domain binds to MockProvider. Future live work should update these bindings, not the dashboards.' })}
+            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while Sprint 8 allows marketing to bind to AnalyticsProvider without forcing any dashboard rewrites.' })}
             <div class="section-stack">
               ${config.domainBindings
                 .map((binding) =>
@@ -2460,7 +2460,7 @@ function settingsProviderArchitectureView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Provider Architecture', title: 'Presentation, service, and provider layers', body: 'This is the abstraction that should let EP Intelligence adopt future APIs without rewriting the executive dashboards.' })}
+          ${sectionHeader({ eyebrow: 'Provider Architecture', title: 'Presentation, service, and provider layers', body: 'This abstraction now carries the first live-capable provider path without rewriting the executive dashboards.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-3">
             ${architecture.layers.map((layer) => insightCard({ eyebrow: 'System layer', title: layer.title, body: layer.body, tone: layer.tone })).join('')}
@@ -2477,7 +2477,7 @@ function settingsProviderArchitectureView() {
             <div class="grid-3">
               ${statCard({ iconName: 'home', label: 'CEO score', value: String(architecture.health.ceo), body: 'CEO dashboard still renders through the new data path.' })}
               ${statCard({ iconName: 'coins', label: 'CFO score', value: String(architecture.health.cfo), body: 'CFO workspace remains functional through FinanceService.' })}
-              ${statCard({ iconName: 'sparkles', label: 'CMO score', value: String(architecture.health.cmo), body: 'CMO workspace remains functional through MarketingService.' })}
+              ${statCard({ iconName: 'sparkles', label: 'CMO score', value: String(architecture.health.cmo), body: 'CMO workspace remains functional through MarketingService, including the GA4-aware Website Analytics route.' })}
               ${statCard({ iconName: 'check-circle', label: 'Approval groups', value: String(architecture.health.approvals), body: 'ApprovalService still powers grouped approvals.' })}
               ${statCard({ iconName: 'presentation', label: 'Report routes', value: String(architecture.health.reports), body: 'ReportService powers shared reporting outputs.' })}
               ${statCard({ iconName: 'calendar', label: 'Timeline events', value: String(architecture.health.timeline), body: 'TimelineService provides reusable timeline shaping.' })}
@@ -2491,7 +2491,7 @@ function settingsProviderArchitectureView() {
             <div class="section-stack">${architecture.services.map((service) => insightCard({ eyebrow: 'Service', title: service.title, body: service.body, tone: 'info' })).join('')}</div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Provider catalogue', title: 'Current and future providers', body: 'Only MockProvider is active today. The rest are placeholder registration points for future work.' })}
+            ${sectionHeader({ eyebrow: 'Provider catalogue', title: 'Current and future providers', body: 'MockProvider remains the foundation, while AnalyticsProvider is now the first live-capable provider with safe demo fallback.' })}
             <div class="section-stack">${architecture.providers.map((provider) => registerRow({ kicker: `${pill(provider.status, provider.type === 'active' ? 'good' : 'warn')}${pill(provider.label, 'neutral')}`, title: provider.key, body: provider.notes, meta: `Domains: ${(provider.domains || []).join(', ') || 'all demo domains'}` })).join('')}</div>
           </section>
         </div>

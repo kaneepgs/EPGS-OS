@@ -53,12 +53,16 @@ Show:
 
 - Marketing Dashboard
 - Social Media Overview
-- YouTube or Website Analytics
+- Website Analytics
 - AI Marketing Advisor
 
 Say:
 
 > “The goal is to show not just channel metrics, but what is working, what matters commercially, what risks exist, and what actions deserve approval next.”
+
+Then add:
+
+> “Sprint 8 introduces the first live-capable provider path. Website Analytics can now read from a locally generated GA4 snapshot, but the rest of the product stays in safe Demo Mode.”
 
 ## 6) Open Approvals
 
@@ -96,7 +100,7 @@ Say:
 
 ## 10) Close with the positioning
 
-> “Today this is a polished static prototype using realistic mock data only. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, and the platform direction for the rest of the business.”
+> “Today this is a polished static prototype with one controlled live-data path. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, the first GA4-backed Website Analytics route, and the platform direction for the rest of the business.”
 
 ## Short closing line
 

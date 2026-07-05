@@ -2,7 +2,9 @@
 
 EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios.
 
-It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing — while remaining entirely static and powered by realistic mock data.
+It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
+
+Sprint 8 adds the first live-capable provider path: **Website Analytics** can now hydrate from a locally generated **Google Analytics 4 snapshot** while the rest of the product stays safely in Demo Mode.
 
 ## Current Sprint State
 
@@ -107,14 +109,26 @@ Added the first deterministic reasoning layer on top of the provider/service fra
 - upgraded the CEO Dashboard, CFO, CMO, Reports, Board Meeting Mode, and Ask EP Intelligence views to consume engine-backed intelligence outputs
 - added timeline intelligence so the business timeline now includes generated milestones, warnings, and campaign/financial signal events
 
+### Sprint 8 — Google Analytics Provider v1.0
+
+Added the first live data path without changing the wider architecture:
+
+- introduced a dedicated `AnalyticsProvider` that selectively overrides only the **CMO Website Analytics** workspace when a valid GA4 snapshot exists
+- added `assets/data/live-data-loader.js` so the runtime can safely load a generated local snapshot and fall back automatically when it is missing or invalid
+- added `scripts/sync-ga4-snapshot.mjs` plus `npm run ga4:sync` to fetch GA4 data using service-account credentials and write a local snapshot file that is intentionally ignored by git
+- kept the wider executive shell, provider/service/intelligence layering, and all non-website routes in **Demo Mode**
+- updated Settings pages so **Integration Status**, **Demo Mode Configuration**, and **Provider Architecture** now explain the hybrid demo/live state clearly
+- preserved safe fallback behaviour when credentials are missing, incomplete, or not yet synced
+
 ## Constraints
 
 This prototype intentionally remains:
 
 - **HTML + CSS + Vanilla JavaScript only**
-- **frontend-only**
-- **mock-data-only**
-- **without APIs, backend, authentication, databases, live integrations, external services, or automation**
+- **frontend-only in the browser**
+- **no browser-side secrets or direct GA4 calls from the UI**
+- **mostly demo-mode**, with only Website Analytics eligible for optional GA4 hydration through a locally generated snapshot
+- **without backend services, databases, authentication, or automation inside the product itself**
 
 ## Project Structure
 
@@ -129,8 +143,9 @@ This prototype intentionally remains:
 - `assets/config/shell-config.js` — route, navigation, and page-question metadata
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
 - `assets/data/mock-data.js` — raw structured demo datasets
+- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4 snapshot
 - `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, and runtime workspace data
-- `assets/providers/` — active mock provider plus future provider placeholders and provider registry
+- `assets/providers/` — active mock provider, live-capable analytics provider, future provider placeholders, and provider registry
 - `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, integration status, and intelligence assembly
 - `assets/intelligence/` — deterministic executive reasoning engines for insights, correlations, recommendations, priority, health, narratives, and confidence
 - `assets/ui/components.js` — reusable UI render helpers
@@ -138,6 +153,7 @@ This prototype intentionally remains:
 - `assets/vendor/chart.umd.js` — local Chart.js bundle for static hosting
 - `assets/favicon.svg` — favicon / OG image source
 - `assets/site.webmanifest` — install metadata
+- `scripts/sync-ga4-snapshot.mjs` — local GA4 snapshot sync script for Sprint 8
 - `docs/` — architecture and constitutional documents
 - `specifications/` — executive role specifications
 - `prompts/` — future OpenClaw executive build prompts
@@ -151,6 +167,14 @@ npm install
 npm run vendor:chart
 npm run validate:js
 npm run serve
+```
+
+Optional GA4 sync for Website Analytics only:
+
+```bash
+cp .env.example .env.local
+# add GA4 credentials locally
+npm run ga4:sync
 ```
 
 Then open:
@@ -172,7 +196,9 @@ The project is structured to be easy to host on:
 - Hostinger static hosting / web hosting
 - any simple static web host
 
-No server runtime is required.
+No server runtime is required for the UI itself.
+
+If you want live Website Analytics, run the local GA4 sync script first so the static frontend can read the generated snapshot file.
 
 ## Validation
 
@@ -247,6 +273,20 @@ Sprint 7 validation included:
   - Executive Recommendations
   - Health Engine
   - Board Meeting Mode
+
+Sprint 8 validation included:
+
+- `npm run ga4:sync` with missing credentials confirming safe fallback snapshot generation
+- `node --check assets/app.js`
+- syntax checks across the full `assets/` tree and `scripts/sync-ga4-snapshot.mjs`
+- runtime validation confirming `AnalyticsProvider` binds to marketing while Website Analytics stays safely on demo data when no snapshot is available
+- scripted route validation for Website Analytics, Integration Status, Demo Mode Configuration, and Provider Architecture
+- runtime validation with no JavaScript errors and no console warnings during the scripted walkthrough
+- captured screenshots for:
+  - Website Analytics
+  - Integration Status
+  - Demo Mode Configuration
+  - Provider Architecture
 
 ## Design Principles
 

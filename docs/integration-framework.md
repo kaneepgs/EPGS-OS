@@ -53,8 +53,9 @@ The provider layer lives in `assets/providers/`.
 
 Current state:
 
-- `MockProvider` is the only active provider
-- placeholder providers are registered for Analytics, Finance, Marketing, CRM, Calendar, and AI
+- `MockProvider` remains the baseline provider
+- `AnalyticsProvider` is now the first live-capable provider and selectively overrides only Website Analytics when a generated GA4 snapshot exists
+- placeholder providers remain registered for Finance, Marketing, CRM, Calendar, and AI
 
 Rules:
 
@@ -79,9 +80,9 @@ This file is the main swap-point for future mode changes.
 
 ## Current Mode
 
-Only one real mode exists today:
+Only one real runtime mode exists today:
 
-- **Demo Mode** — all domains resolve to `MockProvider`
+- **Demo Mode** — the wider app stays demo-first, while individual providers may still expose safe selective overlays such as the Sprint 8 GA4 Website Analytics snapshot
 
 A future mode is reserved but not active:
 
@@ -100,7 +101,9 @@ The provider registry currently binds these domains:
 - `ai`
 - `settings`
 
-In Sprint 6, each of these binds to `MockProvider`.
+In Sprint 6 and Sprint 7, each of these bound to `MockProvider`.
+
+In Sprint 8, `marketing` now binds to `AnalyticsProvider`, which internally decides whether to return demo marketing data or a selective GA4 Website Analytics overlay.
 
 In future live work, the binding should change before any dashboard code changes are considered.
 
@@ -221,5 +224,5 @@ The intended flow is now:
 
 This means future work can evolve in two directions independently:
 
-- **provider evolution** — replacing Demo Mode data with real data sources
+- **provider evolution** — replacing Demo Mode data with real data sources, starting with the Sprint 8 GA4 snapshot path
 - **reasoning evolution** — improving correlation, recommendation, and narrative logic, later including optional LLM enhancement

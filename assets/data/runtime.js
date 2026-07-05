@@ -1,5 +1,6 @@
 import { APP_CONFIG, currentModeConfig } from '../config/app-config.js';
 import { RAW_MOCK_DATA } from './mock-data.js';
+import { loadGeneratedGa4Snapshot } from './live-data-loader.js';
 import { createProviderRegistry } from '../providers/provider-registry.js';
 import { createTimelineService } from '../services/timeline-service.js';
 import { createApprovalService } from '../services/approval-service.js';
@@ -10,21 +11,14 @@ import { createExecutiveService } from '../services/executive-service.js';
 import { createIntegrationService } from '../services/integration-service.js';
 import { createIntelligenceService } from '../services/intelligence-service.js';
 
-const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode });
+const GA4_SNAPSHOT = await loadGeneratedGa4Snapshot();
+const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT });
 const timelineService = createTimelineService(providerRegistry);
 const approvalService = createApprovalService(providerRegistry);
 const financeService = createFinanceService(providerRegistry);
 const marketingService = createMarketingService(providerRegistry);
 const reportService = createReportService(providerRegistry);
 const executiveService = createExecutiveService(providerRegistry, { timelineService });
-const integrationService = createIntegrationService(providerRegistry, {
-  executiveService,
-  financeService,
-  marketingService,
-  approvalService,
-  reportService,
-  timelineService
-});
 const intelligenceService = createIntelligenceService({
   executive: executiveService,
   finance: financeService,
@@ -32,6 +26,15 @@ const intelligenceService = createIntelligenceService({
   approval: approvalService,
   report: reportService,
   timeline: timelineService
+});
+const integrationService = createIntegrationService(providerRegistry, {
+  executiveService,
+  financeService,
+  marketingService,
+  approvalService,
+  reportService,
+  timelineService,
+  intelligenceService
 });
 const INTELLIGENCE = intelligenceService.getWorkspace();
 
@@ -117,7 +120,8 @@ export const WORKSPACE_DATA = Object.freeze({
 export const APP_RUNTIME = Object.freeze({
   config: {
     ...APP_CONFIG,
-    activeMode: currentModeConfig()
+    activeMode: currentModeConfig(),
+    liveData: providerRegistry.getLiveDataSummary()
   },
   providers: providerRegistry.listProviders(),
   bindings: providerRegistry.describeBindings(),
