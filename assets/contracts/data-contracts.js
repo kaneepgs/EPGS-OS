@@ -1,6 +1,8 @@
 export const DATA_CONTRACTS = Object.freeze({
   kpi: ['id', 'label', 'value', 'body', 'trend', 'icon'],
   insight: ['id', 'eyebrow', 'title', 'body', 'tone'],
+  executiveInsight: ['id', 'title', 'executiveSummary', 'supportingEvidence', 'confidenceScore', 'confidence', 'businessImpact', 'financialImpact', 'suggestedActions', 'responsibleDepartment', 'priority', 'timestamp'],
+  executiveRecommendation: ['id', 'recommendation', 'why', 'expectedBenefit', 'risk', 'confidence', 'estimatedValue', 'suggestedOwner', 'priority', 'priorityScore'],
   timelineEvent: ['id', 'time', 'type', 'title', 'body'],
   approval: ['id', 'title', 'why', 'impact', 'risk', 'confidence'],
   opportunity: ['id', 'title', 'estimatedValue', 'effort', 'confidence', 'team', 'nextAction'],
@@ -47,6 +49,41 @@ export function normalizeInsight(entry = {}) {
     title: text(entry.title),
     body: text(entry.body),
     tone: text(entry.tone, 'neutral')
+  };
+}
+
+export function normalizeExecutiveInsight(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.title || 'executive-insight'),
+    title: text(entry.title),
+    executiveSummary: text(entry.executiveSummary ?? entry.summary),
+    supportingEvidence: (entry.supportingEvidence || []).map((item) => text(item)).filter(Boolean),
+    confidenceScore: Number(entry.confidenceScore ?? 0),
+    confidence: text(entry.confidence, 'Medium'),
+    businessImpact: text(entry.businessImpact),
+    financialImpact: text(entry.financialImpact),
+    suggestedActions: (entry.suggestedActions || []).map((item) => text(item)).filter(Boolean),
+    responsibleDepartment: text(entry.responsibleDepartment),
+    priority: text(entry.priority, 'Medium'),
+    timestamp: text(entry.timestamp)
+  };
+}
+
+export function normalizeExecutiveRecommendation(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.recommendation || 'executive-recommendation'),
+    recommendation: text(entry.recommendation),
+    why: text(entry.why),
+    expectedBenefit: text(entry.expectedBenefit),
+    risk: text(entry.risk, 'Medium'),
+    confidence: text(entry.confidence, 'Medium'),
+    estimatedValue: text(entry.estimatedValue),
+    suggestedOwner: text(entry.suggestedOwner),
+    priority: text(entry.priority, 'Medium'),
+    priorityScore: Number(entry.priorityScore ?? 0),
+    tone: text(entry.tone, 'warn')
   };
 }
 

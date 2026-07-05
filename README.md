@@ -94,6 +94,19 @@ Introduced the first integration architecture for EP Intelligence while keeping 
 - refactored the application to consume **provider-backed runtime data** rather than importing raw mock datasets directly into the workspace UI
 - added a Settings-based **Integration Status**, **Demo Mode Configuration**, and **Provider Architecture** view for future scalability and onboarding
 
+### Sprint 7 — Executive Intelligence Engine v0.1
+
+Added the first deterministic reasoning layer on top of the provider/service framework while keeping the whole product in **Demo Mode**:
+
+- introduced a dedicated `assets/intelligence/` layer with **InsightEngine, CorrelationEngine, RecommendationEngine, PriorityEngine, HealthEngine, NarrativeEngine, and ConfidenceEngine**
+- built structured executive insight generation with title, executive summary, supporting evidence, confidence score, business impact, financial impact, suggested actions, responsible department, priority, and timestamp
+- added configurable scoring weights and thresholds for health, priority, and confidence evaluation
+- generated cross-department correlations such as marketing ↔ revenue, profit ↔ expenses, cash ↔ supplier pressure, and approval-load ↔ execution drag
+- generated deterministic recommendation objects with suggested owner, expected benefit, risk, confidence, estimated value, and ranked priority
+- created narrative outputs for daily briefings, weekly briefings, board summaries, and department summaries from structured insights rather than hardcoded commentary
+- upgraded the CEO Dashboard, CFO, CMO, Reports, Board Meeting Mode, and Ask EP Intelligence views to consume engine-backed intelligence outputs
+- added timeline intelligence so the business timeline now includes generated milestones, warnings, and campaign/financial signal events
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -116,9 +129,10 @@ This prototype intentionally remains:
 - `assets/config/shell-config.js` — route, navigation, and page-question metadata
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
 - `assets/data/mock-data.js` — raw structured demo datasets
-- `assets/data/runtime.js` — composition root that assembles providers, services, and runtime workspace data
+- `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, and runtime workspace data
 - `assets/providers/` — active mock provider plus future provider placeholders and provider registry
-- `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, and integration status
+- `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, integration status, and intelligence assembly
+- `assets/intelligence/` — deterministic executive reasoning engines for insights, correlations, recommendations, priority, health, narratives, and confidence
 - `assets/ui/components.js` — reusable UI render helpers
 - `assets/ui/charts.js` — Chart.js render/destroy helpers
 - `assets/vendor/chart.umd.js` — local Chart.js bundle for static hosting
@@ -220,6 +234,20 @@ Sprint 6 validation included:
   - Demo Mode Configuration
   - Provider Architecture
 
+Sprint 7 validation included:
+
+- `node --check assets/app.js`
+- syntax checks across the full `assets/` tree including the new intelligence layer
+- engine initialisation validation confirming insights, recommendations, health scores, narratives, and timeline events are generated from provider-backed service data
+- route validation confirming the CEO Dashboard, CFO, CMO, Reports, Board Meeting Mode, and Ask EP Intelligence all consume generated intelligence objects
+- runtime validation with no JavaScript errors and no console warnings during the scripted walkthrough
+- captured screenshots for:
+  - CEO Dashboard with generated insights
+  - Cross-Department Intelligence
+  - Executive Recommendations
+  - Health Engine
+  - Board Meeting Mode
+
 ## Design Principles
 
 1. Evidence before recommendation
@@ -234,4 +262,4 @@ Sprint 6 validation included:
 
 The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System**, giving EP Golf Studios a credible AI-Chief-of-Staff-style **CEO Dashboard** plus integrated prototype depth across the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
 
-After Sprint 6, the product also has a real integration framework beneath that UI, so future API work can focus on provider implementation instead of rewriting executive dashboards.
+After Sprint 7, the product has both a real integration framework and a deterministic Executive Intelligence Engine beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core instead of replacing it.

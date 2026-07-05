@@ -50,3 +50,11 @@
 - Added Settings routes for Integration Status, Demo Mode Configuration, and Provider Architecture so future integrations can be inspected without changing the executive dashboards.
 - Added developer documentation for the provider architecture, data flow, service responsibilities, naming conventions, and future API onboarding process.
 - Captured Sprint 6 validation screenshots for Integration Status, Demo Mode Configuration, and Provider Architecture.
+- Added Sprint 7 and introduced the first deterministic Executive Intelligence Engine v0.1 on top of the provider/service architecture.
+- Added `assets/intelligence/` modules for insights, correlations, recommendations, priority scoring, health scoring, narratives, and confidence scoring.
+- Added separate intelligence configuration with configurable health weights, priority weights, and scoring thresholds.
+- Added structured executive insight and executive recommendation contracts, plus timeline intelligence event generation.
+- Added `IntelligenceService` and wired the runtime so provider-backed service data now flows through the reasoning layer before reaching the UI.
+- Upgraded the CEO Dashboard, CFO commentary, CMO commentary, Weekly Briefings, Board Meeting Mode, and Ask EP Intelligence to consume generated intelligence outputs instead of static placeholder commentary.
+- Added documentation for the engine architecture, reasoning flow, scoring, recommendation generation, and future AI augmentation path in `docs/intelligence-engine.md`.
+- Captured Sprint 7 validation screenshots for CEO Dashboard with generated insights, Cross-Department Intelligence, Executive Recommendations, Health Engine, and Board Meeting Mode.

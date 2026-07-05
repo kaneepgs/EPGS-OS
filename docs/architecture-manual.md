@@ -6,11 +6,12 @@ EP Intelligence is intended to become an AI Executive Operating System for EP Go
 
 The system will eventually coordinate executive agents, connected business data, decision memory, approval workflows, and recurring briefings.
 
-Sprint 6 now implements the first real integration framework for that future direction:
+Sprint 6 introduced the first real integration framework for that future direction, and Sprint 7 now adds the first deterministic Executive Intelligence Engine on top of it:
 
 - presentation routes remain stable
-- business logic now sits behind reusable services
-- data access now sits behind interchangeable providers
+- business logic sits behind reusable services
+- data access sits behind interchangeable providers
+- executive reasoning now sits in dedicated intelligence engines
 - the whole application still runs entirely in Demo Mode using mock data only
 
 ## Proposed System Layers
@@ -34,18 +35,16 @@ Instead, the new provider architecture introduces:
 - placeholder providers for Analytics, Finance, Marketing, CRM, Calendar, and AI domains
 - a provider registry that decides which provider each business domain uses
 
-### 2. Business Logic / Intelligence Layer
+### 2. Business Logic Layer
 
 This layer now lives in `assets/services/`.
 
-It will:
+It:
 
-- normalise business data through shared contracts
-- preserve domain boundaries between executive modules
-- compare current state against prior periods
-- support evidence-based recommendations
-- expose uncertainty, gaps, and assumptions
-- shield the UI from provider-specific data shapes
+- normalises business data through shared contracts
+- preserves domain boundaries between executive modules
+- shields the UI from provider-specific data shapes
+- exposes stable service-backed business objects to the runtime composition layer
 
 Current services:
 
@@ -56,17 +55,31 @@ Current services:
 - `ReportService`
 - `TimelineService`
 - `IntegrationService`
+- `IntelligenceService`
 
-### 3. Executive Reasoning Layer
+### 3. Executive Intelligence Layer
 
-Separate executive agents will be responsible for domain-specific reasoning:
+The deterministic reasoning layer now lives in `assets/intelligence/`.
 
-- CFO
-- CMO
-- COO
-- CEO
+Current engines:
 
-Each executive should produce recommendations in a transparent format with rationale, evidence, alternatives, risks, impact, confidence, and missing information.
+- `InsightEngine`
+- `CorrelationEngine`
+- `RecommendationEngine`
+- `PriorityEngine`
+- `HealthEngine`
+- `NarrativeEngine`
+- `ConfidenceEngine`
+
+Responsibilities:
+
+- consume provider-backed data through the service layer
+- explain what happened, why it happened, why it matters, and what should happen next
+- generate cross-department correlations before the UI renders them
+- rank priorities and recommendations using configurable scoring weights
+- generate health scores for CEO, CFO, CMO, and overall business health
+- create reusable narratives for daily, weekly, board, and department briefings
+- provide a reasoning core that future LLM features can enhance rather than replace
 
 ### 4. Decision and Memory Layer
 
@@ -100,7 +113,7 @@ The reporting layer will eventually provide:
 - risk and performance alerts
 - historical trend summaries
 
-Sprint 6 keeps reporting frontend-only, but moves report access behind `ReportService` so future live inputs can be added without route rewrites.
+Sprint 6 moved report access behind `ReportService`, and Sprint 7 now lets report views consume generated narratives and recommendations from the intelligence layer without direct UI-side reasoning.
 
 ## Architectural Rules for This Sprint
 
@@ -110,7 +123,9 @@ Sprint 6 keeps reporting frontend-only, but moves report access behind `ReportSe
 4. All executive recommendations must be explainable.
 5. Views should not import raw mock datasets directly.
 6. Services should request data only through providers.
-7. Provider swaps should happen in the registry before any UI rewrite is considered.
+7. Intelligence engines should consume service-backed data, not call raw data sources directly.
+8. Provider swaps should happen in the registry before any UI rewrite is considered.
+9. Future LLM integrations should augment deterministic reasoning rather than replace it outright.
 
 ## Current Integration Build Sequence
 
@@ -120,3 +135,4 @@ Sprint 6 keeps reporting frontend-only, but moves report access behind `ReportSe
 4. Add configuration and integration status surfaces.
 5. Onboard future APIs by implementing providers and rebinding domains.
 6. Keep the presentation layer stable unless product requirements themselves change.
+7. Layer any future AI assistance on top of the deterministic intelligence outputs before allowing it to shape visible executive briefings.

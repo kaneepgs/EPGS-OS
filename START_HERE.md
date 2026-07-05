@@ -15,6 +15,7 @@ Today it is a **demo product**, not a live operating platform.
 - a complete first-pass **CMO module** inside the wider shell
 - integrated executive intelligence that links Finance and Marketing together inside one CEO-level daily briefing
 - a new **Integration Framework** beneath the UI so future live data can be added through providers rather than dashboard rewrites
+- a deterministic **Executive Intelligence Engine** that turns structured business data into scored health views, correlations, recommendations, narratives, and executive Q&A outputs before any external AI is introduced
 - placeholder module landing pages for:
   - COO
   - Sales
@@ -36,7 +37,7 @@ Today it is a **demo product**, not a live operating platform.
 - no automation
 - no live financial or operational data
 
-The app now includes architecture for future integrations, but it still runs entirely in **Demo Mode**.
+The app now includes architecture for future integrations plus an internal intelligence engine, but it still runs entirely in **Demo Mode**.
 
 ## How to open it locally
 
@@ -71,6 +72,7 @@ Start with these in order:
 5. **Approvals** — shows business-wide approval thinking
 6. **AI Assistant** — shows the conversational executive AI direction
 7. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the live data framework is now structured under the product
+8. **CEO Dashboard health / recommendations / cross-department intelligence** — shows the new deterministic reasoning layer at work
 
 ## Key pages to show
 
@@ -94,16 +96,17 @@ This is intentionally still a prototype.
 - no save/sync between users or devices
 - no real approvals or workflow execution
 - no live reporting engine or integrations yet
+- no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
 
 ## Recommended next sprint
 
-**Sprint 7 — First live-provider implementation planning**
+**Sprint 8 — First live-provider implementation planning**
 
 Recommended focus:
 
 - choose the first real provider to implement inside the new framework
 - likely start with one of: Google Analytics, YouTube, or finance/accounting data
-- keep the UI stable while proving the provider swap works in practice
+- keep the UI and the new intelligence engine stable while proving the provider swap works in practice
 - deepen Approvals, Reports, and AI Assistant only where the new live data path adds real product value
 
 ## Suggested positioning when presenting it
@@ -112,4 +115,4 @@ Describe it as:
 
 > “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance and Marketing.”
 
-You can now more accurately say it includes a real **CEO intelligence layer** plus both **CFO** and **CMO** executive workspaces, with the rest of the business architecture prepared for future module builds.
+You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, and both **CFO** and **CMO** executive workspaces, with the rest of the business architecture prepared for future module builds.

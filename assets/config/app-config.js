@@ -19,9 +19,9 @@ export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
   shellName: 'EP Intelligence',
-  architectureVersion: 'v0.1',
-  providerStrategy: 'provider-service-contract',
-  notes: 'Sprint 6 introduces the integration framework without any live external connections.'
+  architectureVersion: 'v0.2',
+  providerStrategy: 'provider-service-intelligence-contract',
+  notes: 'Sprint 7 adds a deterministic executive intelligence engine on top of the Demo Mode integration framework without any live external connections.'
 });
 
 export function currentModeConfig() {

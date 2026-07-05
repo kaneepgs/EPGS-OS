@@ -6,9 +6,10 @@ Sprint 6 introduces the first reusable integration architecture for EP Intellige
 
 The goal is simple:
 
-- keep the current executive UI unchanged
+- keep the current executive UI stable
 - keep the whole product in Demo Mode
 - make future live integrations a provider implementation task rather than a dashboard rewrite
+- give the intelligence layer a stable service-backed foundation before any live API or LLM work begins
 
 ## Core Separation
 
@@ -37,12 +38,14 @@ Current services:
 - `ReportService`
 - `TimelineService`
 - `IntegrationService`
+- `IntelligenceService`
 
 Rules:
 
 - services talk to providers, not raw files
 - services normalize or preserve data contracts before returning view data
-- services are the right place for future aggregation, fallback rules, confidence handling, and cross-source synthesis
+- services are the right place for future aggregation, fallback rules, and cross-source synthesis
+- intelligence engines should consume service-backed data rather than bypassing the service layer
 
 ### 3. Data Provider Layer
 
@@ -68,6 +71,7 @@ It:
 - loads the active app configuration
 - creates the provider registry
 - instantiates the services
+- instantiates the intelligence layer through `IntelligenceService`
 - exports `WORKSPACE_DATA` for the current runtime
 - exports `APP_RUNTIME` for configuration and architecture inspection
 
@@ -108,6 +112,8 @@ Current contract types:
 
 - KPI
 - Insight
+- Executive Insight
+- Executive Recommendation
 - Timeline Event
 - Approval
 - Opportunity
@@ -200,3 +206,20 @@ When adding a real integration:
 4. leave the presentation layer untouched unless the product requirement itself changed
 
 That sequence is the main architectural promise of Sprint 6.
+
+## Relationship to the Intelligence Engine
+
+Sprint 7 adds a deterministic intelligence layer above the service layer.
+
+The intended flow is now:
+
+1. providers return structured business-domain data
+2. services shape that data into stable workspace/domain objects
+3. intelligence engines reason over those service outputs
+4. the runtime assembles the final UI-facing `WORKSPACE_DATA`
+5. the presentation layer renders insights, recommendations, scores, and narratives without needing to know how they were produced
+
+This means future work can evolve in two directions independently:
+
+- **provider evolution** — replacing Demo Mode data with real data sources
+- **reasoning evolution** — improving correlation, recommendation, and narrative logic, later including optional LLM enhancement
