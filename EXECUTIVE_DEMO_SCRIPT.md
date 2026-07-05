@@ -3,7 +3,8 @@
 **Current release:** EP Intelligence v1.1 — Marketing Intelligence  
 **Current roadmap:** `Roadmap.md`  
 **Formal release changelog:** `CHANGELOG.md`  
-**Detailed sprint history:** `changelog/CHANGELOG.md`
+**Detailed sprint history:** `changelog/CHANGELOG.md`  
+**Definition of Done:** `DEFINITION_OF_DONE.md`
 
 ## 1) Open with the purpose
 

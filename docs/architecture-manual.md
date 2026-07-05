@@ -4,6 +4,8 @@
 
 EP Intelligence is intended to become an AI Executive Operating System for EP Golf Studios.
 
+`DEFINITION_OF_DONE.md` now acts as the permanent delivery standard for any architecture changes described in this manual.
+
 The system will eventually coordinate executive agents, connected business data, decision memory, approval workflows, and recurring briefings.
 
 Sprint 6 introduced the first real integration framework for that future direction, Sprint 7 added the first deterministic Executive Intelligence Engine on top of it, Sprint 8 proved the first live-capable provider path, and Sprint 9 now adds a provider-independent Executive Memory & Knowledge Graph layer:

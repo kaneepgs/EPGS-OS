@@ -265,6 +265,8 @@ Before any feature is considered complete, confirm:
 
 If not, redesign the feature before implementation.
 
+The permanent implementation checklist for this standard now lives in `DEFINITION_OF_DONE.md`.
+
 ---
 
 ## Future Rule
@@ -273,7 +275,7 @@ Every future AI agent working on EP Intelligence should read:
 
 1. `PROJECT_PRINCIPLES.md`
 2. `CHANGELOG.md`
-3. `Definition of Done`
+3. `DEFINITION_OF_DONE.md`
 4. `Architecture Manual`
 
 before proposing or implementing changes.

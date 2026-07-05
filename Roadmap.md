@@ -143,6 +143,8 @@ Reference the current roadmap from:
 - `START_HERE.md`
 - `EXECUTIVE_DEMO_SCRIPT.md`
 
+Every roadmap change should also continue to respect `PROJECT_PRINCIPLES.md` and `DEFINITION_OF_DONE.md`.
+
 Where appropriate, include references to the current release and roadmap.
 
 ## Permanent Rule
@@ -153,5 +155,6 @@ At the end of every completed release:
 - Move completed work into `CHANGELOG.md`
 - Advance the next priority into the **Now** section
 - Review and reprioritise the **Next**, **Later**, and **Icebox** sections
+- Confirm the latest sprint satisfied `DEFINITION_OF_DONE.md`
 
 This document becomes the permanent planning guide for EP Intelligence.

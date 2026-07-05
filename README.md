@@ -13,10 +13,11 @@ Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intellige
 - **Formal release changelog:** `CHANGELOG.md`
 - **Detailed sprint history:** `changelog/CHANGELOG.md`
 - **Project principles:** `PROJECT_PRINCIPLES.md`
+- **Definition of Done:** `DEFINITION_OF_DONE.md`
 
 Release metadata is now centralised in `assets/config/release-config.js`, so the app, docs, and release process can all read from one source of truth.
 
-Use `Roadmap.md` for active planning, `CHANGELOG.md` for formal release history, `changelog/CHANGELOG.md` for detailed sprint history, and the project principles as the filter for what should or should not be built next.
+Use `Roadmap.md` for active planning, `CHANGELOG.md` for formal release history, `changelog/CHANGELOG.md` for detailed sprint history, `PROJECT_PRINCIPLES.md` for architectural and product judgment, and `DEFINITION_OF_DONE.md` for sprint completion standards.
 
 ## Current Sprint State
 
@@ -187,6 +188,7 @@ This prototype intentionally remains:
 - `START_HERE.md` — non-technical demo handoff guide
 - `CHANGELOG.md` — formal semver release history for the platform
 - `Roadmap.md` — active product roadmap and current planning source of truth
+- `DEFINITION_OF_DONE.md` — permanent sprint completion standard and handoff format
 - `DEPLOYMENT_NOTE.md` — simple deployment notes for Replit and Hostinger static hosting
 - `EXECUTIVE_DEMO_SCRIPT.md` — short demo script for live walkthroughs
 - `index.html` — main app shell and metadata
@@ -422,6 +424,7 @@ From this point forward:
 3. move detailed completed sprint notes into `changelog/CHANGELOG.md`
 4. keep the demo script aligned to the latest release positioning
 5. evaluate new feature requests against `PROJECT_PRINCIPLES.md` before accepting them into the roadmap
+6. do not mark a sprint complete until `DEFINITION_OF_DONE.md` has been satisfied and a structured handoff report has been produced
 
 ## Near-Term Outcome
 

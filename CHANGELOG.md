@@ -33,6 +33,12 @@ Included milestones:
 - Marketing Milestones
 - Executive Marketing Improvements
 
+### Governance additions after v1.1
+
+- Formal release management framework
+- Permanent product roadmap management
+- Permanent Definition of Done standard
+
 ## v1.2 — Business Operations
 
 Planned:

@@ -16,6 +16,7 @@ Sprint 11 packages those into **EP Intelligence v1.1 — Marketing Intelligence*
 - **Current roadmap:** `Roadmap.md`
 - **Formal release changelog:** `CHANGELOG.md`
 - **Detailed sprint history:** `changelog/CHANGELOG.md`
+- **Definition of Done:** `DEFINITION_OF_DONE.md`
 
 Release metadata is now centralised in `assets/config/release-config.js`, so the displayed version and release references should stay consistent across the product.
 
