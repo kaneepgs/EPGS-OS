@@ -1,8 +1,9 @@
 {
   "name": "ep-intelligence",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "EP Intelligence executive-grade CFO workspace prototype for EP Golf Studios.",
+  "type": "module",
+  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, and integration-framework architecture for EP Golf Studios.",
   "scripts": {
     "serve": "python3 -m http.server 3012",
     "validate:js": "node --check assets/app.js",
@@ -10,7 +11,10 @@
   },
   "keywords": [
     "executive-workspace",
+    "ceo-dashboard",
     "cfo",
+    "cmo",
+    "integration-framework",
     "prototype",
     "chartjs"
   ],

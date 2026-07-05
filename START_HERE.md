@@ -14,6 +14,7 @@ Today it is a **demo product**, not a live operating platform.
 - a complete **CFO module** inside the wider shell
 - a complete first-pass **CMO module** inside the wider shell
 - integrated executive intelligence that links Finance and Marketing together inside one CEO-level daily briefing
+- a new **Integration Framework** beneath the UI so future live data can be added through providers rather than dashboard rewrites
 - placeholder module landing pages for:
   - COO
   - Sales
@@ -28,12 +29,14 @@ Today it is a **demo product**, not a live operating platform.
 
 ## What it does not include
 
-- no APIs
+- no live APIs
 - no authentication
 - no backend
 - no databases
 - no automation
 - no live financial or operational data
+
+The app now includes architecture for future integrations, but it still runs entirely in **Demo Mode**.
 
 ## How to open it locally
 
@@ -67,6 +70,7 @@ Start with these in order:
 4. **CMO** — shows the first full executive marketing workspace
 5. **Approvals** — shows business-wide approval thinking
 6. **AI Assistant** — shows the conversational executive AI direction
+7. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the live data framework is now structured under the product
 
 ## Key pages to show
 
@@ -93,14 +97,14 @@ This is intentionally still a prototype.
 
 ## Recommended next sprint
 
-**Sprint 6 — Operational expansion beyond Finance + Marketing**
+**Sprint 7 — First live-provider implementation planning**
 
 Recommended focus:
 
-- begin the next real operating module beyond CMO (likely Operations, Sales, or Customer Success)
-- deepen Approvals, Reports, and AI Assistant into richer multi-step executive workflows
-- strengthen cross-department intelligence between CEO, CFO, and CMO before adding live integrations
-- improve stakeholder-demo polish and prepare the shell for future real data connectors
+- choose the first real provider to implement inside the new framework
+- likely start with one of: Google Analytics, YouTube, or finance/accounting data
+- keep the UI stable while proving the provider swap works in practice
+- deepen Approvals, Reports, and AI Assistant only where the new live data path adds real product value
 
 ## Suggested positioning when presenting it
 

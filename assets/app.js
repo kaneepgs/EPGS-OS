@@ -1,4 +1,5 @@
-import { TOP_LEVEL_NAV, SUBNAV, MODE_OPTIONS, ROUTE_META, QUESTION_SETS, MOCK_DATA } from './data/mock-data.js';
+import { TOP_LEVEL_NAV, SUBNAV, MODE_OPTIONS, ROUTE_META, QUESTION_SETS } from './config/shell-config.js';
+import { WORKSPACE_DATA, APP_RUNTIME } from './data/runtime.js';
 import {
   icon,
   navLink,
@@ -79,6 +80,7 @@ function currentSubnav() {
   if (key === '/cmo') return SUBNAV.cmo;
   if (key === '/reports') return SUBNAV.reports;
   if (key === '/ai-assistant') return SUBNAV.aiAssistant;
+  if (key === '/settings') return SUBNAV.settings;
   return [];
 }
 
@@ -244,7 +246,7 @@ function renderSidebar() {
 }
 
 function chartSpec(key, canvasId, label = '') {
-  return { id: canvasId, label, ...MOCK_DATA.cfo.charts[key] };
+  return { id: canvasId, label, ...WORKSPACE_DATA.cfo.charts[key] };
 }
 
 function entryChartSpec(entry, canvasId, label = '') {
@@ -266,7 +268,7 @@ function toneFromSeverity(severity = '') {
 }
 
 function boardSlides() {
-  const ceo = MOCK_DATA.ceo;
+  const ceo = WORKSPACE_DATA.ceo;
   return [
     {
       key: 'summary',
@@ -297,16 +299,16 @@ function boardSlides() {
       key: 'finance',
       eyebrow: 'Financial Summary',
       title: 'Finance should preserve optionality',
-      body: MOCK_DATA.cfo.weeklyBriefing.summary,
+      body: WORKSPACE_DATA.cfo.weeklyBriefing.summary,
       html: `
         <div class="grid-3">
-          ${statCard({ iconName: 'trending-up', label: 'Revenue', value: MOCK_DATA.cfo.metrics[0].value, body: MOCK_DATA.cfo.metrics[0].detail })}
-          ${statCard({ iconName: 'coins', label: 'Profit', value: MOCK_DATA.cfo.metrics[1].value, body: MOCK_DATA.cfo.metrics[1].detail })}
-          ${statCard({ iconName: 'wallet', label: 'Cash Position', value: MOCK_DATA.cfo.metrics[2].value, body: MOCK_DATA.cfo.metrics[2].detail })}
+          ${statCard({ iconName: 'trending-up', label: 'Revenue', value: WORKSPACE_DATA.cfo.metrics[0].value, body: WORKSPACE_DATA.cfo.metrics[0].detail })}
+          ${statCard({ iconName: 'coins', label: 'Profit', value: WORKSPACE_DATA.cfo.metrics[1].value, body: WORKSPACE_DATA.cfo.metrics[1].detail })}
+          ${statCard({ iconName: 'wallet', label: 'Cash Position', value: WORKSPACE_DATA.cfo.metrics[2].value, body: WORKSPACE_DATA.cfo.metrics[2].detail })}
         </div>
         <div class="grid-2">
-          ${insightCard({ eyebrow: 'Primary risk', title: MOCK_DATA.cfo.risks[0].impact, body: MOCK_DATA.cfo.risks[0].commentary, tone: 'risk' })}
-          ${insightCard({ eyebrow: 'Best opportunity', title: MOCK_DATA.cfo.opportunities[0].title, body: MOCK_DATA.cfo.opportunities[0].description, tone: 'good' })}
+          ${insightCard({ eyebrow: 'Primary risk', title: WORKSPACE_DATA.cfo.risks[0].impact, body: WORKSPACE_DATA.cfo.risks[0].commentary, tone: 'risk' })}
+          ${insightCard({ eyebrow: 'Best opportunity', title: WORKSPACE_DATA.cfo.opportunities[0].title, body: WORKSPACE_DATA.cfo.opportunities[0].description, tone: 'good' })}
         </div>
       `
     },
@@ -314,13 +316,13 @@ function boardSlides() {
       key: 'marketing',
       eyebrow: 'Marketing Summary',
       title: 'Marketing is creating momentum, but conversion matters next',
-      body: MOCK_DATA.cmo.dashboard.weeklyBriefing,
+      body: WORKSPACE_DATA.cmo.dashboard.weeklyBriefing,
       html: `
         <div class="grid-4">
-          ${statCard({ iconName: 'sparkles', label: 'Marketing Health Score', value: String(MOCK_DATA.cmo.dashboard.healthScore), body: MOCK_DATA.cmo.dashboard.summary })}
-          ${statCard({ iconName: 'pulse', label: 'Best Platform', value: MOCK_DATA.cmo.dashboard.bestPlatform, body: 'The strongest current growth and trust engine.' })}
-          ${statCard({ iconName: 'grid', label: 'Website Visitors', value: MOCK_DATA.cmo.dashboard.metrics.visitors, body: 'Traffic is up, but conversion quality is the real lever.' })}
-          ${statCard({ iconName: 'target', label: 'Booking Enquiries', value: MOCK_DATA.cmo.dashboard.metrics.enquiries, body: 'The most commercially relevant current marketing output.' })}
+          ${statCard({ iconName: 'sparkles', label: 'Marketing Health Score', value: String(WORKSPACE_DATA.cmo.dashboard.healthScore), body: WORKSPACE_DATA.cmo.dashboard.summary })}
+          ${statCard({ iconName: 'pulse', label: 'Best Platform', value: WORKSPACE_DATA.cmo.dashboard.bestPlatform, body: 'The strongest current growth and trust engine.' })}
+          ${statCard({ iconName: 'grid', label: 'Website Visitors', value: WORKSPACE_DATA.cmo.dashboard.metrics.visitors, body: 'Traffic is up, but conversion quality is the real lever.' })}
+          ${statCard({ iconName: 'target', label: 'Booking Enquiries', value: WORKSPACE_DATA.cmo.dashboard.metrics.enquiries, body: 'The most commercially relevant current marketing output.' })}
         </div>
         <div class="grid-2">
           ${insightCard({ eyebrow: 'Cross-department intelligence', title: ceo.crossDepartmentIntelligence[0].title, body: ceo.crossDepartmentIntelligence[0].body, tone: 'good' })}
@@ -451,7 +453,7 @@ function attachPageEvents() {
 
   pageContent.querySelectorAll('.supplier-link').forEach((button) => {
     button.addEventListener('click', () => {
-      const supplier = MOCK_DATA.cfo.suppliers.find((item) => item.id === button.dataset.supplier);
+      const supplier = WORKSPACE_DATA.cfo.suppliers.find((item) => item.id === button.dataset.supplier);
       if (!supplier) return;
       const holder = document.createElement('div');
       holder.className = 'drilldown-card';
@@ -635,7 +637,7 @@ function attachGlobalEvents() {
 }
 
 function ceoDashboardView() {
-  const data = MOCK_DATA.ceo;
+  const data = WORKSPACE_DATA.ceo;
   const briefingCommentary = {
     summary: data.executiveBriefing.boardSummary,
     evidence: `${data.executiveBriefing.wins[0]} ${data.executiveBriefing.changes[1]}`,
@@ -862,7 +864,7 @@ function ceoDashboardView() {
 }
 
 function cfoHomeView() {
-  const data = MOCK_DATA.cfo;
+  const data = WORKSPACE_DATA.cfo;
   const activeMetric = data.metrics.find((metric) => metric.key === state.activeMetric) || data.metrics[0];
   return {
     html: `
@@ -957,7 +959,7 @@ function cfoRevenueView() {
             ${statCard({ iconName: 'trending-up', label: 'Revenue this month', value: '£46.8k', body: 'Ahead of plan with healthier premium conversion.' })}
             ${statCard({ iconName: 'calendar', label: 'Revenue by month', value: '7 months tracked', body: 'Steady progression in placeholder monthly trend.' })}
             ${statCard({ iconName: 'wallet', label: 'Revenue vs last year', value: '+14.2%', body: 'Growth is positive without obvious discount-led distortion.' })}
-            ${statCard({ iconName: 'sparkles', label: 'Revenue forecast', value: MOCK_DATA.cfo.forecasts.revenue, body: 'Forecast stays constructive under current assumptions.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Revenue forecast', value: WORKSPACE_DATA.cfo.forecasts.revenue, body: 'Forecast stays constructive under current assumptions.' })}
           </div>
         </section>
         ${pageQuestions('/cfo/revenue')}
@@ -966,7 +968,7 @@ function cfoRevenueView() {
           ${chartCard({ eyebrow: 'Payment mix', title: 'Revenue by payment method', canvasId: 'chart-payment-methods', meta: 'Card, transfer, finance, and cash mix.' })}
           ${chartCard({ eyebrow: 'Invoice status', title: 'Revenue by invoice status', canvasId: 'chart-invoice-status', meta: 'Paid, pending, and overdue profile.' })}
         </div>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.revenue.title, data: MOCK_DATA.cfo.commentary.revenue })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.revenue.title, data: WORKSPACE_DATA.cfo.commentary.revenue })}
       </div>
     `,
     charts: [chartSpec('revenueTrend', 'chart-revenue-trend', 'Revenue trend'), chartSpec('paymentMethods', 'chart-payment-methods', 'Payment method mix'), chartSpec('invoiceStatus', 'chart-invoice-status', 'Invoice status mix')]
@@ -1000,7 +1002,7 @@ function cfoProfitView() {
             </div>
           </section>
         </div>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.profit.title, data: MOCK_DATA.cfo.commentary.profit })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.profit.title, data: WORKSPACE_DATA.cfo.commentary.profit })}
       </div>
     `,
     charts: [chartSpec('monthlyProfit', 'chart-profit', 'Monthly profit trend'), { id: 'chart-profit-costs', type: 'bar', labels: ['Suppliers', 'Support', 'Rent', 'Software'], values: [42, 23, 19, 16], label: 'Cost centre mix', suffix: '%' }]
@@ -1026,7 +1028,7 @@ function cfoExpensesView() {
           ${chartCard({ eyebrow: 'Expense trend', title: 'Monthly expenses', canvasId: 'chart-expenses', meta: 'Interactive monthly trend.' })}
           ${chartCard({ eyebrow: 'Categories', title: 'Expense categories', canvasId: 'chart-expense-categories', meta: 'Share of total expense by category.' })}
         </div>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.expenses.title, data: MOCK_DATA.cfo.commentary.expenses })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.expenses.title, data: WORKSPACE_DATA.cfo.commentary.expenses })}
       </div>
     `,
     charts: [chartSpec('expenseTrend', 'chart-expenses', 'Expense trend'), chartSpec('expenseCategories', 'chart-expense-categories', 'Expense categories')]
@@ -1055,9 +1057,9 @@ function cfoSupplierView() {
         </div>
         <section class="panel">
           ${sectionHeader({ eyebrow: 'Top suppliers', title: 'Supplier drill-down placeholders', body: 'Every supplier includes a future drill-down placeholder.' })}
-          <div class="tile-grid">${MOCK_DATA.cfo.suppliers.map((supplier) => supplierCard(supplier)).join('')}</div>
+          <div class="tile-grid">${WORKSPACE_DATA.cfo.suppliers.map((supplier) => supplierCard(supplier)).join('')}</div>
         </section>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.suppliers.title, data: MOCK_DATA.cfo.commentary.suppliers })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.suppliers.title, data: WORKSPACE_DATA.cfo.commentary.suppliers })}
       </div>
     `,
     charts: [chartSpec('supplierTrend', 'chart-supplier-trend', 'Supplier monthly spend'), { id: 'chart-supplier-categories', type: 'doughnut', labels: ['Launch Monitors', 'Retail Stock', 'Subscriptions', 'Consumables'], values: [39, 29, 19, 13], label: 'Supplier categories', suffix: '%' }, { id: 'chart-supplier-risk', type: 'bar', labels: ['Low', 'Medium', 'High'], values: [34, 52, 14], label: 'Risk indicator', suffix: '%' }]
@@ -1083,7 +1085,7 @@ function cfoCashView() {
           ${chartCard({ eyebrow: 'Cash Flow', title: '30/60/90 day forecast', canvasId: 'chart-cash-flow', meta: 'Interactive placeholder forecast.' })}
           ${chartCard({ eyebrow: 'Risk analysis', title: 'Cash flow sensitivity', canvasId: 'chart-cash-risk', meta: 'Which factors most affect confidence in the view.' })}
         </div>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.cash.title, data: MOCK_DATA.cfo.commentary.cash })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.cash.title, data: WORKSPACE_DATA.cfo.commentary.cash })}
       </div>
     `,
     charts: [chartSpec('cashFlow', 'chart-cash-flow', 'Cash flow forecast'), { id: 'chart-cash-risk', type: 'bar', labels: ['Collections', 'Supplier timing', 'Discretionary spend', 'Tax timing'], values: [38, 29, 17, 16], label: 'Cash risk', suffix: '%' }]
@@ -1109,7 +1111,7 @@ function cfoVatView() {
           ${chartCard({ eyebrow: 'VAT History', title: 'Historical VAT trend', canvasId: 'chart-vat', meta: 'Quarterly placeholder VAT history.' })}
           ${chartCard({ eyebrow: 'KPI Gauge', title: 'VAT confidence gauge', canvasId: 'chart-vat-gauge', meta: 'Proxy for confidence rather than a direct liability measure.' })}
         </div>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.vat.title, data: MOCK_DATA.cfo.commentary.vat })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.vat.title, data: WORKSPACE_DATA.cfo.commentary.vat })}
       </div>
     `,
     charts: [chartSpec('vatHistory', 'chart-vat', 'VAT history'), chartSpec('kpiGauge', 'chart-vat-gauge', 'VAT confidence gauge')]
@@ -1124,9 +1126,9 @@ function cfoForecastingView() {
           ${sectionHeader({ eyebrow: 'CFO Module', title: 'Executive forecasting workspace', body: 'Use this page to challenge assumptions and model choices, not to seek false precision.' })}
           ${renderRoutePillbar(SUBNAV.cfo)}
           <div class="grid-4">
-            ${statCard({ iconName: 'trending-up', label: 'Revenue forecast', value: MOCK_DATA.cfo.forecasts.revenue, body: 'Assumes healthy demand and stable booking conversion.' })}
-            ${statCard({ iconName: 'coins', label: 'Profit forecast', value: MOCK_DATA.cfo.forecasts.profit, body: 'Depends on stabilising supplier cost growth.' })}
-            ${statCard({ iconName: 'wallet', label: 'Cash forecast', value: MOCK_DATA.cfo.forecasts.cash, body: 'Requires collections to normalise on time.' })}
+            ${statCard({ iconName: 'trending-up', label: 'Revenue forecast', value: WORKSPACE_DATA.cfo.forecasts.revenue, body: 'Assumes healthy demand and stable booking conversion.' })}
+            ${statCard({ iconName: 'coins', label: 'Profit forecast', value: WORKSPACE_DATA.cfo.forecasts.profit, body: 'Depends on stabilising supplier cost growth.' })}
+            ${statCard({ iconName: 'wallet', label: 'Cash forecast', value: WORKSPACE_DATA.cfo.forecasts.cash, body: 'Requires collections to normalise on time.' })}
             ${statCard({ iconName: 'sparkles', label: 'Investment modelling', value: 'Placeholder', body: 'Reserved for future capital and equipment decision models.' })}
           </div>
         </section>
@@ -1136,9 +1138,9 @@ function cfoForecastingView() {
         </div>
         <section class="panel">
           ${sectionHeader({ eyebrow: 'What if…', title: 'Scenario planning placeholders', body: 'A forecasting workspace should feel like a thinking environment rather than a static report.' })}
-          <div class="tile-grid">${MOCK_DATA.cfo.forecasts.scenarios.map((item) => insightCard({ eyebrow: 'Scenario', title: item.title, body: item.body, tone: 'neutral' })).join('')}</div>
+          <div class="tile-grid">${WORKSPACE_DATA.cfo.forecasts.scenarios.map((item) => insightCard({ eyebrow: 'Scenario', title: item.title, body: item.body, tone: 'neutral' })).join('')}</div>
         </section>
-        ${commentaryCard({ title: MOCK_DATA.cfo.commentary.forecasting.title, data: MOCK_DATA.cfo.commentary.forecasting })}
+        ${commentaryCard({ title: WORKSPACE_DATA.cfo.commentary.forecasting.title, data: WORKSPACE_DATA.cfo.commentary.forecasting })}
       </div>
     `,
     charts: [chartSpec('financialForecast', 'chart-forecast', 'Forecast scenario comparison')]
@@ -1153,7 +1155,7 @@ function cfoBusinessKpisView() {
           ${sectionHeader({ eyebrow: 'CFO Module', title: 'Connected KPI framework', body: 'KPIs are grouped by the questions they help answer, not by accounting table structure.' })}
           ${renderRoutePillbar(SUBNAV.cfo)}
           <div class="section-stack">
-            ${MOCK_DATA.cfo.kpis.groups
+            ${WORKSPACE_DATA.cfo.kpis.groups
               .map(
                 ([title, entries]) => `
                   <section class="panel">
@@ -1180,7 +1182,7 @@ function cfoBusinessKpisView() {
 
 function cfoDecisionJournalView() {
   const query = state.journalQuery.trim().toLowerCase();
-  const filtered = MOCK_DATA.cfo.decisionJournal.filter((entry) => {
+  const filtered = WORKSPACE_DATA.cfo.decisionJournal.filter((entry) => {
     if (!query) return true;
     return [entry.id, entry.recommendation, entry.reasoning, entry.decision, entry.outcome, entry.status].join(' ').toLowerCase().includes(query);
   });
@@ -1223,7 +1225,7 @@ function cfoDecisionJournalView() {
 }
 
 function cfoFinancialHealthView() {
-  const data = MOCK_DATA.cfo;
+  const data = WORKSPACE_DATA.cfo;
   return {
     html: `
       <div class="page-grid">
@@ -1263,7 +1265,7 @@ function cfoOpportunityRegisterView() {
         ${pageQuestions('/cfo/opportunity-register')}
         <section class="panel">
           <div class="section-stack">
-            ${MOCK_DATA.cfo.opportunities
+            ${WORKSPACE_DATA.cfo.opportunities
               .map(
                 (entry) => registerRow({
                   kicker: `${pill(entry.category, 'info')}${pill(entry.confidence, entry.confidence === 'High' ? 'good' : 'warn')}${pill(entry.strategicPriority, entry.strategicPriority === 'Immediate' ? 'warn' : 'good')}`,
@@ -1299,7 +1301,7 @@ function cfoRiskRegisterView() {
         ${pageQuestions('/cfo/risk-register')}
         <section class="panel">
           <div class="section-stack">
-            ${MOCK_DATA.cfo.risks
+            ${WORKSPACE_DATA.cfo.risks
               .map(
                 (risk) => registerRow({
                   kicker: `${pill(risk.level, risk.level === 'High' ? 'risk' : 'warn')}${pill(risk.trend, risk.trend === 'Improving' ? 'good' : risk.trend === 'Stable' ? 'neutral' : 'warn')}`,
@@ -1325,7 +1327,7 @@ function cfoRiskRegisterView() {
 }
 
 function marketingApprovals(limit = 6) {
-  return (MOCK_DATA.approvals.groups['Marketing approvals'] || []).slice(0, limit);
+  return (WORKSPACE_DATA.approvals.groups['Marketing approvals'] || []).slice(0, limit);
 }
 
 function pairStats(entries, body = 'Executive placeholder metric.') {
@@ -1361,7 +1363,7 @@ function cmoPlatformCommentary(platform) {
 }
 
 function cmoDashboardView() {
-  const data = MOCK_DATA.cmo.dashboard;
+  const data = WORKSPACE_DATA.cmo.dashboard;
   return {
     html: `
       <div class="page-grid">
@@ -1456,16 +1458,16 @@ function cmoDashboardView() {
       </div>
     `,
     charts: [
-      entryChartSpec(MOCK_DATA.cmo.charts.platformComparison, 'chart-cmo-platform-comparison', 'Platform ranking'),
-      entryChartSpec(MOCK_DATA.cmo.charts.totalViews, 'chart-cmo-total-views', 'Total views'),
-      entryChartSpec(MOCK_DATA.cmo.charts.websiteTraffic, 'chart-cmo-website-traffic', 'Website traffic'),
-      entryChartSpec(MOCK_DATA.cmo.charts.websiteConversions, 'chart-cmo-website-conversions', 'Website conversions')
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.platformComparison, 'chart-cmo-platform-comparison', 'Platform ranking'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.totalViews, 'chart-cmo-total-views', 'Total views'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteTraffic, 'chart-cmo-website-traffic', 'Website traffic'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteConversions, 'chart-cmo-website-conversions', 'Website conversions')
     ]
   };
 }
 
 function cmoSocialOverviewView() {
-  const data = MOCK_DATA.cmo.socialOverview;
+  const data = WORKSPACE_DATA.cmo.socialOverview;
   return {
     html: `
       <div class="page-grid">
@@ -1511,16 +1513,16 @@ function cmoSocialOverviewView() {
       </div>
     `,
     charts: [
-      entryChartSpec(MOCK_DATA.cmo.charts.platformComparison, 'chart-social-platform-comparison', 'Platform ranking'),
-      entryChartSpec(MOCK_DATA.cmo.charts.followerGrowth, 'chart-social-follower-growth', 'Follower growth'),
-      entryChartSpec(MOCK_DATA.cmo.charts.totalViews, 'chart-social-total-views', 'Total views'),
-      entryChartSpec(MOCK_DATA.cmo.charts.engagementMix, 'chart-social-engagement-mix', 'Engagement mix')
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.platformComparison, 'chart-social-platform-comparison', 'Platform ranking'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.followerGrowth, 'chart-social-follower-growth', 'Follower growth'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.totalViews, 'chart-social-total-views', 'Total views'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.engagementMix, 'chart-social-engagement-mix', 'Engagement mix')
     ]
   };
 }
 
 function cmoPlatformView(key, route) {
-  const data = MOCK_DATA.cmo.platforms[key];
+  const data = WORKSPACE_DATA.cmo.platforms[key];
   const commentary = cmoPlatformCommentary(data);
   return {
     html: `
@@ -1562,7 +1564,7 @@ function cmoPlatformView(key, route) {
 }
 
 function cmoWebsiteAnalyticsView() {
-  const data = MOCK_DATA.cmo.websiteAnalytics;
+  const data = WORKSPACE_DATA.cmo.websiteAnalytics;
   return {
     html: `
       <div class="page-grid">
@@ -1591,15 +1593,15 @@ function cmoWebsiteAnalyticsView() {
       </div>
     `,
     charts: [
-      entryChartSpec(MOCK_DATA.cmo.charts.websiteTraffic, 'chart-website-traffic', 'Website traffic'),
-      entryChartSpec(MOCK_DATA.cmo.charts.websiteConversions, 'chart-website-conversions', 'Website conversions'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteTraffic, 'chart-website-traffic', 'Website traffic'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.websiteConversions, 'chart-website-conversions', 'Website conversions'),
       { id: 'chart-website-visitors-mix', type: 'bar', labels: ['Users', 'New Users', 'Returning'], values: [18.9, 12.4, 6.5], label: 'Visitor mix', suffix: 'k' }
     ]
   };
 }
 
 function cmoEmailMarketingView() {
-  const data = MOCK_DATA.cmo.emailMarketing;
+  const data = WORKSPACE_DATA.cmo.emailMarketing;
   return {
     html: `
       <div class="page-grid">
@@ -1628,12 +1630,12 @@ function cmoEmailMarketingView() {
         </div>
       </div>
     `,
-    charts: [entryChartSpec(MOCK_DATA.cmo.charts.emailGrowth, 'chart-email-growth', 'Subscriber growth'), entryChartSpec(MOCK_DATA.cmo.charts.emailPerformance, 'chart-email-performance', 'Email performance')]
+    charts: [entryChartSpec(WORKSPACE_DATA.cmo.charts.emailGrowth, 'chart-email-growth', 'Subscriber growth'), entryChartSpec(WORKSPACE_DATA.cmo.charts.emailPerformance, 'chart-email-performance', 'Email performance')]
   };
 }
 
 function cmoCampaignPerformanceView() {
-  const data = MOCK_DATA.cmo.campaignPerformance;
+  const data = WORKSPACE_DATA.cmo.campaignPerformance;
   return {
     html: `
       <div class="page-grid">
@@ -1684,7 +1686,7 @@ function cmoCampaignPerformanceView() {
       </div>
     `,
     charts: [
-      entryChartSpec(MOCK_DATA.cmo.charts.campaignROI, 'chart-campaign-roi', 'Campaign ROI'),
+      entryChartSpec(WORKSPACE_DATA.cmo.charts.campaignROI, 'chart-campaign-roi', 'Campaign ROI'),
       { id: 'chart-campaign-leads', type: 'bar', labels: data.campaigns.map((item) => item.title), values: data.campaigns.map((item) => Number.parseFloat(item.leads)), label: 'Leads', suffix: '' },
       { id: 'chart-campaign-conversion', type: 'bar', labels: data.campaigns.map((item) => item.title), values: data.campaigns.map((item) => Number.parseFloat(item.conversion)), label: 'Conversion rate', suffix: '%' }
     ]
@@ -1693,7 +1695,7 @@ function cmoCampaignPerformanceView() {
 
 function cmoContentLibraryView() {
   const query = state.contentQuery.trim().toLowerCase();
-  const items = MOCK_DATA.cmo.contentLibrary.items.filter((item) => {
+  const items = WORKSPACE_DATA.cmo.contentLibrary.items.filter((item) => {
     if (!query) return true;
     return [item.title, item.type, item.platform, item.rating, item.publishDate].join(' ').toLowerCase().includes(query);
   });
@@ -1729,7 +1731,7 @@ function cmoContentLibraryView() {
 }
 
 function cmoCompetitorAnalysisView() {
-  const data = MOCK_DATA.cmo.competitorAnalysis;
+  const data = WORKSPACE_DATA.cmo.competitorAnalysis;
   return {
     html: `
       <div class="page-grid">
@@ -1786,7 +1788,7 @@ function cmoCompetitorAnalysisView() {
 }
 
 function cmoMarketingCalendarView() {
-  const data = MOCK_DATA.cmo.marketingCalendar;
+  const data = WORKSPACE_DATA.cmo.marketingCalendar;
   const typeCounts = data.events.reduce((accumulator, item) => {
     accumulator[item.type] = (accumulator[item.type] || 0) + 1;
     return accumulator;
@@ -1825,7 +1827,7 @@ function cmoMarketingCalendarView() {
 }
 
 function cmoAiAdvisorView() {
-  const data = MOCK_DATA.cmo.aiMarketingAdvisor;
+  const data = WORKSPACE_DATA.cmo.aiMarketingAdvisor;
   return {
     html: `
       <div class="page-grid">
@@ -1903,7 +1905,7 @@ function cmoAiAdvisorView() {
 }
 
 function cmoReportsView() {
-  const data = MOCK_DATA.cmo.reports;
+  const data = WORKSPACE_DATA.cmo.reports;
   return {
     html: `
       <div class="page-grid">
@@ -1944,7 +1946,7 @@ function cmoReportsView() {
 }
 
 function cmoSettingsView() {
-  const data = MOCK_DATA.cmo.settings;
+  const data = WORKSPACE_DATA.cmo.settings;
   return {
     html: `
       <div class="page-grid">
@@ -1964,7 +1966,7 @@ function cmoSettingsView() {
 }
 
 function placeholderModuleView(route) {
-  const data = MOCK_DATA.placeholders[route];
+  const data = WORKSPACE_DATA.placeholders[route];
   return {
     html: `
       <div class="page-grid">
@@ -2011,7 +2013,7 @@ function placeholderModuleView(route) {
 }
 
 function approvalsView() {
-  const groups = Object.entries(MOCK_DATA.approvals.groups);
+  const groups = Object.entries(WORKSPACE_DATA.approvals.groups);
   return {
     html: `
       <div class="page-grid">
@@ -2053,7 +2055,7 @@ function reportsOverviewView() {
         <section class="panel">
           ${sectionHeader({ eyebrow: 'Available report routes', title: 'What to open next', body: 'Use this area to move from module work into packaged executive outputs.' })}
           <div class="tile-grid">
-            ${MOCK_DATA.reports.overview
+            ${WORKSPACE_DATA.reports.overview
               .map(
                 (item) => `
                   <article class="insight-card neutral">
@@ -2074,7 +2076,7 @@ function reportsOverviewView() {
 }
 
 function weeklyBriefingsView() {
-  const data = MOCK_DATA.cfo.weeklyBriefing;
+  const data = WORKSPACE_DATA.cfo.weeklyBriefing;
   return {
     html: `
       <div class="page-grid">
@@ -2082,7 +2084,7 @@ function weeklyBriefingsView() {
           ${sectionHeader({ eyebrow: 'Weekly Briefings', title: 'Sunday Executive Briefing', body: 'A board-style briefing designed for Sunday mornings.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
           <div class="grid-4">
-            ${statCard({ iconName: 'pulse', label: 'Business health score', value: String(MOCK_DATA.ceo.score), body: MOCK_DATA.ceo.label })}
+            ${statCard({ iconName: 'pulse', label: 'Business health score', value: String(WORKSPACE_DATA.ceo.score), body: WORKSPACE_DATA.ceo.label })}
             ${statCard({ iconName: 'trending-up', label: 'Revenue', value: '£46.8k', body: 'Ahead of the baseline.' })}
             ${statCard({ iconName: 'coins', label: 'Profit', value: '£11.6k', body: 'Healthy with margin watchpoints.' })}
             ${statCard({ iconName: 'check-circle', label: 'Approval queue', value: '11 items', body: 'Approval-first queue remains visible and deliberate.' })}
@@ -2103,7 +2105,7 @@ function weeklyBriefingsView() {
 }
 
 function monthlyReportsView() {
-  const data = MOCK_DATA.reports.monthly;
+  const data = WORKSPACE_DATA.reports.monthly;
   return {
     html: `
       <div class="page-grid">
@@ -2149,7 +2151,7 @@ function quarterlyReviewsView() {
 }
 
 function boardMeetingView() {
-  const data = MOCK_DATA.ceo;
+  const data = WORKSPACE_DATA.ceo;
   const slides = boardSlides();
   const slide = slides[state.boardSlide] || slides[0];
   return {
@@ -2213,7 +2215,7 @@ function reportPlaceholderView(route, title, items) {
 }
 
 function aiAssistantOverviewView() {
-  const data = MOCK_DATA.aiAssistant.overview;
+  const data = WORKSPACE_DATA.aiAssistant.overview;
   return {
     html: `
       <div class="page-grid">
@@ -2252,11 +2254,11 @@ function aiAssistantOverviewView() {
           </div>
         </section>
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Ask EP Intelligence', title: 'Example executive conversations', body: MOCK_DATA.aiAssistant.askWorkspace.intro })}
+          ${sectionHeader({ eyebrow: 'Ask EP Intelligence', title: 'Example executive conversations', body: WORKSPACE_DATA.aiAssistant.askWorkspace.intro })}
           <div class="tile-grid">
-            ${MOCK_DATA.aiAssistant.askWorkspace.prompts.map((item) => insightCard({ eyebrow: item.question, title: 'AI response', body: item.answer, tone: 'neutral' })).join('')}
+            ${WORKSPACE_DATA.aiAssistant.askWorkspace.prompts.map((item) => insightCard({ eyebrow: item.question, title: 'AI response', body: item.answer, tone: 'neutral' })).join('')}
           </div>
-          <div class="chip-list">${MOCK_DATA.aiAssistant.askWorkspace.suggestedFollowUps.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
+          <div class="chip-list">${WORKSPACE_DATA.aiAssistant.askWorkspace.suggestedFollowUps.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
         </section>
         ${pageQuestions('/ai-assistant')}
       </div>
@@ -2266,7 +2268,7 @@ function aiAssistantOverviewView() {
 }
 
 function aiAssistantAskView() {
-  const data = MOCK_DATA.aiAssistant.askWorkspace;
+  const data = WORKSPACE_DATA.aiAssistant.askWorkspace;
   return {
     html: `
       <div class="page-grid">
@@ -2295,7 +2297,7 @@ function aiAssistantAskView() {
 }
 
 function aiAssistantPlaceholderView(route) {
-  const data = MOCK_DATA.aiAssistant.pages[route];
+  const data = WORKSPACE_DATA.aiAssistant.pages[route];
   return {
     html: `
       <div class="page-grid">
@@ -2325,22 +2327,212 @@ function aiAssistantPlaceholderView(route) {
 }
 
 function settingsView() {
+  const config = WORKSPACE_DATA.settings.configuration;
   return {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Settings', title: 'Shell preferences and future connections', body: 'This page exists to make the future operating model clear before anything live is connected.' })}
-          <div class="settings-grid">
-            ${MOCK_DATA.settings.placeholders.map((item) => integrationTile(item)).join('')}
+          ${sectionHeader({ eyebrow: 'Settings', title: 'Integration framework overview', body: 'Sprint 6 introduces a provider/service/config architecture while keeping the whole product in Demo Mode.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'settings', label: 'Active Mode', value: config.activeMode.label, body: config.activeMode.description })}
+            ${statCard({ iconName: 'grid', label: 'Provider Strategy', value: APP_RUNTIME.config.providerStrategy, body: 'Provider + service + contract layers are now in place.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Domain Bindings', value: String(config.domainBindings.length), body: 'Every service domain currently resolves to Demo Mode mock providers.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Registered Integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Future integration registration points are defined without any live connections.' })}
           </div>
         </section>
+
+        <div class="grid-3">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring view', body: 'See the placeholder status for every future integration target.' })}
+            <div class="snapshot-panel">
+              <h3>All integrations remain in Demo Mode</h3>
+              <p>The architecture is now ready for provider-by-provider activation later without rewriting the executive UI.</p>
+              <button type="button" class="quick-action-button" data-route="/settings/integrations">Open Integration Status ${icon('arrowRight')}</button>
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Configuration', title: 'Mode and provider bindings', body: 'Inspect runtime mode, available modes, and active provider-domain mapping.' })}
+            <div class="snapshot-panel">
+              <h3>${escapeHtml(config.activeMode.label)}</h3>
+              <p>${escapeHtml(APP_RUNTIME.config.notes)}</p>
+              <button type="button" class="quick-action-button" data-route="/settings/configuration">Open Demo Mode Configuration ${icon('arrowRight')}</button>
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Provider Architecture', title: 'Layered system design', body: 'Presentation, service, and provider responsibilities are now separated clearly.' })}
+            <div class="snapshot-panel">
+              <h3>${escapeHtml(APP_RUNTIME.config.architectureVersion)}</h3>
+              <p>Future APIs should now be a plug-in exercise rather than a dashboard rewrite.</p>
+              <button type="button" class="quick-action-button" data-route="/settings/provider-architecture">Open Provider Architecture ${icon('arrowRight')}</button>
+            </div>
+          </section>
+        </div>
+
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Future integration placeholders', title: 'Connected intelligence sources', body: 'Each item below is intentionally a placeholder for future connection.' })}
-          <div class="tile-grid">${MOCK_DATA.settings.integrations.map((item) => integrationTile(item)).join('')}</div>
+          ${sectionHeader({ eyebrow: 'Future connection placeholders', title: 'Connected intelligence sources', body: 'Each item below is intentionally a placeholder for future connection.' })}
+          <div class="tile-grid">${WORKSPACE_DATA.settings.integrations.map((item) => integrationTile(item)).join('')}</div>
         </section>
         <section class="panel">
           ${sectionHeader({ eyebrow: 'Keyboard shortcuts', title: 'Fast navigation', body: 'Designed to make the workspace feel fast and executive-friendly.' })}
-          <div class="shortcut-grid">${MOCK_DATA.shortcuts.map((item) => `<div class="command-chip"><strong>${escapeHtml(item.keys)}</strong><span>${escapeHtml(item.action)}</span></div>`).join('')}</div>
+          <div class="shortcut-grid">${WORKSPACE_DATA.shortcuts.map((item) => `<div class="command-chip"><strong>${escapeHtml(item.keys)}</strong><span>${escapeHtml(item.action)}</span></div>`).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function settingsIntegrationStatusView() {
+  const groups = Object.entries(
+    WORKSPACE_DATA.settings.integrationStatus.reduce((acc, entry) => {
+      acc[entry.group] = acc[entry.group] || [];
+      acc[entry.group].push(entry);
+      return acc;
+    }, {})
+  );
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'Everything is still running in Demo Mode, but every future integration now has a registration point and status surface.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: 'Current state', value: 'Demo Mode', body: 'No network requests, credentials, or external systems are active in this sprint.' })}
+            ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Placeholder status cards now exist for every future integration target.' })}
+            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'MockProvider is active; future providers are registered as placeholders.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Goal', value: 'Plug-in ready', body: 'Future live connections should swap providers without requiring UI rewrites.' })}
+          </div>
+        </section>
+
+        <div class="settings-grid">
+          ${groups
+            .map(
+              ([group, entries]) => `
+                <section class="panel">
+                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Every entry remains in Demo Mode until a future live provider is implemented.' })}
+                  <div class="section-stack">
+                    ${entries
+                      .map((entry) =>
+                        registerRow({
+                          kicker: `${pill(entry.status, 'info')}${pill(entry.provider, 'neutral')}${pill(entry.service, 'good')}`,
+                          title: entry.label,
+                          body: entry.notes,
+                          meta: `Registration key: ${entry.id}`
+                        })
+                      )
+                      .join('')}
+                  </div>
+                </section>
+              `
+            )
+            .join('')}
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function settingsConfigurationView() {
+  const config = WORKSPACE_DATA.settings.configuration;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode and provider bindings', body: 'The app can now distinguish between demo architecture and future live architecture without changing the UI.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'settings', label: 'Active mode', value: config.activeMode.label, body: config.activeMode.description })}
+            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'Every active domain currently resolves to the mock provider.' })}
+            ${statCard({ iconName: 'shield', label: 'Live integrations', value: config.activeMode.allowLiveIntegrations ? 'Allowed' : 'Disabled', body: 'Live connections remain intentionally disabled in Sprint 6.' })}
+            ${statCard({ iconName: 'book-open', label: 'Architecture version', value: APP_RUNTIME.config.architectureVersion, body: 'This sprint introduces the first provider/service/config abstraction layer.' })}
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but Future Live Mode is explicitly reserved in config.' })}
+            <div class="section-stack">
+              ${config.availableModes
+                .map((mode) =>
+                  insightCard({
+                    eyebrow: mode.available ? 'Available now' : 'Reserved for later',
+                    title: mode.label,
+                    body: mode.description,
+                    tone: mode.available ? 'good' : 'warn'
+                  })
+                )
+                .join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'In Demo Mode, every domain binds to MockProvider. Future live work should update these bindings, not the dashboards.' })}
+            <div class="section-stack">
+              ${config.domainBindings
+                .map((binding) =>
+                  registerRow({
+                    kicker: `${pill(binding.domain, 'info')}${pill(binding.provider, 'neutral')}${pill(binding.mode, 'good')}`,
+                    title: `${binding.domain} → ${binding.provider}`,
+                    body: 'This binding is the swap-point for future integration work.',
+                    meta: `Provider key: ${binding.providerKey}`
+                  })
+                )
+                .join('')}
+            </div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function settingsProviderArchitectureView() {
+  const architecture = WORKSPACE_DATA.settings.architecture;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Provider Architecture', title: 'Presentation, service, and provider layers', body: 'This is the abstraction that should let EP Intelligence adopt future APIs without rewriting the executive dashboards.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-3">
+            ${architecture.layers.map((layer) => insightCard({ eyebrow: 'System layer', title: layer.title, body: layer.body, tone: layer.tone })).join('')}
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Data flow', title: 'How information now moves through the app', body: 'The UI consumes shaped service outputs instead of raw datasets.' })}
+            <div class="section-stack">${architecture.flow.map((item) => insightCard({ eyebrow: 'Flow step', title: item, body: 'This is an explicit handoff point in the integration architecture.', tone: 'neutral' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Architecture health', title: 'Current framework coverage', body: 'These are lightweight counts proving the framework is already plugged into the working product.' })}
+            <div class="grid-3">
+              ${statCard({ iconName: 'home', label: 'CEO score', value: String(architecture.health.ceo), body: 'CEO dashboard still renders through the new data path.' })}
+              ${statCard({ iconName: 'coins', label: 'CFO score', value: String(architecture.health.cfo), body: 'CFO workspace remains functional through FinanceService.' })}
+              ${statCard({ iconName: 'sparkles', label: 'CMO score', value: String(architecture.health.cmo), body: 'CMO workspace remains functional through MarketingService.' })}
+              ${statCard({ iconName: 'check-circle', label: 'Approval groups', value: String(architecture.health.approvals), body: 'ApprovalService still powers grouped approvals.' })}
+              ${statCard({ iconName: 'presentation', label: 'Report routes', value: String(architecture.health.reports), body: 'ReportService powers shared reporting outputs.' })}
+              ${statCard({ iconName: 'calendar', label: 'Timeline events', value: String(architecture.health.timeline), body: 'TimelineService provides reusable timeline shaping.' })}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Service responsibilities', title: 'Reusable business logic layer', body: 'These services are the new contract between the UI and future integrations.' })}
+            <div class="section-stack">${architecture.services.map((service) => insightCard({ eyebrow: 'Service', title: service.title, body: service.body, tone: 'info' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Provider catalogue', title: 'Current and future providers', body: 'Only MockProvider is active today. The rest are placeholder registration points for future work.' })}
+            <div class="section-stack">${architecture.providers.map((provider) => registerRow({ kicker: `${pill(provider.status, provider.type === 'active' ? 'good' : 'warn')}${pill(provider.label, 'neutral')}`, title: provider.key, body: provider.notes, meta: `Domains: ${(provider.domains || []).join(', ') || 'all demo domains'}` })).join('')}</div>
+          </section>
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Naming conventions', title: 'How future integrations should be added', body: 'This keeps future API onboarding consistent and reduces rewrite risk.' })}
+          <div class="tile-grid">${architecture.conventions.map((item) => insightCard({ eyebrow: 'Convention', title: item, body: 'Follow this rule when adding future providers, services, or integrations.', tone: 'neutral' })).join('')}</div>
         </section>
       </div>
     `,
@@ -2391,9 +2583,9 @@ const routeRenderers = {
   '/reports/monthly-reports': monthlyReportsView,
   '/reports/quarterly-reviews': quarterlyReviewsView,
   '/reports/board-meeting': boardMeetingView,
-  '/reports/cfo-reports': () => reportPlaceholderView('/reports/cfo-reports', 'CFO Reports', MOCK_DATA.reports.cfoReports),
-  '/reports/cmo-reports': () => reportPlaceholderView('/reports/cmo-reports', 'CMO Reports', MOCK_DATA.reports.cmoReports),
-  '/reports/ceo-reports': () => reportPlaceholderView('/reports/ceo-reports', 'CEO Reports', MOCK_DATA.reports.ceoReports),
+  '/reports/cfo-reports': () => reportPlaceholderView('/reports/cfo-reports', 'CFO Reports', WORKSPACE_DATA.reports.cfoReports),
+  '/reports/cmo-reports': () => reportPlaceholderView('/reports/cmo-reports', 'CMO Reports', WORKSPACE_DATA.reports.cmoReports),
+  '/reports/ceo-reports': () => reportPlaceholderView('/reports/ceo-reports', 'CEO Reports', WORKSPACE_DATA.reports.ceoReports),
   '/ai-assistant': aiAssistantOverviewView,
   '/ai-assistant/ask': aiAssistantAskView,
   '/ai-assistant/executive-briefing': () => aiAssistantPlaceholderView('/ai-assistant/executive-briefing'),
@@ -2402,7 +2594,10 @@ const routeRenderers = {
   '/ai-assistant/assumptions': () => aiAssistantPlaceholderView('/ai-assistant/assumptions'),
   '/ai-assistant/missing-information': () => aiAssistantPlaceholderView('/ai-assistant/missing-information'),
   '/ai-assistant/memory-context': () => aiAssistantPlaceholderView('/ai-assistant/memory-context'),
-  '/settings': settingsView
+  '/settings': settingsView,
+  '/settings/integrations': settingsIntegrationStatusView,
+  '/settings/configuration': settingsConfigurationView,
+  '/settings/provider-architecture': settingsProviderArchitectureView
 };
 
 function renderView() {

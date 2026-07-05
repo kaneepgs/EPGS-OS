@@ -44,3 +44,9 @@
 - Upgraded Board Meeting Mode into a presentation-style executive briefing deck with keyboard navigation across Executive Summary, KPI, Finance, Marketing, Opportunities, Risks, and Actions slides.
 - Expanded the structured mock-data layer with richer CEO synthesis data linking Finance and Marketing into one daily executive readout.
 - Captured Sprint 5C validation screenshots for CEO Dashboard, Executive Briefing, Today’s Priorities, Cross-Department Intelligence, Risks & Opportunities, Board Meeting Mode, and mobile layout.
+- Added Sprint 6 and introduced the first Integration Framework v0.1 beneath the executive UI.
+- Split shell configuration away from raw mock datasets and moved the app to consume provider-backed runtime data instead of importing mock data directly into the presentation layer.
+- Added central app configuration, integration registry, shared data contracts, provider registry, active `MockProvider`, future provider placeholders, and reusable service modules for executive, finance, marketing, approvals, reports, timeline, and integration status.
+- Added Settings routes for Integration Status, Demo Mode Configuration, and Provider Architecture so future integrations can be inspected without changing the executive dashboards.
+- Added developer documentation for the provider architecture, data flow, service responsibilities, naming conventions, and future API onboarding process.
+- Captured Sprint 6 validation screenshots for Integration Status, Demo Mode Configuration, and Provider Architecture.

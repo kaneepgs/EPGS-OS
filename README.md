@@ -83,6 +83,17 @@ Upgraded the default **CEO Dashboard** into an AI Chief of Staff experience with
 
 EP Intelligence now feels less like a shell with modules and more like a working **CEO operating surface** for the business.
 
+### Sprint 6 — Integration Framework v0.1
+
+Introduced the first integration architecture for EP Intelligence while keeping all visible behaviour in **Demo Mode**:
+
+- created a provider pattern so the UI no longer needs to care whether data comes from mock datasets or future live integrations
+- added a reusable service layer spanning **ExecutiveService, FinanceService, MarketingService, ApprovalService, ReportService, TimelineService, and IntegrationService**
+- added a central configuration module with **Demo Mode** active and **Future Live Mode** reserved
+- defined shared contracts for KPI, Insight, Timeline Event, Approval, Opportunity, Risk, AI Recommendation, Report, and Department Summary
+- refactored the application to consume **provider-backed runtime data** rather than importing raw mock datasets directly into the workspace UI
+- added a Settings-based **Integration Status**, **Demo Mode Configuration**, and **Provider Architecture** view for future scalability and onboarding
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -100,7 +111,14 @@ This prototype intentionally remains:
 - `index.html` — main app shell and metadata
 - `assets/app.js` — application state, routing, rendering, and interactions
 - `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
-- `assets/data/mock-data.js` — structured mock data for CEO, CFO, CMO, approvals, reports, AI Assistant, and placeholder modules
+- `assets/config/app-config.js` — central runtime mode and framework configuration
+- `assets/config/integration-registry.js` — placeholder registration points for future integrations
+- `assets/config/shell-config.js` — route, navigation, and page-question metadata
+- `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
+- `assets/data/mock-data.js` — raw structured demo datasets
+- `assets/data/runtime.js` — composition root that assembles providers, services, and runtime workspace data
+- `assets/providers/` — active mock provider plus future provider placeholders and provider registry
+- `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, and integration status
 - `assets/ui/components.js` — reusable UI render helpers
 - `assets/ui/charts.js` — Chart.js render/destroy helpers
 - `assets/vendor/chart.umd.js` — local Chart.js bundle for static hosting
@@ -190,6 +208,18 @@ Sprint 5C validation included:
   - Board Meeting Mode
   - Mobile Layout
 
+Sprint 6 validation included:
+
+- `node --check assets/app.js`
+- syntax checks across the full `assets/` tree including config, providers, services, contracts, and runtime modules
+- route validation confirming the CEO Dashboard, CFO routes, CMO routes, and new Settings architecture pages still render
+- provider-layer validation confirming Demo Mode runtime assembly and provider/service bindings work
+- runtime validation with no JavaScript errors and no console warnings during the scripted walkthrough
+- captured screenshots for:
+  - Integration Status
+  - Demo Mode Configuration
+  - Provider Architecture
+
 ## Design Principles
 
 1. Evidence before recommendation
@@ -203,3 +233,5 @@ Sprint 5C validation included:
 ## Near-Term Outcome
 
 The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System**, giving EP Golf Studios a credible AI-Chief-of-Staff-style **CEO Dashboard** plus integrated prototype depth across the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
+
+After Sprint 6, the product also has a real integration framework beneath that UI, so future API work can focus on provider implementation instead of rewriting executive dashboards.
