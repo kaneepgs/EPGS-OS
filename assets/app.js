@@ -1,647 +1,246 @@
-const NAV_PRIMARY = [
-  ['workspace', 'Workspace'],
-  ['revenue', 'Revenue'],
-  ['profit', 'Profit'],
-  ['expenses', 'Expenses'],
-  ['supplier-spend', 'Supplier Spend'],
-  ['cash-flow', 'Cash Flow'],
-  ['vat', 'VAT'],
-  ['forecasting', 'Forecasting'],
-  ['business-kpis', 'Business KPIs'],
-  ['approval-centre', 'Approval Centre'],
-  ['decision-journal', 'Decision Journal'],
-  ['weekly-briefings', 'Weekly Briefings'],
-  ['settings', 'Settings']
-];
+import { NAV_PRIMARY, NAV_SECONDARY, MODE_OPTIONS, PAGE_META, MOCK_DATA } from './data/mock-data.js';
+import {
+  icon,
+  navLink,
+  breadcrumb,
+  sectionHeader,
+  statCard,
+  metricCard,
+  insightCard,
+  priorityCard,
+  chartCard,
+  executiveQuestionCard,
+  commentaryCard,
+  approvalCard,
+  registerRow,
+  supplierCard,
+  searchRow,
+  integrationTile,
+  loadingSkeleton,
+  pill,
+  escapeHtml
+} from './ui/components.js';
+import { renderCharts, destroyCharts } from './ui/charts.js';
 
-const NAV_SECONDARY = [
-  ['financial-health', 'Financial Health Score'],
-  ['opportunity-register', 'Opportunity Register'],
-  ['risk-register', 'Risk Register'],
-  ['quarterly-review', 'Quarterly Review']
-];
+const STORAGE_KEY = 'ep-intelligence.workspace.v0.3';
+const appShell = document.getElementById('app-shell');
+const sidebar = document.getElementById('sidebar');
+const primaryNav = document.getElementById('primary-nav');
+const secondaryNav = document.getElementById('secondary-nav');
+const sidebarFavourites = document.getElementById('sidebar-favourites');
+const sidebarRecent = document.getElementById('sidebar-recent');
+const navSearch = document.getElementById('nav-search');
+const breadcrumbNode = document.getElementById('breadcrumb');
+const pageTitle = document.getElementById('page-title');
+const pageSubtitle = document.getElementById('page-subtitle');
+const pageContent = document.getElementById('page-content');
+const modeSwitcher = document.getElementById('mode-switcher');
+const themeToggle = document.getElementById('theme-toggle');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const commandLauncher = document.getElementById('command-launcher');
+const paletteBackdrop = document.getElementById('palette-backdrop');
+const paletteClose = document.getElementById('palette-close');
+const paletteInput = document.getElementById('palette-input');
+const paletteResults = document.getElementById('palette-results');
 
-const appState = {
-  currentPage: 'workspace',
+const state = {
+  page: 'workspace',
   mode: 'workspace',
   activeMetric: 'revenue',
   activeQuestion: 0,
   journalQuery: '',
-  data: {
-    welcome: {
-      score: 84,
-      previous: 81,
-      trend: '+3 points vs last month',
-      label: 'Stable with near-term control actions',
-      summary:
-        'The business is financially healthy overall, but collections discipline and supplier cost control will decide how much freedom EP Golf Studios has over the next six weeks.',
-      narrative:
-        'Revenue is holding up, profit is slightly compressed, and cash remains resilient if receivables land on time and discretionary spend stays deliberate.'
-    },
-    metrics: [
-      {
-        key: 'revenue',
-        label: 'Revenue This Month',
-        value: '£46.8k',
-        trend: '+8.4% vs last month',
-        detail:
-          'Revenue is ahead of plan, with fitting demand and add-on sales providing momentum. The key CFO question is whether this higher top line is converting into durable margin and cash.'
-      },
-      {
-        key: 'profit',
-        label: 'Profit This Month',
-        value: '£11.6k',
-        trend: '-3.1% vs last month',
-        detail:
-          'Profit is still healthy, but it softened because cost growth outpaced revenue conversion. This matters because it quietly erodes strategic flexibility.'
-      },
-      {
-        key: 'expenses',
-        label: 'Monthly Expenses',
-        value: '£24.9k',
-        trend: '+6.8% vs last month',
-        detail:
-          'Expense growth remains manageable, but contractor and discretionary operating costs are drifting upward faster than the base plan assumed.'
-      },
-      {
-        key: 'invoices',
-        label: 'Outstanding Invoices',
-        value: '£9.4k',
-        trend: '4 overdue invoices',
-        detail:
-          'Receivables remain the cleanest short-term lever for improving cash. A concentrated overdue balance means a small number of actions can materially improve headroom.'
-      },
-      {
-        key: 'bills',
-        label: 'Bills To Pay',
-        value: '£6.1k',
-        trend: '7 due within 10 days',
-        detail:
-          'The near-term payable stack is manageable, but approval timing should follow strategic cash sequencing rather than simple habit.'
-      },
-      {
-        key: 'vat',
-        label: 'VAT Liability',
-        value: '£4.8k',
-        trend: 'Provisioned',
-        detail:
-          'The current VAT estimate appears covered, but confidence still depends on complete purchase-side record capture.'
-      },
-      {
-        key: 'cash',
-        label: 'Cash Flow Forecast',
-        value: '£21.3k',
-        trend: '30-day closing cash',
-        detail:
-          'Cash remains healthy enough for the current plan if receivables are collected on time and supplier spend does not drift further upward.'
-      },
-      {
-        key: 'supplier',
-        label: 'Largest Supplier Spend',
-        value: '£8.7k',
-        trend: 'Launch monitor inventory',
-        detail:
-          'One supplier now represents a disproportionate monthly cash outflow. That may be strategic, but it should be explicitly reviewed rather than passively inherited.'
-      }
-    ],
-    priorities: [
-      {
-        title: 'Review overdue invoices',
-        note: 'Collections speed is the simplest route to better cash flexibility this week.',
-        tone: 'warn'
-      },
-      {
-        title: 'Pressure-test supplier spend',
-        note: 'Margin quality will depend on whether higher supplier costs are truly revenue-accretive.',
-        tone: 'risk'
-      },
-      {
-        title: 'Protect discretionary spend discipline',
-        note: 'Cash is healthy enough for calm decision-making, but not for casual drift.',
-        tone: 'good'
-      }
-    ],
-    opportunities: [
-      {
-        title: 'Speed up receivables follow-up cadence',
-        revenueIncrease: '—',
-        profitIncrease: '—',
-        cost: 'Low',
-        roi: 'High',
-        time: '1 week',
-        confidence: 'High',
-        priority: 'Immediate',
-        status: 'Ready for approval',
-        reviewDate: 'Friday',
-        category: 'Cash Flow',
-        description: 'A tighter collections rhythm is likely to pull forward £6.0k–£8.0k in cash without reducing growth activity.'
-      },
-      {
-        title: 'Renegotiate one high-cost supplier relationship',
-        revenueIncrease: '—',
-        profitIncrease: '£1.2k/month',
-        cost: 'Low',
-        roi: 'Medium–High',
-        time: '2–4 weeks',
-        confidence: 'Medium',
-        priority: 'High',
-        status: 'Under review',
-        reviewDate: 'Next Monday',
-        category: 'Profit',
-        description: 'Supplier spend suggests room to improve unit economics or payment terms without disrupting service quality.'
-      },
-      {
-        title: 'Reduce low-yield discretionary operating spend',
-        revenueIncrease: '—',
-        profitIncrease: '£900/month',
-        cost: 'None',
-        roi: 'High',
-        time: '2 weeks',
-        confidence: 'Medium',
-        priority: 'High',
-        status: 'Requires decision',
-        reviewDate: 'Wednesday',
-        category: 'Cost Saving',
-        description: 'Travel and ad hoc support costs appear to have expanded faster than their clear commercial return.'
-      }
-    ],
-    risks: [
-      {
-        level: 'High',
-        impact: '£6k–£8k cash timing pressure',
-        probability: 'Medium',
-        mitigation: 'Escalate overdue follow-up and set explicit collection dates.',
-        owner: 'CFO',
-        reviewDate: 'This week',
-        trend: 'Worsening',
-        commentary: 'Receivables concentration is a real but manageable control issue. The risk is not lack of demand; it is timing discipline.'
-      },
-      {
-        level: 'Medium',
-        impact: '£1k–£2k monthly margin erosion',
-        probability: 'Medium',
-        mitigation: 'Review supplier contribution by category before next buying cycle.',
-        owner: 'CFO / COO',
-        reviewDate: 'Next Sunday',
-        trend: 'Stable',
-        commentary: 'Supplier cost inflation is not yet dangerous, but it is becoming strategically meaningful.'
-      },
-      {
-        level: 'Medium',
-        impact: 'Forecast confidence reduction',
-        probability: 'Low–Medium',
-        mitigation: 'Tighten VAT and invoice capture workflow.',
-        owner: 'Finance Ops',
-        reviewDate: 'Month end',
-        trend: 'Improving',
-        commentary: 'Data quality is good enough for confident direction, but not perfect enough to be ignored.'
-      }
-    ],
-    approvals: {
-      Accounting: [
-        {
-          title: 'Approve supplier payment batch',
-          why: 'Three invoices fall due this week including fitting bay consumables.',
-          impact: 'Maintains supplier continuity but reduces near-term cash headroom.',
-          risk: 'Low–Medium',
-          confidence: 'High'
-        }
-      ],
-      Invoices: [
-        {
-          title: 'Approve overdue invoice escalation plan',
-          why: 'Passive reminders are no longer enough for the overdue balance.',
-          impact: 'Likely positive cash acceleration with minimal operational downside.',
-          risk: 'Low',
-          confidence: 'High'
-        }
-      ],
-      Bills: [
-        {
-          title: 'Approve staged payment timing review',
-          why: 'Some bills can be sequenced more intelligently against incoming cash.',
-          impact: 'Improves cash timing without damaging supplier trust if managed carefully.',
-          risk: 'Medium',
-          confidence: 'Medium'
-        }
-      ],
-      Categorisation: [
-        {
-          title: 'Approve contractor spend reclassification',
-          why: 'Current coding obscures whether spend is growth support or general overhead.',
-          impact: 'Improves forecasting quality and cost-centre clarity.',
-          risk: 'Low',
-          confidence: 'Medium'
-        }
-      ],
-      Recommendations: [
-        {
-          title: 'Approve supplier negotiation proposal',
-          why: 'One supplier line is growing faster than profit contribution.',
-          impact: 'Potential £1.2k monthly margin improvement.',
-          risk: 'Medium',
-          confidence: 'Medium'
-        }
-      ],
-      'Forecast assumptions': [
-        {
-          title: 'Approve conservative Q3 growth assumption',
-          why: 'The current forecast assumes stable demand but tighter margin conversion.',
-          impact: 'Leads to more prudent cash and profit planning.',
-          risk: 'Low',
-          confidence: 'Medium–High'
-        }
-      ]
-    },
-    chat: [
-      {
-        question: 'Why has profit changed?',
-        answer:
-          'Profit softened because cost growth has been faster than margin expansion. Revenue is up, but supplier and fulfilment costs have eaten into the gain. That matters because good top-line momentum can otherwise create false confidence.'
-      },
-      {
-        question: 'Can I afford another GCQuad?',
-        answer:
-          'On placeholder numbers, potentially yes — but only as a deliberate investment decision. I would want to test cash headroom, payback period, expected fitting uplift, and whether current receivables timing makes this month the right moment.'
-      },
-      {
-        question: 'What should I focus on this week?',
-        answer:
-          'This week I would focus on invoice collection speed, supplier margin discipline, and controlled discretionary spend. Those three levers offer the strongest control benefit with the least disruption.'
-      },
-      {
-        question: 'Which suppliers cost the most?',
-        answer:
-          'In this demo environment, the largest supplier line is launch monitor inventory at £8.7k this month. The more useful next question is whether that spend is aligned to profitable demand and the right payment timing.'
-      },
-      {
-        question: "Forecast next month's profit.",
-        answer:
-          'Using placeholder assumptions, next month’s profit looks stable to slightly improved if collections normalise and supplier cost growth slows. If current expense drift continues, profit likely flattens rather than grows.'
-      }
-    ],
-    charts: {
-      revenueMonthly: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        values: [34, 37, 39, 41, 43, 44, 47]
-      },
-      revenuePaymentMethods: {
-        labels: ['Card', 'Bank Transfer', 'Finance', 'Cash'],
-        values: [54, 24, 17, 5]
-      },
-      revenueInvoiceStatus: {
-        labels: ['Paid', 'Pending', 'Overdue'],
-        values: [72, 18, 10]
-      },
-      profitTrend: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        values: [8.4, 9.2, 10.1, 10.5, 11.1, 12.0, 11.6]
-      },
-      expenseTrend: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        values: [18.2, 19.1, 20.0, 21.0, 22.4, 23.1, 24.9]
-      },
-      supplierTrend: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        values: [5.4, 5.1, 5.9, 6.3, 7.0, 8.0, 8.7]
-      },
-      cashForecast: {
-        labels: ['Now', '30d', '60d', '90d'],
-        values: [28, 21, 24, 26]
-      },
-      historicalScores: {
-        labels: ['Q4', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        values: [76, 77, 78, 79, 80, 81, 82, 84]
-      }
-    },
-    suppliers: [
-      {
-        id: 'foresight-sports',
-        name: 'Foresight Sports',
-        spendMonth: '£8.7k',
-        spendYtd: '£41.2k',
-        spendLastYear: '£33.6k',
-        yoy: '+22.6%',
-        avgInvoice: '£2.2k',
-        invoices: '4',
-        lastPayment: '2026-07-01',
-        category: 'Launch Monitors',
-        risk: 'Medium',
-        opportunity: 'Payment terms review + bundle pricing check'
-      },
-      {
-        id: 'titleist-pro-v1',
-        name: 'Titleist Trade',
-        spendMonth: '£5.2k',
-        spendYtd: '£28.7k',
-        spendLastYear: '£25.4k',
-        yoy: '+13.0%',
-        avgInvoice: '£1.3k',
-        invoices: '8',
-        lastPayment: '2026-06-27',
-        category: 'Retail Stock',
-        risk: 'Low',
-        opportunity: 'Margin mix review on premium stock lines'
-      },
-      {
-        id: 'trackman-services',
-        name: 'Trackman Services',
-        spendMonth: '£3.8k',
-        spendYtd: '£19.9k',
-        spendLastYear: '£16.1k',
-        yoy: '+23.6%',
-        avgInvoice: '£1.9k',
-        invoices: '3',
-        lastPayment: '2026-06-18',
-        category: 'Subscriptions & Support',
-        risk: 'Medium',
-        opportunity: 'Usage and contract alignment review'
-      }
-    ],
-    decisionJournal: [
-      {
-        id: 'DJ-017',
-        date: '2026-07-03',
-        executive: 'CFO',
-        recommendation: 'Escalate overdue receivable follow-up on four concentrated invoices.',
-        reasoning: 'Cash flexibility is being constrained by a small number of slow-paying balances.',
-        evidence: '£9.4k outstanding, 4 invoices overdue, 30-day cash forecast dependent on collections.',
-        alternatives: 'Wait another week; stage payment sequencing instead.',
-        decision: 'Pending approval',
-        outcome: 'Awaiting decision',
-        impact: 'Potential £6k–£8k cash acceleration',
-        confidence: 'High',
-        lessons: 'Collections cadence should tighten before balances become concentrated.',
-        reviewDate: '2026-07-10',
-        status: 'Pending'
-      },
-      {
-        id: 'DJ-016',
-        date: '2026-06-29',
-        executive: 'CFO',
-        recommendation: 'Review one major supplier relationship for margin protection.',
-        reasoning: 'Supplier spend has risen faster than gross profit contribution.',
-        evidence: 'Largest supplier line up +22.6% YoY, margin softening 3.1% month on month.',
-        alternatives: 'Absorb cost; pass through selectively; reduce order volume.',
-        decision: 'Approved',
-        outcome: 'Negotiation prep underway',
-        impact: 'Estimated £1.2k monthly margin upside',
-        confidence: 'Medium',
-        lessons: 'Supplier concentration should be reviewed before it becomes embedded.',
-        reviewDate: '2026-07-21',
-        status: 'Active'
-      },
-      {
-        id: 'DJ-015',
-        date: '2026-06-18',
-        executive: 'CFO',
-        recommendation: 'Hold discretionary support costs flat for one cycle.',
-        reasoning: 'Contractor and support spend drifted above the planned baseline.',
-        evidence: 'Expense trend up 6.8% with unclear operating return on part of spend.',
-        alternatives: 'Immediate reduction; continue unchanged; reclassify first.',
-        decision: 'Approved',
-        outcome: 'Expense drift stabilised',
-        impact: 'Avoided roughly £900 monthly cost escalation',
-        confidence: 'Medium',
-        lessons: 'Small discretionary lines need explicit ownership before they compound.',
-        reviewDate: '2026-08-01',
-        status: 'Reviewed'
-      }
-    ],
-    weeklyBriefing: {
-      summary:
-        'EP Golf Studios enters the week from a position of financial strength, but margin quality and collections speed remain the most important control levers for protecting strategic flexibility.',
-      wins: [
-        'Revenue remains ahead of the recent baseline.',
-        'Cash headroom is healthy enough to avoid reactive decisions.',
-        'Expense drift is visible early, which means it can still be managed calmly.'
-      ],
-      risks: [
-        'Receivables timing remains too concentrated.',
-        'Supplier spend is growing faster than comfort allows.',
-        'Forecast confidence is slightly constrained by incomplete categorisation clarity.'
-      ],
-      recommendations: [
-        'Approve overdue receivables escalation plan.',
-        'Pressure-test the biggest supplier line before the next purchasing cycle.',
-        'Hold discretionary operating spend steady until profit quality improves.'
-      ],
-      questions: [
-        'Which current spend lines are genuinely strategic versus merely habitual?',
-        'If growth remains strong but margin weakens, what should be slowed first?',
-        'What assumptions in the 30/60/90 day cash view need the closest challenge?' 
-      ]
-    },
-    futureIntegrations: [
-      'CMO Workspace',
-      'COO Workspace',
-      'CEO Workspace',
-      'Bookings Dashboard',
-      'CRM',
-      'Inventory',
-      'HR',
-      'Payroll',
-      'Google Analytics',
-      'Gmail',
-      'Calendar',
-      'Customer Portal'
-    ]
+  navQuery: '',
+  commandQuery: '',
+  commandOpen: false,
+  theme: 'dark',
+  sidebarCollapsed: false,
+  sidebarOpen: false,
+  favourites: ['supplier-spend', 'cash-flow', 'weekly-briefings'],
+  recent: ['workspace', 'supplier-spend', 'cash-flow'],
+  loading: false
+};
+
+const questionSets = {
+  workspace: {
+    what: ['Revenue is healthy, profit is slightly tighter', 'The business is growing, but the quality of that growth matters more than volume alone.'],
+    why: ['Supplier and support costs rose faster than ideal', 'Supplier concentration and expense drift have moderated how much confidence top-line growth should create.'],
+    matters: ['Yes — it affects flexibility', 'The business remains strong, but weaker margin conversion reduces room for casual decisions.'],
+    next: ['Prioritise collections and margin control', 'The best next decisions are around receivables, supplier discipline, and selective spend restraint.']
+  },
+  revenue: {
+    what: ['Revenue is trending up', 'Revenue is ahead of both recent months and the placeholder prior-year baseline.'],
+    why: ['Demand and conversion improved', 'Fitting demand appears stronger and premium conversion is supporting basket quality.'],
+    matters: ['Yes, if margin quality holds', 'Top-line growth only matters strategically if it improves profit and cash rather than hiding cost inflation.'],
+    next: ['Track mix and booking quality', 'Compare revenue growth against gross margin, collections, and future bookings confidence.']
+  },
+  profit: {
+    what: ['Profit softened slightly', 'Top-line growth has not fully translated into stronger net output this month.'],
+    why: ['Costs rose faster than ideal', 'Supplier, fulfilment, and discretionary operating costs compressed the gain.'],
+    matters: ['Yes, because it changes confidence', 'Good revenue can still leave less room for investment if margin quality weakens.'],
+    next: ['Defend margin quality', 'Review cost centres, supplier leverage, and discretionary spend before approving new commitments.']
+  },
+  expenses: {
+    what: ['Expenses are trending upward', 'Spend remains controllable, but variable lines are rising faster than the original baseline.'],
+    why: ['Activity and support costs expanded', 'Contractor, travel, and supplier-related spend rose alongside commercial activity.'],
+    matters: ['Yes, because profit conversion depends on it', 'Expenses only become strategic when they outpace the return created by revenue growth.'],
+    next: ['Separate strategic spend from drift', 'Keep valuable spend, but remove lines that lack a clear return or owner.']
+  },
+  'supplier-spend': {
+    what: ['Supplier spend is rising and concentrated', 'A small number of suppliers now account for a meaningful share of cash outflow and margin pressure.'],
+    why: ['Growth and inventory choices lifted exposure', 'The current pattern may be rational, but it has not all been pressure-tested recently.'],
+    matters: ['Yes, because supplier leverage shapes margin and cash', 'The issue is not just cost — it is dependency, timing, and bargaining power.'],
+    next: ['Review top suppliers one by one', 'Decide where terms, volumes, or payment timing should be challenged rather than inherited.']
+  },
+  'cash-flow': {
+    what: ['Cash is healthy but timing matters', 'There is no immediate liquidity stress, but short-term flexibility still depends on planned receipts landing.'],
+    why: ['Receivables concentration remains a factor', 'Strong inflows are offset by a handful of overdue balances and planned outgoing supplier payments.'],
+    matters: ['Yes, because timing changes decision freedom', 'Healthy cash without good timing discipline can still force weaker decisions than necessary.'],
+    next: ['Protect timing and challenge assumptions', 'Pressure-test receivables, staged payables, and forecast assumptions for the next 90 days.']
+  },
+  vat: {
+    what: ['VAT looks provisioned', 'The estimate is not alarming and appears covered in the short-term plan.'],
+    why: ['Trading remains healthy and the liability is stable', 'The forecast moves mainly with revenue and purchase record completeness.'],
+    matters: ['Yes, because confidence matters as much as the amount', 'A manageable liability can still become disruptive if record quality slips.'],
+    next: ['Tighten record capture confidence', 'Keep purchase-side discipline high ahead of the next filing cycle.']
+  },
+  forecasting: {
+    what: ['Forecasts are positive but assumption-sensitive', 'The current outlook is constructive under a controlled set of placeholder assumptions.'],
+    why: ['Demand is stable and cash is healthy', 'A small number of assumptions still drive most of the model: collections speed, supplier costs, and discretionary expense control.'],
+    matters: ['Yes, because forecast quality shapes confidence', 'The right forecast improves timing, investment discipline, and approval quality.'],
+    next: ['Challenge assumptions, not just outputs', 'The best use of the page is to test what could break the plan and what could improve it.']
+  },
+  'business-kpis': {
+    what: ['KPIs are broadly healthy', 'Core revenue, profit, and cash KPIs support confidence, with working-capital watchpoints still visible.'],
+    why: ['Growth stayed positive and governance stayed tight', 'The score is rising because cash resilience and growth quality improved while controls remained strong.'],
+    matters: ['Yes, because KPIs shape the health score', 'The KPI layer helps explain the business in aggregate before leadership goes deeper.'],
+    next: ['Use KPIs to guide deeper reviews', 'Follow the KPI signals into supplier, cash-flow, and approval pages rather than stopping at the surface.']
+  },
+  'decision-journal': {
+    what: ['Recommendations are becoming a reusable knowledge base', 'The journal shows what was recommended, what was decided, and what happened next.'],
+    why: ['The platform is built to learn from decisions', 'Executive quality improves when outcomes and lessons are preserved, not forgotten.'],
+    matters: ['Yes, because memory compounds quality', 'The Decision Journal becomes one of the most valuable assets once it builds history.'],
+    next: ['Review, search, and revisit decisions', 'Use the journal to question assumptions and surface recommendations worth revisiting.']
+  },
+  'weekly-briefings': {
+    what: ['The weekly briefing frames the board conversation', 'It condenses the business into what matters most this week, not just what happened.'],
+    why: ['Leaders need a decision-focused Sunday view', 'The right briefing reduces noise and creates alignment before the week begins.'],
+    matters: ['Yes, because cadence shapes quality', 'A strong weekly briefing is how the executive operating system becomes habitual.'],
+    next: ['Use the page like a board paper', 'Review wins, risks, forecasts, approvals, and the questions worth asking before action is taken.']
+  },
+  'approval-centre': {
+    what: ['Approvals are grouped by decision type', 'Accounting, invoices, bills, categorisation, recommendations, and forecast assumptions all sit in one governed view.'],
+    why: ['Approval-first design protects the business', 'The workspace is built to stage decisions before any future automation exists.'],
+    matters: ['Yes, because governance quality is strategic', 'Approval design is one of the clearest ways to preserve control as the platform grows.'],
+    next: ['Prioritise high-impact approvals', 'Start with the approvals that most affect cash, margin, and forecast confidence.']
+  },
+  settings: {
+    what: ['Settings define the future operating model', 'This page shows the future control surface for integrations, personas, and preferences.'],
+    why: ['Good configuration is part of good governance', 'Executive systems should be explainable and controllable as they scale.'],
+    matters: ['Yes, because future integrations need safe defaults', 'Architecture quality now reduces risk when live systems are connected later.'],
+    next: ['Prepare for future integration', 'Keep the settings model clear, modular, and executive-readable before anything live is connected.']
+  },
+  'financial-health': {
+    what: ['The score improved', 'The Financial Health Score rose because revenue resilience and cash stability improved.'],
+    why: ['Cash and growth quality were the main contributors', 'Margin was slightly softer, but the broader balance still improved overall.'],
+    matters: ['Yes, because the score helps orient leadership', 'The score is useful as a summary — provided the weighting and logic remain transparent.'],
+    next: ['Treat the score as guidance, not an answer', 'Use the score to direct attention, then examine the pages beneath it.']
+  },
+  'opportunity-register': {
+    what: ['The register captures practical upside', 'Each opportunity is written as an executive decision rather than an abstract idea.'],
+    why: ['The best opportunities sit between insight and timing', 'Clear structure helps leadership choose which upside matters now versus later.'],
+    matters: ['Yes, because not all opportunities deserve the same attention', 'The register prevents good ideas from being lost or over-valued.'],
+    next: ['Prioritise by ROI, timing, and confidence', 'Use the register to decide what deserves action, review, or deferment.']
+  },
+  'risk-register': {
+    what: ['The register captures the real business watchpoints', 'Risk is expressed in operational and financial terms rather than vague caution.'],
+    why: ['Executive calm requires explicit ownership', 'A clear register prevents known risks from becoming recurring surprises.'],
+    matters: ['Yes, because risk visibility improves decision quality', 'Known risk with a plan is different from unseen risk with false confidence.'],
+    next: ['Review mitigation quality regularly', 'Treat the risk register as a living document rather than a one-time report.']
+  },
+  'quarterly-review': {
+    what: ['The quarterly review consolidates what changed', 'It captures business performance, accepted recommendations, lessons learned, and the next quarter’s opportunities.'],
+    why: ['Quarterly rhythm supports strategic memory', 'A prepared board paper helps leadership see patterns beyond weekly noise.'],
+    matters: ['Yes, because the platform should improve over time', 'Quarterly review is where tactical activity becomes strategic learning.'],
+    next: ['Use it to revisit decisions', 'Challenge which accepted, rejected, and pending ideas still make sense under current conditions.']
   }
 };
 
-const pageContent = document.getElementById('page-content');
-const pageTitle = document.getElementById('page-title');
-const pageSubtitle = document.getElementById('page-subtitle');
-const breadcrumb = document.getElementById('breadcrumb');
-const primaryNav = document.getElementById('primary-nav');
-const secondaryNav = document.getElementById('secondary-nav');
-const modeSwitcher = document.getElementById('mode-switcher');
-
-const PAGE_META = {
-  workspace: {
-    title: 'CFO Workspace',
-    subtitle: 'A conversational executive homepage for day-to-day financial management.'
-  },
-  revenue: { title: 'Revenue', subtitle: 'Revenue performance, mix, forecasts, and booking pipeline context.' },
-  profit: { title: 'Profit', subtitle: 'Margin quality, cost pressure, and profitability decisions.' },
-  expenses: { title: 'Expenses', subtitle: 'Expense discipline, categories, and operating cost insight.' },
-  'supplier-spend': { title: 'Supplier Spend', subtitle: 'Supplier concentration, risk, opportunity, and drill-down placeholders.' },
-  'cash-flow': { title: 'Cash Flow', subtitle: 'Liquidity strength, cash runway, and forecast risk.' },
-  vat: { title: 'VAT', subtitle: 'Estimated position, timing, forecast, and confidence level.' },
-  forecasting: { title: 'Forecasting', subtitle: 'Executive forecasting workspace with scenarios and investment thinking.' },
-  'business-kpis': { title: 'Business KPIs', subtitle: 'Cross-business KPI framework with context, not just numbers.' },
-  'approval-centre': { title: 'Approval Centre', subtitle: 'Approval-first decisions grouped by type and risk.' },
-  'decision-journal': { title: 'Decision Journal', subtitle: 'Searchable timeline of recommendations, approvals, outcomes, and lessons.' },
-  'weekly-briefings': { title: 'Weekly Briefings', subtitle: 'Sunday executive briefing presented like a board paper.' },
-  settings: { title: 'Settings', subtitle: 'Future controls for integrations, personas, preferences, and governance.' },
-  'financial-health': { title: 'Financial Health Score', subtitle: 'A transparent breakdown of the score, weightings, and how it changed.' },
-  'opportunity-register': { title: 'Opportunity Register', subtitle: 'A permanent register of financial and strategic upside.' },
-  'risk-register': { title: 'Risk Register', subtitle: 'A living document of business risks, mitigations, and review cadence.' },
-  'quarterly-review': { title: 'Quarterly Executive Review', subtitle: 'A board-style quarterly review pack for what changed and what matters next.' }
-};
-
-function pill(text, tone = 'neutral') {
-  return `<span class="pill ${tone}">${text}</span>`;
+function saveState() {
+  const snapshot = {
+    page: state.page,
+    mode: state.mode,
+    theme: state.theme,
+    sidebarCollapsed: state.sidebarCollapsed,
+    favourites: state.favourites,
+    recent: state.recent
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
 }
 
-function escapeAttr(text) {
-  return String(text).replace(/"/g, '&quot;');
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw);
+    Object.assign(state, parsed);
+  } catch {}
 }
 
-function lineChart({ labels, values, suffix = '', color = '#7dd3fc' }) {
-  const width = 640;
-  const height = 220;
-  const padding = 24;
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const range = max - min || 1;
-
-  const points = values.map((value, index) => {
-    const x = padding + (index * (width - padding * 2)) / Math.max(values.length - 1, 1);
-    const y = height - padding - ((value - min) / range) * (height - padding * 2);
-    return { x, y, value };
-  });
-
-  const polyline = points.map((p) => `${p.x},${p.y}`).join(' ');
-  const area = `${padding},${height - padding} ${polyline} ${width - padding},${height - padding}`;
-
-  return `
-    <div class="chart-shell">
-      <svg class="chart-svg" viewBox="0 0 ${width} ${height}" fill="none" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="area-${Math.random().toString(36).slice(2)}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${color}" stop-opacity="0.35"></stop>
-            <stop offset="100%" stop-color="${color}" stop-opacity="0"></stop>
-          </linearGradient>
-        </defs>
-        <path d="M ${padding} ${height - padding} L ${polyline} L ${width - padding} ${height - padding} Z" fill="rgba(125, 211, 252, 0.10)"></path>
-        <polyline points="${polyline}" stroke="${color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
-        ${points
-          .map((p) => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="${color}"></circle>`)
-          .join('')}
-      </svg>
-      <div class="axis-labels">${labels.map((label) => `<span>${label}</span>`).join('')}</div>
-      <div class="meta muted">Latest: ${values[values.length - 1]}${suffix}</div>
-    </div>
-  `;
+function setTheme(theme) {
+  state.theme = theme;
+  document.body.dataset.theme = theme;
+  updateThemeButton();
+  saveState();
 }
 
-function barChart({ labels, values, suffix = '', color = '#38bdf8' }) {
-  const max = Math.max(...values) || 1;
-  return `
-    <div class="chart-shell">
-      <div style="display:grid; gap:10px;">
-        ${values
-          .map(
-            (value, index) => `
-              <div>
-                <div class="meta-row" style="justify-content:space-between; margin-bottom:6px;">
-                  <span class="muted">${labels[index]}</span>
-                  <strong>${value}${suffix}</strong>
-                </div>
-                <div style="height:10px; border-radius:999px; background:rgba(255,255,255,0.05); overflow:hidden;">
-                  <div style="height:100%; width:${(value / max) * 100}%; background:${color}; border-radius:999px;"></div>
-                </div>
-              </div>
-            `
-          )
-          .join('')}
-      </div>
-    </div>
-  `;
+function updateThemeButton() {
+  themeToggle.innerHTML = `${icon('moon')}<span class="visually-hidden">Toggle theme</span>`;
+  themeToggle.title = state.theme === 'dark' ? 'Switch to midnight theme' : 'Switch to dark theme';
 }
 
-function executiveQuestions(data) {
-  return `
-    <section class="panel">
-      <div class="panel-heading compact">
-        <div>
-          <div class="eyebrow">Executive Intelligence</div>
-          <h3>The four questions this page answers</h3>
-        </div>
-      </div>
-      <div class="executive-questions">
-        <div class="question-card"><div class="label">What happened?</div><h4>${data.what}</h4><p>${data.whatText}</p></div>
-        <div class="question-card"><div class="label">Why did it happen?</div><h4>${data.why}</h4><p>${data.whyText}</p></div>
-        <div class="question-card"><div class="label">Does it matter?</div><h4>${data.matters}</h4><p>${data.mattersText}</p></div>
-        <div class="question-card"><div class="label">What should I do next?</div><h4>${data.next}</h4><p>${data.nextText}</p></div>
-      </div>
-    </section>
-  `;
+function visiblePages() {
+  return [...NAV_PRIMARY, ...NAV_SECONDARY].filter(([, label]) => label.toLowerCase().includes(state.navQuery.toLowerCase()));
 }
 
-function commentaryCard(title, entry) {
-  return `
-    <section class="panel commentary-card">
-      <div class="panel-heading compact">
-        <div>
-          <div class="eyebrow">AI Commentary Standard</div>
-          <h3>${title}</h3>
-        </div>
-        ${pill(`${entry.confidence} confidence`, entry.confidence.includes('High') ? 'good' : 'warn')}
-      </div>
-      <div class="commentary-grid">
-        <div class="commentary-card"><div class="label">Executive Summary</div><h4>${entry.summary}</h4></div>
-        <div class="commentary-card"><div class="label">Supporting Evidence</div><p>${entry.evidence}</p></div>
-        <div class="commentary-card"><div class="label">Financial Impact</div><p>${entry.impact}</p></div>
-        <div class="commentary-card"><div class="label">Risks</div><p>${entry.risks}</p></div>
-        <div class="commentary-card"><div class="label">Alternative Options</div><p>${entry.alternatives}</p></div>
-        <div class="commentary-card"><div class="label">Recommended Action</div><p>${entry.action}</p></div>
-        <div class="commentary-card" style="grid-column:1 / -1;"><div class="label">Missing Information</div><p>${entry.missing}</p></div>
-      </div>
-    </section>
-  `;
+function updateRecent(page) {
+  state.recent = [page, ...state.recent.filter((item) => item !== page)].slice(0, 6);
 }
 
-function renderNav(container, items) {
-  container.innerHTML = items
-    .map(([id, label]) => {
-      const meta = PAGE_META[id];
-      const active = appState.currentPage === id && appState.mode === 'workspace';
-      return `<a href="#${id}" class="nav-link ${active ? 'active' : ''}" data-page="${id}"><span>${label}</span><small>→</small></a>`;
-    })
-    .join('');
-
-  container.querySelectorAll('[data-page]').forEach((node) => {
-    node.addEventListener('click', (event) => {
-      event.preventDefault();
-      setMode('workspace');
-      setPage(node.dataset.page);
-    });
-  });
+function toggleFavourite(page) {
+  if (state.favourites.includes(page)) {
+    state.favourites = state.favourites.filter((item) => item !== page);
+  } else {
+    state.favourites = [page, ...state.favourites].slice(0, 6);
+  }
+  saveState();
+  renderSidebarMeta();
 }
 
-function renderModeSwitcher() {
-  modeSwitcher.innerHTML = ['workspace', 'board']
-    .map(
-      (mode) => `<button class="mode-button ${appState.mode === mode ? 'active' : ''}" data-mode="${mode}">${
-        mode === 'workspace' ? 'Workspace' : 'Board Meeting'
-      }</button>`
-    )
-    .join('');
-
-  modeSwitcher.querySelectorAll('[data-mode]').forEach((button) => {
-    button.addEventListener('click', () => setMode(button.dataset.mode));
-  });
-}
-
-function setPage(page) {
-  appState.currentPage = page;
+function setPage(page, { withLoading = true } = {}) {
+  state.page = page;
+  state.mode = state.mode || 'workspace';
+  updateRecent(page);
   syncUrl();
-  render();
+  saveState();
+  if (window.innerWidth <= 1080) {
+    state.sidebarOpen = false;
+    appShell.classList.remove('sidebar-open');
+  }
+  withLoading ? renderWithSkeleton() : render();
 }
 
-function setMode(mode) {
-  appState.mode = mode;
+function setMode(mode, { withLoading = false } = {}) {
+  state.mode = mode;
   syncUrl();
-  render();
+  saveState();
+  withLoading ? renderWithSkeleton() : render();
 }
 
 function syncUrl() {
   const params = new URLSearchParams(window.location.search);
-  params.set('page', appState.currentPage);
-  params.set('mode', appState.mode);
-  window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+  params.set('page', state.page);
+  params.set('mode', state.mode);
+  history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
 }
 
 function loadFromUrl() {
@@ -649,888 +248,938 @@ function loadFromUrl() {
   const page = params.get('page');
   const mode = params.get('mode');
   const validPages = new Set([...NAV_PRIMARY, ...NAV_SECONDARY].map(([id]) => id));
-  if (validPages.has(page)) appState.currentPage = page;
-  if (mode === 'workspace' || mode === 'board') appState.mode = mode;
+  if (validPages.has(page)) state.page = page;
+  if (mode === 'board' || mode === 'workspace') state.mode = mode;
 }
 
-function statsGrid(items) {
-  return `<div class="metric-grid">${items
-    .map(
-      (item) => `
-      <button class="metric-button ${appState.activeMetric === item.key ? 'active' : ''}" data-metric="${item.key}">
-        <div class="label">${item.label}</div>
-        <strong>${item.value}</strong>
-        <p>${item.trend}</p>
-      </button>
-    `
-    )
-    .join('')}</div>`;
+function renderSidebarMeta() {
+  sidebarFavourites.innerHTML = state.favourites
+    .map((page) => {
+      const meta = PAGE_META[page];
+      return `<button type="button" class="sidebar-chip" data-chip-page="${page}">${icon('star')}${escapeHtml(meta.title)}</button>`;
+    })
+    .join('');
+
+  sidebarRecent.innerHTML = state.recent
+    .map((page) => {
+      const meta = PAGE_META[page];
+      return `<button type="button" class="sidebar-chip" data-chip-page="${page}">${icon('arrowRight')}${escapeHtml(meta.title)}</button>`;
+    })
+    .join('');
+
+  document.querySelectorAll('[data-chip-page]').forEach((button) => {
+    button.addEventListener('click', () => setPage(button.dataset.chipPage));
+  });
 }
 
-function workspacePage() {
-  const metric = appState.data.metrics.find((item) => item.key === appState.activeMetric) || appState.data.metrics[0];
-  return `
-    <div class="page-grid">
-      <section class="hero">
-        <div class="panel">
-          <div class="eyebrow">Good morning, Kane.</div>
-          <div class="hero-title">Your CFO is ready.</div>
-          <p class="hero-summary">${appState.data.welcome.summary}</p>
-          <div class="page-note" style="margin-top:16px;">
-            <div class="label">Current status summary</div>
-            <h4>${appState.data.welcome.label}</h4>
-            <p>${appState.data.welcome.narrative}</p>
-          </div>
-        </div>
-        <div class="hero-side">
-          <div class="score-tile">
-            <div class="label">Financial Health Score</div>
-            <strong>${appState.data.welcome.score}</strong>
-            <small>${appState.data.welcome.trend}</small>
-          </div>
-          <div class="panel">
-            <div class="label">One-sentence health view</div>
-            <p>${appState.data.welcome.narrative}</p>
-          </div>
-        </div>
-      </section>
+function renderSidebar() {
+  const pages = visiblePages();
+  primaryNav.innerHTML = pages
+    .filter(([id]) => NAV_PRIMARY.some(([navId]) => navId === id))
+    .map(([id, label, iconName]) => navLink({ id, label, iconName, active: state.mode === 'workspace' && state.page === id, favourite: state.favourites.includes(id) }))
+    .join('');
 
-      <section class="panel">
-        <div class="panel-heading">
-          <div>
-            <div class="eyebrow">Executive Summary</div>
-            <h3>What matters right now</h3>
-          </div>
-          <p>Every number is explained in the language of decisions, not accounting administration.</p>
-        </div>
-        ${statsGrid(appState.data.metrics)}
-        <div class="drilldown-card">
-          <div class="label">CFO Readout</div>
-          <h4>${metric.label}</h4>
-          <p>${metric.detail}</p>
-        </div>
-      </section>
+  secondaryNav.innerHTML = pages
+    .filter(([id]) => NAV_SECONDARY.some(([navId]) => navId === id))
+    .map(([id, label, iconName]) => navLink({ id, label, iconName, active: state.mode === 'workspace' && state.page === id, favourite: state.favourites.includes(id) }))
+    .join('');
 
-      ${executiveQuestions({
-        what: 'Revenue is healthy, profit is slightly tighter',
-        whatText: 'The business is growing, but the shape of that growth is more important than the volume alone.',
-        why: 'Cost pressure has risen faster than ideal',
-        whyText: 'Supplier concentration and expense drift have moderated the benefit of revenue growth.',
-        matters: 'Yes — it affects flexibility',
-        mattersText: 'The business is still healthy, but strategic room narrows if margin quality keeps slipping.',
-        next: 'Prioritise collections and margin control',
-        nextText: 'The best next decisions are around receivables, supplier discipline, and selective spend restraint.'
-      })}
-
-      <div class="grid-2">
-        <section class="panel">
-          <div class="panel-heading compact"><div><div class="eyebrow">My Priorities</div><h3>Top three CFO priorities</h3></div></div>
-          <div class="section-stack">
-            ${appState.data.priorities
-              .map(
-                (item, index) => `
-                  <div class="timeline-entry">
-                    <div class="tone-row"><strong>${index + 1}. ${item.title}</strong>${pill(item.tone === 'good' ? 'Positive' : item.tone === 'warn' ? 'Watch item' : 'Risk', item.tone)}</div>
-                    <p>${item.note}</p>
-                  </div>
-                `
-              )
-              .join('')}
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-heading compact"><div><div class="eyebrow">Weekly Briefing</div><h3>Sunday executive briefing preview</h3></div></div>
-          <div class="timeline-entry">
-            <strong>${appState.data.weeklyBriefing.summary}</strong>
-          </div>
-          <ul class="briefing-list">
-            ${appState.data.weeklyBriefing.recommendations.map((item) => `<li>${item}</li>`).join('')}
-          </ul>
-        </section>
-      </div>
-
-      <div class="grid-2">
-        <section class="panel">
-          <div class="panel-heading compact"><div><div class="eyebrow">Opportunities</div><h3>Where the CFO sees upside</h3></div></div>
-          <div class="opportunity-list">
-            ${appState.data.opportunities
-              .map(
-                (item) => `
-                  <div class="register-row">
-                    <div class="register-meta">${pill(item.category, 'info')}${pill(`${item.confidence} confidence`, item.confidence === 'High' ? 'good' : 'warn')}</div>
-                    <h4>${item.title}</h4>
-                    <p>${item.description}</p>
-                    <strong>${item.profitIncrease === '—' ? item.roi : item.profitIncrease}</strong>
-                  </div>
-                `
-              )
-              .join('')}
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-heading compact"><div><div class="eyebrow">Risks</div><h3>What needs watching</h3></div></div>
-          <div class="risk-list">
-            ${appState.data.risks
-              .map(
-                (item) => `
-                  <div class="register-row">
-                    <div class="register-meta">${pill(item.level, item.level === 'High' ? 'risk' : 'warn')}${pill(item.trend, item.trend === 'Improving' ? 'good' : item.trend === 'Stable' ? 'neutral' : 'warn')}</div>
-                    <h4>${item.impact}</h4>
-                    <p><strong>Reason:</strong> ${item.commentary}</p>
-                    <p><strong>Recommended mitigation:</strong> ${item.mitigation}</p>
-                  </div>
-                `
-              )
-              .join('')}
-          </div>
-        </section>
-      </div>
-
-      <section class="panel">
-        <div class="panel-heading"><div><div class="eyebrow">Approval Centre</div><h3>Actions waiting for approval</h3></div><p>Nothing executes automatically. The CFO always stages decisions first.</p></div>
-        <div class="approval-grid">
-          ${Object.entries(appState.data.approvals)
-            .slice(0, 4)
-            .map(
-              ([group, entries]) => `
-                <div class="approval-card">
-                  <div class="label">${group}</div>
-                  <h4>${entries[0].title}</h4>
-                  <p><strong>Why:</strong> ${entries[0].why}</p>
-                  <p><strong>Impact:</strong> ${entries[0].impact}</p>
-                  <div class="approval-meta">${pill(`Risk: ${entries[0].risk}`, entries[0].risk.includes('Low') ? 'good' : 'warn')}${pill(`Confidence: ${entries[0].confidence}`, 'info')}</div>
-                </div>
-              `
-            )
-            .join('')}
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-heading"><div><div class="eyebrow">Ask My CFO</div><h3>Natural-language finance workspace</h3></div><p>This sprint uses placeholder answers, but the interface is designed for real executive conversation.</p></div>
-        <div class="grid-2">
-          <div class="section-stack">
-            ${appState.data.chat
-              .map(
-                (entry, index) => `
-                  <button class="question-card ${index === appState.activeQuestion ? 'active' : ''}" data-question="${index}">
-                    <div class="label">Suggested prompt</div>
-                    <h4>${entry.question}</h4>
-                  </button>
-                `
-              )
-              .join('')}
-          </div>
-          <div class="section-stack">
-            <div class="question-card active">
-              <div class="label">Kane asks</div>
-              <h4>${appState.data.chat[appState.activeQuestion].question}</h4>
-            </div>
-            <div class="question-card">
-              <div class="label">CFO response</div>
-              <p>${appState.data.chat[appState.activeQuestion].answer}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  `;
-}
-
-function revenuePage() {
-  return `
-    <div class="page-grid">
-      <section class="panel">
-        <div class="panel-heading"><div><div class="eyebrow">Revenue</div><h3>Revenue performance and quality</h3></div><p>The page explains what changed, why it changed, and whether that growth is strategically useful.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Revenue this month</div><strong>£46.8k</strong><p>Strong month driven by fitting demand and accessory conversion.</p></div>
-          <div class="stat-card"><div class="label">Revenue vs last year</div><strong>+14.2%</strong><p>Healthy year-on-year growth without obvious discount-led distortion.</p></div>
-          <div class="stat-card"><div class="label">Revenue forecast</div><strong>£49.5k</strong><p>Assumes bookings remain stable and conversion quality holds.</p></div>
-          <div class="stat-card"><div class="label">Future bookings placeholder</div><strong>Bookings feed</strong><p>Future Bookings Dashboard integration will feed high-confidence pipeline here later.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({
-        what: 'Revenue is trending up',
-        whatText: 'Monthly revenue is ahead of both recent months and the implied prior-year baseline.',
-        why: 'Demand and conversion improved',
-        whyText: 'Fitting demand appears stronger and premium conversion is supporting basket quality.',
-        matters: 'Yes, if margin quality holds',
-        mattersText: 'Revenue growth matters only if it converts into profit and cash rather than masking cost inflation.',
-        next: 'Track mix and booking quality',
-        nextText: 'The best next step is to compare revenue growth against gross margin, collections, and booking intent.'
-      })}
-      <div class="chart-grid">
-        <section class="chart-card"><div class="label">Revenue trend chart</div><h4>Revenue by month</h4>${lineChart({ labels: appState.data.charts.revenueMonthly.labels, values: appState.data.charts.revenueMonthly.values, suffix: 'k' })}</section>
-        <section class="chart-card"><div class="label">Revenue mix</div><h4>Revenue by payment method</h4>${barChart({ labels: appState.data.charts.revenuePaymentMethods.labels, values: appState.data.charts.revenuePaymentMethods.values, suffix: '%' })}</section>
-        <section class="chart-card"><div class="label">Collection profile</div><h4>Revenue by invoice status</h4>${barChart({ labels: appState.data.charts.revenueInvoiceStatus.labels, values: appState.data.charts.revenueInvoiceStatus.values, suffix: '%' })}</section>
-      </div>
-      ${commentaryCard('Revenue AI Commentary', {
-        summary: 'Revenue is encouraging, but the important question is whether quality is improving alongside quantity.',
-        evidence: 'Monthly revenue +8.4%, YoY +14.2%, premium bookings and add-on conversion both up in placeholder data.',
-        confidence: 'High',
-        impact: 'Higher revenue supports flexibility, but only if gross margin and collection speed remain healthy.',
-        risks: 'Revenue could feel stronger than it is if supplier cost inflation or receivable slippage continues.',
-        alternatives: 'Push volume harder, protect premium mix, or slow lower-margin activity to improve profit conversion.',
-        action: 'Keep watching revenue mix, booking quality, and margin conversion before celebrating the top line too early.',
-        missing: 'Future bookings data and live attribution sources are not connected in this sprint.'
-      })}
-      <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Future integration placeholder</div><h3>Bookings Dashboard</h3></div></div><div class="integration-tile"><p>This area is reserved for the Future Bookings Dashboard so the CFO can connect demand pipeline with revenue forecasting and cash planning.</p></div></section>
-    </div>
-  `;
-}
-
-function profitPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Profit</div><h3>Margin quality and profitability</h3></div><p>This page turns profitability into decision language instead of static accounting output.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Gross profit</div><strong>£24.1k</strong><p>Gross profit remains healthy but is being pressured by supplier costs.</p></div>
-          <div class="stat-card"><div class="label">Net profit</div><strong>£11.6k</strong><p>Still strong, though slightly below last month’s level.</p></div>
-          <div class="stat-card"><div class="label">Gross margin</div><strong>51.5%</strong><p>Margin is acceptable but should improve if supplier terms tighten.</p></div>
-          <div class="stat-card"><div class="label">Net margin</div><strong>24.8%</strong><p>Net margin remains solid for the current growth stage.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({ what: 'Profit softened slightly', whatText: 'Top-line growth has not fully translated into stronger net output this month.', why: 'Costs rose faster than ideal', whyText: 'Supplier, fulfilment, and discretionary operating costs compressed the gain.', matters: 'Yes, because it changes confidence', mattersText: 'The business is still strong, but weaker conversion limits room for casual investment decisions.', next: 'Defend margin quality', nextText: 'Review cost centres, challenge supplier terms, and keep discretionary spend disciplined.' })}
-      <div class="chart-grid">
-        <section class="chart-card"><div class="label">Profit trend</div><h4>Monthly profit trend</h4>${lineChart({ labels: appState.data.charts.profitTrend.labels, values: appState.data.charts.profitTrend.values, suffix: 'k' })}</section>
-        <section class="chart-card"><div class="label">Cost centres</div><h4>Biggest cost centres</h4>${barChart({ labels: ['Suppliers', 'Team/Support', 'Rent', 'Software'], values: [42, 23, 19, 16], suffix: '%' })}</section>
-      </div>
-      ${commentaryCard('Profit AI Commentary', {
-        summary: 'Profit remains strong enough for confidence, but margin discipline is now more strategically important than further top-line celebration.',
-        evidence: 'Net profit down 3.1% month on month while supplier and support-related cost pressure increased.',
-        confidence: 'High',
-        impact: 'Sustained margin leakage would reduce reinvestment flexibility within one to two cycles.',
-        risks: 'Good revenue can disguise weakening unit economics if cost discipline is not visible enough.',
-        alternatives: 'Absorb pressure temporarily, cut selectively, or negotiate margin improvements upstream.',
-        action: 'Protect gross margin first, then challenge the biggest soft-cost lines before new investment decisions are made.',
-        missing: 'Live SKU, invoice, and supplier-level margin data is not connected yet.'
-      })}
-      <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Recommendations</div><h3>Ways to improve profitability</h3></div></div><div class="section-stack"><div class="register-row"><h4>Renegotiate one major supplier</h4><p>Potential £1.2k monthly margin improvement.</p></div><div class="register-row"><h4>Reduce low-yield discretionary costs</h4><p>Protects net profit without reducing growth capacity.</p></div><div class="register-row"><h4>Review premium service mix</h4><p>Higher-value booking conversion may widen margin faster than volume alone.</p></div></div></section>
-    </div>
-  `;
-}
-
-function expensesPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Expenses</div><h3>Operating cost intelligence</h3></div><p>Expense visibility should help prioritise decisions, not just explain where money went.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Monthly expenses</div><strong>£24.9k</strong><p>Expense growth is visible early enough to manage calmly.</p></div>
-          <div class="stat-card"><div class="label">Fixed vs variable</div><strong>58 / 42</strong><p>Fixed costs remain stable; variable costs need more attention.</p></div>
-          <div class="stat-card"><div class="label">Software subscriptions</div><strong>£1.4k</strong><p>Software is manageable but should be reviewed for overlap later.</p></div>
-          <div class="stat-card"><div class="label">Largest expense</div><strong>Inventory & supply</strong><p>Supplier-related spend remains the primary cost driver.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({ what: 'Expenses are trending upward', whatText: 'Spend is still under control, but variable lines are rising faster than the baseline plan.', why: 'Activity, support, and discretionary lines increased', whyText: 'Contractor, travel, and supplier-related costs rose alongside commercial activity.', matters: 'Yes, because profit conversion depends on it', mattersText: 'Expenses only matter strategically when they outpace the return generated by revenue growth.', next: 'Separate strategic spend from drift', nextText: 'Keep valuable spend, but remove spend that lacks a clear return or owner.' })}
-      <div class="chart-grid">
-        <section class="chart-card"><div class="label">Monthly trend</div><h4>Expense trend</h4>${lineChart({ labels: appState.data.charts.expenseTrend.labels, values: appState.data.charts.expenseTrend.values, suffix: 'k' })}</section>
-        <section class="chart-card"><div class="label">Expense categories</div><h4>Category mix</h4>${barChart({ labels: ['Suppliers', 'Support', 'Travel', 'Software', 'Premises'], values: [41, 21, 9, 14, 15], suffix: '%' })}</section>
-        <section class="chart-card"><div class="label">Largest expenses</div><h4>Current cost concentration</h4>${barChart({ labels: ['Inventory', 'Contractors', 'Rent', 'Tools'], values: [8.7, 3.1, 2.8, 1.4], suffix: 'k' })}</section>
-      </div>
-      ${commentaryCard('Expense AI Insights', {
-        summary: 'Expenses are not alarming, but several lines are growing more from habit than from intentional strategy.',
-        evidence: 'Monthly expense growth +6.8%, especially in contractor support and discretionary movement.',
-        confidence: 'Medium–High',
-        impact: 'Controlled action now can protect roughly £900+ monthly without reducing important growth work.',
-        risks: 'Overreacting could cut useful capability; underreacting could normalise avoidable leakage.',
-        alternatives: 'Freeze discretionary lines, reclassify before cutting, or protect only the spend tied to strong return.',
-        action: 'Review variable cost lines one by one and keep only the ones with a clear commercial or operational case.',
-        missing: 'Live invoice and subscription-level feeds will improve confidence later.'
-      })}
-    </div>
-  `;
-}
-
-function supplierSpendPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Supplier Spend</div><h3>Supplier concentration, leverage, and risk</h3></div><p>This is one of the strongest strategic pages because supplier behaviour shapes both margin and cash quality.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Spend this month</div><strong>£17.7k</strong><p>Concentrated in a small number of critical supplier relationships.</p></div>
-          <div class="stat-card"><div class="label">Spend year-to-date</div><strong>£89.8k</strong><p>Running ahead of the prior trajectory.</p></div>
-          <div class="stat-card"><div class="label">Spend last year</div><strong>£75.1k</strong><p>Used as the placeholder comparison base.</p></div>
-          <div class="stat-card"><div class="label">Year-on-year</div><strong>+19.6%</strong><p>Higher than the comfort zone if gross margin does not keep pace.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({ what: 'Supplier spend is rising and concentrated', whatText: 'A few suppliers account for a meaningful share of outgoing cash and margin pressure.', why: 'Inventory, support, and premium product positioning have lifted supplier exposure', whyText: 'The growth profile appears commercially rational, but not all of it has been pressure-tested recently.', matters: 'Yes, because supplier concentration shapes margin and liquidity', mattersText: 'The strategic issue is not just cost — it is dependency, payment timing, and bargaining power.', next: 'Review top suppliers one by one', nextText: 'Challenge whether the biggest suppliers are earning their share of spend and whether terms are still optimal.' })}
-      <div class="grid-3">
-        <section class="chart-card"><div class="label">Monthly trend</div><h4>Supplier spend trend</h4>${lineChart({ labels: appState.data.charts.supplierTrend.labels, values: appState.data.charts.supplierTrend.values, suffix: 'k' })}</section>
-        <section class="chart-card"><div class="label">Top spending categories</div><h4>Category mix</h4>${barChart({ labels: ['Launch Monitors', 'Retail Stock', 'Subscriptions', 'Consumables'], values: [39, 29, 19, 13], suffix: '%' })}</section>
-        <section class="chart-card"><div class="label">Supplier risk indicator</div><h4>Risk distribution</h4>${barChart({ labels: ['Low', 'Medium', 'High'], values: [34, 52, 14], suffix: '%' })}</section>
-      </div>
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Top suppliers</div><h3>Supplier drill-down placeholders</h3></div><p>Each supplier links to its own future drill-down page placeholder.</p></div>
-        <div class="supplier-list">
-          ${appState.data.suppliers.map((supplier) => `
-            <div class="supplier-card">
-              <div class="supplier-meta">${pill(supplier.risk + ' risk', supplier.risk === 'Low' ? 'good' : 'warn')}${pill(supplier.category, 'info')}</div>
-              <h4>${supplier.name}</h4>
-              <div class="grid-4">
-                <div><div class="label">This month</div><strong>${supplier.spendMonth}</strong></div>
-                <div><div class="label">YTD</div><strong>${supplier.spendYtd}</strong></div>
-                <div><div class="label">Last year</div><strong>${supplier.spendLastYear}</strong></div>
-                <div><div class="label">YoY</div><strong>${supplier.yoy}</strong></div>
-              </div>
-              <div class="drilldown-meta"><span class="muted">Average invoice: ${supplier.avgInvoice}</span><span class="muted">Invoices: ${supplier.invoices}</span><span class="muted">Last payment: ${supplier.lastPayment}</span></div>
-              <p><strong>Supplier opportunity:</strong> ${supplier.opportunity}</p>
-              <a href="#" class="text-link supplier-link" data-supplier="${escapeAttr(supplier.id)}">Open drill-down placeholder →</a>
-            </div>
-          `).join('')}
-        </div>
-      </section>
-      <div class="grid-2">
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Supplier opportunities</div><h3>Current upside</h3></div></div><div class="section-stack"><div class="register-row"><h4>Term review with top supplier</h4><p>Potential to improve margin and cash timing at the same time.</p></div><div class="register-row"><h4>Bundle volume strategically</h4><p>Larger, more intentional orders may improve unit economics without losing control.</p></div></div></section>
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">AI recommendations</div><h3>What the CFO would do next</h3></div></div><div class="section-stack"><div class="register-row"><p>Review the top three supplier relationships individually, test contribution margin, and decide whether current spend reflects strategy or drift.</p></div></div></section>
-      </div>
-      ${commentaryCard('Supplier Spend AI Commentary', {
-        summary: 'Supplier spend is strategically meaningful now — not dangerous, but important enough to deserve explicit executive attention.',
-        evidence: 'Top supplier up +22.6% YoY, overall supplier spend +19.6% vs placeholder last year, and profit conversion slightly softer.',
-        confidence: 'Medium–High',
-        impact: 'Better terms or spend discipline could improve both margin quality and cash timing.',
-        risks: 'Challenging suppliers without understanding service dependency could create friction or reduce fulfilment quality.',
-        alternatives: 'Renegotiate, re-sequence orders, accept current terms temporarily, or redesign product mix.',
-        action: 'Open individual supplier reviews and decide which relationships justify negotiation, consolidation, or reduced dependence.',
-        missing: 'Live contract, invoice, and inventory dependency data is not connected yet.'
-      })}
-    </div>
-  `;
-}
-
-function cashFlowPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Cash Flow</div><h3>Liquidity, runway, and confidence</h3></div><p>Cash flow is presented as a decision engine, not a backward-looking statement.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Cash balance</div><strong>£28.1k</strong><p>Healthy current position with short-term flexibility.</p></div>
-          <div class="stat-card"><div class="label">Cash inflow</div><strong>£44.6k</strong><p>Strong enough to support current operating plans.</p></div>
-          <div class="stat-card"><div class="label">Cash outflow</div><strong>£37.2k</strong><p>Outflows remain manageable but require sequencing discipline.</p></div>
-          <div class="stat-card"><div class="label">Cash runway</div><strong>5.4 months</strong><p>Comfortable under placeholder assumptions.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({ what: 'Cash is healthy but collection timing matters', whatText: 'There is no immediate liquidity stress, but short-term flexibility relies on receipts arriving when expected.', why: 'Strong inflows are offset by concentrated receivables and planned supplier payments', whyText: 'The cash picture is structurally sound, but timing sensitivity remains real.', matters: 'Yes, because timing changes decision freedom', mattersText: 'Healthy cash without strong timing discipline can still force weaker decisions than necessary.', next: 'Protect timing and challenge assumptions', nextText: 'Pressure-test receivables, staged payables, and forecast assumptions for the next 90 days.' })}
-      <div class="chart-grid">
-        <section class="chart-card"><div class="label">Forecast</div><h4>30 / 60 / 90 day cash view</h4>${lineChart({ labels: appState.data.charts.cashForecast.labels, values: appState.data.charts.cashForecast.values, suffix: 'k' })}</section>
-        <section class="chart-card"><div class="label">Risk analysis</div><h4>Cash risk distribution</h4>${barChart({ labels: ['Collections', 'Supplier timing', 'Discretionary spend', 'Tax timing'], values: [38, 29, 17, 16], suffix: '%' })}</section>
-      </div>
-      ${commentaryCard('Cash Flow Commentary', {
-        summary: 'Cash is strong enough to avoid panic, but not strong enough to ignore timing discipline.',
-        evidence: 'Current balance £28.1k, 30-day closing cash £21.3k, overdue invoices materially affecting timing confidence.',
-        confidence: 'High',
-        impact: 'Better collections discipline could improve flexibility immediately without cutting growth activity.',
-        risks: 'If supplier spend rises again or receipts slip further, comfort narrows quickly.',
-        alternatives: 'Hold spend steady, pull forward collections, or sequence outgoing commitments more deliberately.',
-        action: 'Approve receivables escalation and stage significant payments against confirmed incoming cash.',
-        missing: 'Live banking and invoice-status feeds are intentionally not connected yet.'
-      })}
-    </div>
-  `;
-}
-
-function vatPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">VAT</div><h3>VAT position and confidence</h3></div><p>VAT should feel governed and explainable, not like a black-box year-end surprise.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Current VAT estimate</div><strong>£4.8k</strong><p>Provisioned in the current placeholder cash plan.</p></div>
-          <div class="stat-card"><div class="label">Upcoming payment</div><strong>£4.6k</strong><p>Timing remains manageable under current assumptions.</p></div>
-          <div class="stat-card"><div class="label">Historical VAT</div><strong>£4.1k avg</strong><p>Recent average settlement level for comparison.</p></div>
-          <div class="stat-card"><div class="label">Forecast VAT</div><strong>£5.0k</strong><p>Assumes current trading pattern continues.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({ what: 'VAT looks provisioned', whatText: 'The estimate is not currently alarming and appears covered in the short-term plan.', why: 'Trading remains healthy and taxable activity is broadly stable', whyText: 'The forecast moves mainly with revenue and purchase record completeness.', matters: 'Yes, because confidence matters as much as the amount', mattersText: 'A tolerable liability can still become disruptive if record quality is weak or timing slips.', next: 'Tighten record capture confidence', nextText: 'Preserve discipline on purchase invoices and category integrity ahead of the next filing cycle.' })}
-      ${commentaryCard('VAT AI Explanation', {
-        summary: 'The VAT position is acceptable, but confidence depends on process discipline rather than the estimated number alone.',
-        evidence: 'Current estimate £4.8k, payment provisioned, but purchase-side completeness remains a live dependency.',
-        confidence: 'Medium',
-        impact: 'Good discipline avoids avoidable surprises and protects forecast reliability.',
-        risks: 'Late invoices or weak categorisation reduce accuracy and may distort cash planning.',
-        alternatives: 'Increase monthly controls, keep current process, or defer detailed cleanup until filing week.',
-        action: 'Use a tighter monthly review rhythm so VAT confidence does not depend on last-minute effort.',
-        missing: 'No live bookkeeping or filing system is connected in this sprint.'
-      })}
-    </div>
-  `;
-}
-
-function forecastingPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Forecasting</div><h3>Executive forecasting workspace</h3></div><p>Forecasting exists to support good decisions, not to create false precision.</p></div>
-        <div class="grid-4">
-          <div class="forecast-tile"><div class="label">Revenue forecast</div><strong>£49.5k</strong><p>Assumes healthy demand and steady booking conversion.</p></div>
-          <div class="forecast-tile"><div class="label">Profit forecast</div><strong>£12.1k</strong><p>Dependent on stabilising supplier cost growth.</p></div>
-          <div class="forecast-tile"><div class="label">Cash forecast</div><strong>£24.0k</strong><p>Requires collections to normalise on time.</p></div>
-          <div class="forecast-tile"><div class="label">Investment modelling</div><strong>Placeholder</strong><p>Future modelling for GCQuad and similar investments will live here.</p></div>
-        </div>
-      </section>
-      ${executiveQuestions({ what: 'Forecasts are positive but assumption-sensitive', whatText: 'The current outlook is constructive under a controlled set of placeholder assumptions.', why: 'Demand looks stable and cash is healthy, but margins remain sensitive', whyText: 'A few assumptions drive most of the model: collections speed, supplier costs, and discretionary expense control.', matters: 'Yes, because forecast quality should shape confidence', mattersText: 'The right forecast improves timing, investment discipline, and approval confidence.', next: 'Challenge assumptions, not just outputs', nextText: 'The best use of the page is testing what could break the plan and what could improve it.' })}
-      <div class="grid-2">
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Scenario planning</div><h3>What if...</h3></div></div><div class="section-stack"><div class="scenario-card"><h4>What if collections slip by 14 days?</h4><p>30-day cash closes lower and approval sequencing becomes more important.</p></div><div class="scenario-card"><h4>What if supplier costs rise another 5%?</h4><p>Profit forecast softens and margin-control actions become urgent.</p></div><div class="scenario-card"><h4>What if bookings outperform by 10%?</h4><p>Revenue improves, but margin quality still decides whether that upside is strategically meaningful.</p></div></div></section>
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Future investment modelling</div><h3>Decision sandbox placeholder</h3></div></div><div class="page-note"><h4>Future investment modelling</h4><p>This area is reserved for capital and growth scenario modelling, including equipment purchases, hiring, software, and marketing investment cases.</p></div></section>
-      </div>
-      ${commentaryCard('Forecast Commentary', {
-        summary: 'The forecast is directionally strong, but the value lies in challenging the assumptions rather than admiring the numbers.',
-        evidence: 'Positive revenue, stable cash, and controlled margin pressure under current placeholder assumptions.',
-        confidence: 'Medium',
-        impact: 'A better forecast improves investment timing, approval quality, and strategic calm.',
-        risks: 'False confidence can form if assumptions are not actively challenged each week.',
-        alternatives: 'Optimistic plan, conservative plan, or scenario-weighted planning by risk band.',
-        action: 'Review what changes the forecast most and treat those assumptions as executive priorities.',
-        missing: 'No live system data is feeding forecast logic yet.'
-      })}
-    </div>
-  `;
-}
-
-function businessKpisPage() {
-  const groups = [
-    ['Revenue', [['Revenue this month', '£46.8k'], ['YoY growth', '+14.2%'], ['Forecast', '£49.5k']]],
-    ['Profitability', [['Gross margin', '51.5%'], ['Net margin', '24.8%'], ['Net profit', '£11.6k']]],
-    ['Cash', [['Cash balance', '£28.1k'], ['Runway', '5.4 months'], ['30d closing cash', '£21.3k']]],
-    ['Working Capital', [['Outstanding invoices', '£9.4k'], ['Bills due', '£6.1k'], ['Collections risk', 'Medium']]],
-    ['Operating KPIs', [['Supplier concentration', 'High enough to watch'], ['Expense drift', '+6.8%'], ['Approval load', '6 active items']]],
-    ['Growth KPIs', [['Bookings confidence', 'Placeholder'], ['Premium mix', 'Improving'], ['Repeat demand', 'Stable']]]
-  ];
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Business KPIs</div><h3>Connected KPI view with context</h3></div><p>Every KPI category is translated into what it means for current decision-making.</p></div>
-        <div class="kpi-groups">
-          ${groups
-            .map(
-              ([title, entries]) => `
-                <div class="kpi-group">
-                  <div class="label">${title}</div>
-                  <div class="kpi-row">
-                    ${entries
-                      .map(
-                        ([label, value]) => `
-                          <div class="kpi-chip">
-                            <div class="label">${label}</div>
-                            <strong>${value}</strong>
-                          </div>
-                        `
-                      )
-                      .join('')}
-                  </div>
-                </div>
-              `
-            )
-            .join('')}
-        </div>
-      </section>
-      <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Financial Health Score breakdown</div><h3>How the score is constructed</h3></div><a href="#" class="text-link" data-page-link="financial-health">Open full Financial Health page →</a></div>
-        <div class="health-breakdown">
-          <div class="register-row"><h4>Profit quality — 25%</h4><p>Softened slightly because cost growth outpaced the last month of revenue improvement.</p></div>
-          <div class="register-row"><h4>Cash resilience — 25%</h4><p>Healthy, but still dependent on receivables timing.</p></div>
-          <div class="register-row"><h4>Working capital control — 20%</h4><p>Acceptable, though collections concentration needs attention.</p></div>
-          <div class="register-row"><h4>Growth quality — 15%</h4><p>Positive growth, but still needs bookings and margin proof.</p></div>
-          <div class="register-row"><h4>Governance and confidence — 15%</h4><p>Approval-first approach and visible reasoning improve trust in decisions.</p></div>
-        </div>
-      </section>
-    </div>
-  `;
-}
-
-function decisionJournalPage() {
-  const rows = appState.data.decisionJournal.filter((entry) => {
-    const q = appState.journalQuery.trim().toLowerCase();
-    if (!q) return true;
-    return [entry.id, entry.recommendation, entry.reasoning, entry.executive, entry.status, entry.outcome]
-      .join(' ')
-      .toLowerCase()
-      .includes(q);
+  document.querySelectorAll('[data-page]').forEach((node) => {
+    node.addEventListener('click', (event) => {
+      event.preventDefault();
+      setMode('workspace');
+      setPage(node.dataset.page);
+    });
   });
 
+  renderSidebarMeta();
+}
+
+function renderModeSwitcher() {
+  modeSwitcher.innerHTML = MODE_OPTIONS.map(([value, label]) => `<button type="button" class="mode-button ${state.mode === value ? 'active' : ''}" data-mode="${value}" role="tab" aria-selected="${String(state.mode === value)}">${escapeHtml(label)}</button>`).join('');
+  modeSwitcher.querySelectorAll('[data-mode]').forEach((button) => {
+    button.addEventListener('click', () => setMode(button.dataset.mode, { withLoading: true }));
+  });
+}
+
+function breadcrumbParts() {
+  if (state.mode === 'board') return ['EP Intelligence', 'Board Meeting'];
+  return ['EP Intelligence', 'CFO Executive Workspace', PAGE_META[state.page].title];
+}
+
+function renderTopbar() {
+  const meta = PAGE_META[state.page];
+  breadcrumbNode.innerHTML = breadcrumb(breadcrumbParts());
+  pageTitle.textContent = state.mode === 'board' ? 'Board Meeting Mode' : meta.title;
+  pageSubtitle.textContent = state.mode === 'board' ? 'A Sunday-morning executive briefing view for leadership-level conversations.' : meta.subtitle;
+  sidebarToggle.innerHTML = icon('menu');
+  commandLauncher.innerHTML = `${icon('command')}<span class="command-hint">Ctrl/Cmd + K</span>`;
+  paletteClose.innerHTML = icon('chevronLeft');
+  renderModeSwitcher();
+  updateThemeButton();
+}
+
+function chartSpec(key, canvasId, label = '') {
+  return { id: canvasId, label, ...MOCK_DATA.charts[key] };
+}
+
+function pageQuestions(key) {
+  const set = questionSets[key];
   return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Decision Journal</div><h3>Searchable executive timeline</h3></div><p>One of the most valuable parts of the platform: preserved recommendations, approvals, outcomes, and lessons.</p></div>
-        <div class="search-shell"><span class="label">Search timeline</span><input id="journal-search" type="text" placeholder="Search decisions, reasoning, outcomes, status..." value="${escapeAttr(appState.journalQuery)}" /></div>
-      </section>
-      <section class="panel"><div class="timeline-list">
-        ${rows
-          .map(
-            (entry) => `
-              <article class="timeline-entry">
-                <div class="timeline-meta">${pill(entry.id, 'info')}${pill(entry.status, entry.status === 'Pending' ? 'warn' : entry.status === 'Active' ? 'info' : 'good')}${pill(entry.executive, 'neutral')}</div>
-                <h4>${entry.recommendation}</h4>
-                <div class="grid-3">
-                  <div><div class="label">Reasoning</div><p>${entry.reasoning}</p></div>
-                  <div><div class="label">Supporting evidence</div><p>${entry.evidence}</p></div>
-                  <div><div class="label">Alternatives considered</div><p>${entry.alternatives}</p></div>
-                  <div><div class="label">User decision</div><p>${entry.decision}</p></div>
-                  <div><div class="label">Outcome</div><p>${entry.outcome}</p></div>
-                  <div><div class="label">Financial impact</div><p>${entry.impact}</p></div>
-                  <div><div class="label">Confidence</div><p>${entry.confidence}</p></div>
-                  <div><div class="label">Lessons learned</div><p>${entry.lessons}</p></div>
-                  <div><div class="label">Scheduled review date</div><p>${entry.reviewDate}</p></div>
-                </div>
-              </article>
-            `
-          )
-          .join('')}
-      </div></section>
-    </div>
+    <section class="panel">
+      ${sectionHeader({ eyebrow: 'Executive Intelligence', title: 'The four questions this page answers' })}
+      <div class="executive-question-grid">
+        ${executiveQuestionCard({ question: 'What happened?', title: set.what[0], body: set.what[1] })}
+        ${executiveQuestionCard({ question: 'Why did it happen?', title: set.why[0], body: set.why[1] })}
+        ${executiveQuestionCard({ question: 'Does it matter?', title: set.matters[0], body: set.matters[1] })}
+        ${executiveQuestionCard({ question: 'What should I do next?', title: set.next[0], body: set.next[1] })}
+      </div>
+    </section>
   `;
 }
 
-function weeklyBriefingsPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Weekly Briefings</div><h3>Sunday Executive Briefing</h3></div><p>Designed to feel closer to a board paper than a dashboard.</p></div>
-        <div class="briefing-sections">
-          <div class="page-note"><div class="label">Executive Summary</div><h4>${appState.data.weeklyBriefing.summary}</h4></div>
+function workspaceView() {
+  const activeMetric = MOCK_DATA.metrics.find((metric) => metric.key === state.activeMetric) || MOCK_DATA.metrics[0];
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="hero-grid">
+          <div class="hero-block">
+            <section class="summary-banner">
+              <div class="eyebrow">${escapeHtml(MOCK_DATA.welcome.greeting)}</div>
+              <div class="hero-title">${escapeHtml(MOCK_DATA.welcome.title)}</div>
+              <p class="hero-summary">${escapeHtml(MOCK_DATA.welcome.summary)}</p>
+            </section>
+            <section class="snapshot-grid">
+              ${statCard({ iconName: 'trending-up', label: 'Revenue Summary', value: MOCK_DATA.welcome.snapshot.revenue, body: 'Demand remains strong with premium conversion holding up.' })}
+              ${statCard({ iconName: 'coins', label: 'Profit Summary', value: MOCK_DATA.welcome.snapshot.profit, body: 'Profit is solid, though slightly softer than last month.' })}
+              ${statCard({ iconName: 'wallet', label: 'Cash Position', value: MOCK_DATA.welcome.snapshot.cash, body: 'Healthy enough for calm decision-making under current assumptions.' })}
+              ${statCard({ iconName: 'check-circle', label: 'Recent Approvals', value: MOCK_DATA.welcome.snapshot.approvals, body: 'All material actions remain staged for explicit review.' })}
+            </section>
+          </div>
+          <div class="hero-side">
+            <section class="score-panel">
+              <div class="score-tile">
+                <div class="label">Financial Health Score</div>
+                <strong class="score-value">${MOCK_DATA.welcome.score}</strong>
+                <div class="score-note">${escapeHtml(MOCK_DATA.welcome.trend)}</div>
+              </div>
+              <div class="snapshot-panel">
+                <div class="label">Business Snapshot</div>
+                <h3>${escapeHtml(MOCK_DATA.welcome.label)}</h3>
+                <p>${escapeHtml(MOCK_DATA.welcome.narrative)}</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: MOCK_DATA.homepage.banner.title, title: 'Today’s priorities', body: 'A curated executive view of what deserves attention before anything else.' })}
+          <div class="grid-3">
+            ${MOCK_DATA.homepage.priorities.map((item, index) => priorityCard({ index: index + 1, title: item.title, body: item.note, tone: item.tone })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Workspace summary', title: 'Executive cards', body: 'Use these as your fast launchpads into the most important parts of the business.' })}
+          <div class="metric-grid">
+            ${MOCK_DATA.metrics.map((metric) => metricCard({ key: metric.key, label: metric.label, value: metric.value, trend: metric.trend, iconName: metric.key === 'revenue' ? 'trending-up' : metric.key === 'profit' ? 'coins' : metric.key === 'cash' ? 'wallet' : metric.key === 'supplier' ? 'building' : 'grid', active: metric.key === state.activeMetric })).join('')}
+          </div>
+          <div class="metric-detail">
+            <div class="label">Selected CFO readout</div>
+            <h4>${escapeHtml(activeMetric.label)}</h4>
+            <p>${escapeHtml(activeMetric.detail)}</p>
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Weekly Briefing Preview', title: 'Sunday executive summary', body: 'This is the version that later becomes a full board-quality briefing.' })}
+            <div class="snapshot-panel">
+              <h3>${escapeHtml(MOCK_DATA.weeklyBriefing.summary)}</h3>
+              <ul class="briefing-list">${MOCK_DATA.weeklyBriefing.recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Business Snapshot', title: 'What the CFO wants you to remember', body: 'A compact narrative of the current business state.' })}
+            <div class="snapshot-panel">
+              <ul class="mini-list">${MOCK_DATA.homepage.businessSnapshot.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+            </div>
+          </section>
+        </div>
+
+        ${commentaryCard({ title: MOCK_DATA.commentary.workspace.title, data: MOCK_DATA.commentary.workspace })}
+
+        <div class="grid-3">
+          <section class="quick-action-panel">
+            ${sectionHeader({ eyebrow: 'Quick Actions', title: 'Launch common executive tasks' })}
+            <div class="section-stack">
+              ${MOCK_DATA.homepage.quickActions.map((action) => `<button type="button" class="quick-action-button">${escapeHtml(action)}${icon('arrowRight')}</button>`).join('')}
+            </div>
+          </section>
+          <section class="recent-panel">
+            ${sectionHeader({ eyebrow: 'Recently Viewed Pages', title: 'Pick up where you left off' })}
+            <div class="recent-trail">${state.recent.map((page) => `<button type="button" class="chip-button" data-quick-page="${page}">${icon('arrowRight')}${escapeHtml(PAGE_META[page].title)}</button>`).join('')}</div>
+          </section>
+          <section class="favourites-panel">
+            ${sectionHeader({ eyebrow: 'Favourite Reports', title: 'Your pinned executive views' })}
+            <div class="favourite-trail">${state.favourites.map((page) => `<button type="button" class="chip-button" data-quick-page="${page}">${icon('star')}${escapeHtml(PAGE_META[page].title)}</button>`).join('')}</div>
+          </section>
+        </div>
+
+        ${pageQuestions('workspace')}
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function revenueView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Revenue Page', title: 'Revenue performance and collection quality', body: 'Every revenue number is paired with context about quality, timing, and strategic usefulness.' })}
           <div class="grid-4">
-            <div class="stat-card"><div class="label">KPIs</div><strong>Stable+</strong><p>Core KPIs remain healthy with targeted watch items.</p></div>
-            <div class="stat-card"><div class="label">Wins</div><strong>3</strong><p>Revenue strength, healthy cash, visible cost drift before it becomes embedded.</p></div>
-            <div class="stat-card"><div class="label">Risks</div><strong>3</strong><p>Collections, supplier pressure, and data confidence are the current watchpoints.</p></div>
-            <div class="stat-card"><div class="label">Approval Queue</div><strong>6</strong><p>Approval-first queue remains intentionally visible and controlled.</p></div>
+            ${statCard({ iconName: 'trending-up', label: 'Revenue this month', value: '£46.8k', body: 'Ahead of plan with healthier premium conversion.' })}
+            ${statCard({ iconName: 'calendar', label: 'Revenue by month', value: '7 months tracked', body: 'Steady progression in placeholder monthly trend.' })}
+            ${statCard({ iconName: 'wallet', label: 'Revenue vs last year', value: '+14.2%', body: 'Growth is positive without obvious discount-led distortion.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Revenue forecast', value: MOCK_DATA.forecasts.revenue, body: 'Forecast stays constructive under current assumptions.' })}
+          </div>
+        </section>
+        ${pageQuestions('revenue')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Revenue Trends', title: 'Revenue trend chart', canvasId: 'chart-revenue-trend', meta: 'Interactive placeholder data using Chart.js.' })}
+          ${chartCard({ eyebrow: 'Payment mix', title: 'Revenue by payment method', canvasId: 'chart-payment-methods', meta: 'Card, transfer, finance, and cash mix.' })}
+          ${chartCard({ eyebrow: 'Invoice status', title: 'Revenue by invoice status', canvasId: 'chart-invoice-status', meta: 'Paid, pending, and overdue profile.' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Future integration', title: 'Bookings Dashboard placeholder', body: 'This will later connect future bookings and pipeline quality to revenue forecasting.' })}
+          ${insightCard({ eyebrow: 'Placeholder', title: 'Future Bookings Dashboard integration', body: 'Reserved for a live bookings and pipeline feed that will help the CFO connect demand quality to revenue and cash confidence.' })}
+        </section>
+        ${commentaryCard({ title: MOCK_DATA.commentary.revenue.title, data: MOCK_DATA.commentary.revenue })}
+      </div>
+    `,
+    charts: [
+      chartSpec('revenueTrend', 'chart-revenue-trend', 'Revenue trend'),
+      chartSpec('paymentMethods', 'chart-payment-methods', 'Payment method mix'),
+      chartSpec('invoiceStatus', 'chart-invoice-status', 'Invoice status mix')
+    ]
+  };
+}
+
+function profitView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Profit Page', title: 'Margin quality and profitability', body: 'Profit should feel like an executive conversation about leverage and trade-offs, not a ledger export.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'coins', label: 'Gross profit', value: '£24.1k', body: 'Strong, but pressured by higher supplier costs.' })}
+            ${statCard({ iconName: 'coins', label: 'Net profit', value: '£11.6k', body: 'Still healthy, though softer than last month.' })}
+            ${statCard({ iconName: 'grid', label: 'Gross margin', value: '51.5%', body: 'Should improve if supplier terms tighten.' })}
+            ${statCard({ iconName: 'grid', label: 'Net margin', value: '24.8%', body: 'A solid level for the current growth stage.' })}
+          </div>
+        </section>
+        ${pageQuestions('profit')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Monthly Profit', title: 'Profit trend', canvasId: 'chart-profit', meta: 'Interactive monthly profit trend.' })}
+          ${chartCard({ eyebrow: 'Cost Centres', title: 'Biggest cost centres', canvasId: 'chart-profit-costs', meta: 'Shows where profitability pressure originates.' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Recommendations', title: 'Ways to improve profitability', body: 'Profit improvement options should be concrete, financial, and sequenced.' })}
+          <div class="tile-grid">
+            ${insightCard({ eyebrow: 'Recommendation', title: 'Renegotiate one major supplier', body: 'Potential £1.2k monthly margin improvement with limited disruption.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Recommendation', title: 'Reduce low-yield discretionary costs', body: 'Protects net profit without reducing meaningful growth activity.', tone: 'warn' })}
+            ${insightCard({ eyebrow: 'Recommendation', title: 'Review premium service mix', body: 'Improving mix may widen margin faster than chasing raw volume.', tone: 'info' })}
+          </div>
+        </section>
+        ${commentaryCard({ title: MOCK_DATA.commentary.profit.title, data: MOCK_DATA.commentary.profit })}
+      </div>
+    `,
+    charts: [
+      chartSpec('monthlyProfit', 'chart-profit', 'Monthly profit trend'),
+      { id: 'chart-profit-costs', type: 'bar', labels: ['Suppliers', 'Support', 'Rent', 'Software'], values: [42, 23, 19, 16], label: 'Cost centre mix', suffix: '%' }
+    ]
+  };
+}
+
+function expensesView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Expenses Page', title: 'Operating cost discipline', body: 'Expense visibility is only useful when it improves judgment about what to keep, reduce, or challenge.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'receipt', label: 'Monthly expenses', value: '£24.9k', body: 'Still manageable, but visibly rising.' })}
+            ${statCard({ iconName: 'grid', label: 'Fixed vs variable', value: '58 / 42', body: 'Variable lines deserve the most attention.' })}
+            ${statCard({ iconName: 'settings', label: 'Software subscriptions', value: '£1.4k', body: 'Stable, but worth future overlap review.' })}
+            ${statCard({ iconName: 'building', label: 'Largest expenses', value: 'Inventory & supply', body: 'Supplier-linked costs remain the dominant driver.' })}
+          </div>
+        </section>
+        ${pageQuestions('expenses')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Expense trend', title: 'Monthly expenses', canvasId: 'chart-expenses', meta: 'Interactive monthly trend.' })}
+          ${chartCard({ eyebrow: 'Categories', title: 'Expense categories', canvasId: 'chart-expense-categories', meta: 'Share of total expense by category.' })}
+        </div>
+        ${commentaryCard({ title: MOCK_DATA.commentary.expenses.title, data: MOCK_DATA.commentary.expenses })}
+      </div>
+    `,
+    charts: [chartSpec('expenseTrend', 'chart-expenses', 'Expense trend'), chartSpec('expenseCategories', 'chart-expense-categories', 'Expense categories')]
+  };
+}
+
+function supplierSpendView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Supplier Spend', title: 'Supplier leverage, concentration, and risk', body: 'One of the strongest pages in the prototype because supplier behaviour affects both margin and cash quality.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'building', label: 'Spend this month', value: '£17.7k', body: 'Concentrated in a small number of critical relationships.' })}
+            ${statCard({ iconName: 'building', label: 'Spend year-to-date', value: '£89.8k', body: 'Running ahead of the placeholder prior-year pace.' })}
+            ${statCard({ iconName: 'building', label: 'Spend last year', value: '£75.1k', body: 'Reference point for YoY control.' })}
+            ${statCard({ iconName: 'trending-up', label: 'Year-on-year', value: '+19.6%', body: 'Higher than comfort if gross margin does not keep pace.' })}
+          </div>
+        </section>
+        ${pageQuestions('supplier-spend')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Supplier Spend', title: 'Monthly trend', canvasId: 'chart-supplier-trend', meta: 'Interactive placeholder monthly supplier spend.' })}
+          ${chartCard({ eyebrow: 'Categories', title: 'Top spending categories', canvasId: 'chart-supplier-categories', meta: 'Where supplier cash outflow is concentrated.' })}
+          ${chartCard({ eyebrow: 'Risk indicator', title: 'Supplier risk indicator', canvasId: 'chart-supplier-risk', meta: 'Low, medium, and high-risk mix.' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Top suppliers', title: 'Supplier drill-down placeholders', body: 'Every supplier includes a future drill-down placeholder.' })}
+          <div class="tile-grid">
+            ${MOCK_DATA.suppliers.map((supplier) => supplierCard(supplier)).join('')}
+          </div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Supplier opportunities', title: 'Current upside' })}
+            <div class="section-stack">
+              ${insightCard({ eyebrow: 'Opportunity', title: 'Term review with top supplier', body: 'Potential to improve margin and cash timing at the same time.', tone: 'good' })}
+              ${insightCard({ eyebrow: 'Opportunity', title: 'Bundle volume strategically', body: 'Larger, more intentional orders may improve unit economics without losing control.', tone: 'info' })}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'AI recommendations', title: 'What the CFO would do next' })}
+            ${insightCard({ eyebrow: 'Recommended action', title: 'Open individual supplier reviews', body: 'Test contribution margin, payment timing, and whether current relationships justify their share of spend.', tone: 'warn' })}
+          </section>
+        </div>
+        ${commentaryCard({ title: MOCK_DATA.commentary.suppliers.title, data: MOCK_DATA.commentary.suppliers })}
+      </div>
+    `,
+    charts: [
+      chartSpec('supplierTrend', 'chart-supplier-trend', 'Supplier monthly spend'),
+      { id: 'chart-supplier-categories', type: 'doughnut', labels: ['Launch Monitors', 'Retail Stock', 'Subscriptions', 'Consumables'], values: [39, 29, 19, 13], label: 'Supplier categories', suffix: '%' },
+      { id: 'chart-supplier-risk', type: 'bar', labels: ['Low', 'Medium', 'High'], values: [34, 52, 14], label: 'Risk indicator', suffix: '%' }
+    ]
+  };
+}
+
+function cashFlowView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Cash Flow', title: 'Liquidity, runway, and timing confidence', body: 'Cash should feel like a strategic narrative rather than a number trapped in a ledger.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'wallet', label: 'Cash balance', value: '£28.1k', body: 'Healthy current position with short-term flexibility.' })}
+            ${statCard({ iconName: 'trending-up', label: 'Cash inflow', value: '£44.6k', body: 'Strong enough to support current plans.' })}
+            ${statCard({ iconName: 'receipt', label: 'Cash outflow', value: '£37.2k', body: 'Manageable, but requires sequencing discipline.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Cash runway', value: '5.4 months', body: 'Comfortable under current placeholder assumptions.' })}
+          </div>
+        </section>
+        ${pageQuestions('cash-flow')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Cash Flow', title: '30/60/90 day forecast', canvasId: 'chart-cash-flow', meta: 'Interactive placeholder forecast.' })}
+          ${chartCard({ eyebrow: 'Risk analysis', title: 'Cash flow sensitivity', canvasId: 'chart-cash-risk', meta: 'Which factors most affect confidence in the view.' })}
+        </div>
+        ${commentaryCard({ title: MOCK_DATA.commentary.cash.title, data: MOCK_DATA.commentary.cash })}
+      </div>
+    `,
+    charts: [chartSpec('cashFlow', 'chart-cash-flow', 'Cash flow forecast'), { id: 'chart-cash-risk', type: 'bar', labels: ['Collections', 'Supplier timing', 'Discretionary spend', 'Tax timing'], values: [38, 29, 17, 16], label: 'Cash risk', suffix: '%' }]
+  };
+}
+
+function vatView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'VAT', title: 'VAT position and confidence', body: 'VAT should feel governed and explainable, not like a surprise waiting at the edge of the month.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'shield', label: 'Current VAT estimate', value: '£4.8k', body: 'Provisioned in the current cash plan.' })}
+            ${statCard({ iconName: 'calendar', label: 'Upcoming payment', value: '£4.6k', body: 'Timing remains manageable under current assumptions.' })}
+            ${statCard({ iconName: 'grid', label: 'Historical VAT', value: '£4.1k avg', body: 'Recent settlement range in the demo environment.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Forecast VAT', value: '£5.0k', body: 'Assumes broadly similar trading pattern continues.' })}
+          </div>
+        </section>
+        ${pageQuestions('vat')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'VAT History', title: 'Historical VAT trend', canvasId: 'chart-vat', meta: 'Quarterly placeholder VAT history.' })}
+          ${chartCard({ eyebrow: 'KPI Gauge', title: 'VAT confidence gauge', canvasId: 'chart-vat-gauge', meta: 'Proxy for confidence rather than a direct liability measure.' })}
+        </div>
+        ${commentaryCard({ title: MOCK_DATA.commentary.vat.title, data: MOCK_DATA.commentary.vat })}
+      </div>
+    `,
+    charts: [chartSpec('vatHistory', 'chart-vat', 'VAT history'), chartSpec('kpiGauge', 'chart-vat-gauge', 'VAT confidence gauge')]
+  };
+}
+
+function forecastingView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Forecasting', title: 'Executive forecasting workspace', body: 'Use this page to challenge assumptions and model choices, not to seek false precision.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'trending-up', label: 'Revenue forecast', value: MOCK_DATA.forecasts.revenue, body: 'Assumes healthy demand and stable booking conversion.' })}
+            ${statCard({ iconName: 'coins', label: 'Profit forecast', value: MOCK_DATA.forecasts.profit, body: 'Depends on stabilising supplier cost growth.' })}
+            ${statCard({ iconName: 'wallet', label: 'Cash forecast', value: MOCK_DATA.forecasts.cash, body: 'Requires collections to normalise on time.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Investment modelling', value: 'Placeholder', body: 'Reserved for future capital and equipment decision models.' })}
+          </div>
+        </section>
+        ${pageQuestions('forecasting')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Financial Forecast', title: 'Scenario comparison', canvasId: 'chart-forecast', meta: 'Base, conservative, and upside scenarios.' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'What if…', title: 'Scenario planning placeholders', body: 'A forecasting workspace should feel like a thinking environment rather than a static report.' })}
+          <div class="tile-grid">${MOCK_DATA.forecasts.scenarios.map((item) => insightCard({ eyebrow: 'Scenario', title: item.title, body: item.body, tone: 'neutral' })).join('')}</div>
+        </section>
+        ${commentaryCard({ title: MOCK_DATA.commentary.forecasting.title, data: MOCK_DATA.commentary.forecasting })}
+      </div>
+    `,
+    charts: [chartSpec('financialForecast', 'chart-forecast', 'Forecast scenario comparison')]
+  };
+}
+
+function businessKpisView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Business KPIs', title: 'Connected KPI framework', body: 'KPIs are grouped by the questions they help answer, not by accounting table structure.' })}
+          <div class="section-stack">
+            ${MOCK_DATA.kpis.groups
+              .map(
+                ([title, entries]) => `
+                  <section class="panel">
+                    <div class="label">${escapeHtml(title)}</div>
+                    <div class="kpi-row">
+                      ${entries.map(([label, value]) => statCard({ iconName: 'grid', label, value, body: 'Executive context placeholder.' })).join('')}
+                    </div>
+                  </section>
+                `
+              )
+              .join('')}
+          </div>
+        </section>
+        ${pageQuestions('business-kpis')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'KPI Gauge', title: 'Financial Health Score breakdown', canvasId: 'chart-kpi-gauge', meta: 'Weighted gauge of current business health.' })}
+          ${chartCard({ eyebrow: 'Historical Scores', title: 'Score history', canvasId: 'chart-score-history', meta: 'How the score has moved over time.' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Weighting Breakdown', title: 'How the score is built', body: 'Future versions will allow custom weighting, but this prototype keeps the logic visible.' })}
+          <div class="tile-grid">${MOCK_DATA.kpis.weights.map((item) => insightCard({ eyebrow: item.weight, title: item.title, body: item.note, tone: 'neutral' })).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: [chartSpec('kpiGauge', 'chart-kpi-gauge', 'Health score gauge'), chartSpec('historicalScores', 'chart-score-history', 'Historical scores')]
+  };
+}
+
+function decisionJournalView() {
+  const q = state.journalQuery.trim().toLowerCase();
+  const filtered = MOCK_DATA.decisionJournal.filter((entry) => {
+    if (!q) return true;
+    return [entry.id, entry.recommendation, entry.reasoning, entry.decision, entry.outcome, entry.status].join(' ').toLowerCase().includes(q);
+  });
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Decision Journal', title: 'Searchable executive timeline', body: 'The platform should learn from decisions and outcomes, not just store them.' })}
+          ${searchRow({ value: state.journalQuery })}
+        </section>
+        ${pageQuestions('decision-journal')}
+        <section class="panel">
+          <div class="section-stack">
+            ${filtered
+              .map(
+                (entry) => `
+                  <article class="register-row">
+                    <div class="register-meta">${pill(entry.id, 'info')}${pill(entry.status, entry.status === 'Pending' ? 'warn' : entry.status === 'Active' ? 'info' : 'good')}${pill(entry.executive, 'neutral')}</div>
+                    <h4>${escapeHtml(entry.recommendation)}</h4>
+                    <div class="grid-3">
+                      ${insightCard({ eyebrow: 'Reasoning', title: 'Why', body: entry.reasoning, tone: 'neutral' })}
+                      ${insightCard({ eyebrow: 'Supporting Evidence', title: 'Evidence', body: entry.evidence, tone: 'neutral' })}
+                      ${insightCard({ eyebrow: 'Alternatives', title: 'Considered', body: entry.alternatives, tone: 'neutral' })}
+                      ${insightCard({ eyebrow: 'User Decision', title: entry.decision, body: entry.outcome, tone: 'info' })}
+                      ${insightCard({ eyebrow: 'Financial Impact', title: entry.impact, body: entry.confidence, tone: 'good' })}
+                      ${insightCard({ eyebrow: 'Scheduled Review', title: entry.reviewDate, body: entry.lessons, tone: 'warn' })}
+                    </div>
+                  </article>
+                `
+              )
+              .join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function weeklyBriefingsView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="board-shell">
+          ${sectionHeader({ eyebrow: 'Weekly Briefings', title: 'Sunday Executive Briefing', body: 'A board-style briefing designed for Sunday mornings.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'pulse', label: 'Business health score', value: String(MOCK_DATA.welcome.score), body: MOCK_DATA.welcome.label })}
+            ${statCard({ iconName: 'trending-up', label: 'Revenue', value: '£46.8k', body: 'Ahead of the baseline.' })}
+            ${statCard({ iconName: 'coins', label: 'Profit', value: '£11.6k', body: 'Healthy with margin watchpoints.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Approval queue', value: '6 items', body: 'Approval-first queue remains visible and deliberate.' })}
           </div>
           <div class="grid-2">
-            <div class="register-row"><div class="label">Wins</div><ul class="mini-list">${appState.data.weeklyBriefing.wins.map((item) => `<li>${item}</li>`).join('')}</ul></div>
-            <div class="register-row"><div class="label">Risks</div><ul class="mini-list">${appState.data.weeklyBriefing.risks.map((item) => `<li>${item}</li>`).join('')}</ul></div>
-            <div class="register-row"><div class="label">Forecasts</div><ul class="mini-list"><li>Revenue forecast: £49.5k</li><li>Profit forecast: £12.1k</li><li>30-day closing cash: £21.3k</li></ul></div>
-            <div class="register-row"><div class="label">Recommendations</div><ul class="mini-list">${appState.data.weeklyBriefing.recommendations.map((item) => `<li>${item}</li>`).join('')}</ul></div>
+            ${insightCard({ eyebrow: 'Executive Summary', title: 'Board opening statement', body: MOCK_DATA.weeklyBriefing.summary, tone: 'info' })}
+            ${insightCard({ eyebrow: 'Forecasts', title: 'Current outlook', body: 'Revenue forecast £49.5k, profit forecast £12.1k, 30-day closing cash £21.3k.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Wins', title: 'What went well', body: MOCK_DATA.weeklyBriefing.wins.join(' '), tone: 'good' })}
+            ${insightCard({ eyebrow: 'Risks', title: 'What needs watching', body: MOCK_DATA.weeklyBriefing.risks.join(' '), tone: 'risk' })}
+            ${insightCard({ eyebrow: 'Recommendations', title: 'What to do', body: MOCK_DATA.weeklyBriefing.recommendations.join(' '), tone: 'warn' })}
+            ${insightCard({ eyebrow: 'Questions Worth Asking', title: 'The right board questions', body: MOCK_DATA.weeklyBriefing.questions.join(' '), tone: 'neutral' })}
           </div>
-          <div class="register-row"><div class="label">Questions Worth Asking This Week</div><ul class="mini-list">${appState.data.weeklyBriefing.questions.map((item) => `<li>${item}</li>`).join('')}</ul></div>
-        </div>
-      </section>
-    </div>
-  `;
+        </section>
+      </div>
+    `,
+    charts: []
+  };
 }
 
-function approvalCentrePage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Approval Centre</div><h3>Expanded executive approval queue</h3></div><p>Grouped by type so approvals can be reviewed in the context of control, impact, and confidence.</p></div>
-        <div class="approval-groups">
-          ${Object.entries(appState.data.approvals)
+function approvalCentreView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Approval Centre', title: 'Grouped approvals', body: 'The queue is grouped by the kinds of judgment leadership needs to make.' })}
+          ${pageQuestions('approval-centre')}
+        </section>
+        <div class="settings-grid">
+          ${Object.entries(MOCK_DATA.approvals)
             .map(
-              ([group, items]) => `
+              ([group, entries]) => `
                 <section class="panel">
-                  <div class="panel-heading compact"><div><div class="eyebrow">${group}</div><h3>${group} approvals</h3></div></div>
+                  ${sectionHeader({ eyebrow: group, title: `${group} approvals` })}
                   <div class="section-stack">
-                    ${items
-                      .map(
-                        (item) => `
-                          <div class="approval-card">
-                            <h4>${item.title}</h4>
-                            <p><strong>Why:</strong> ${item.why}</p>
-                            <p><strong>Impact:</strong> ${item.impact}</p>
-                            <p><strong>Risk:</strong> ${item.risk}</p>
-                            <p><strong>Confidence:</strong> ${item.confidence}</p>
-                          </div>
-                        `
-                      )
-                      .join('')}
+                    ${entries.map((entry) => approvalCard(entry)).join('')}
                   </div>
                 </section>
               `
             )
             .join('')}
         </div>
-      </section>
-    </div>
-  `;
-}
-
-function settingsPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Settings</div><h3>Future control surface</h3></div><p>These are placeholders only — they show the future operating model without enabling live connections yet.</p></div>
-        <div class="integration-grid">
-          ${[
-            'QuickBooks',
-            'Starling',
-            'Permissions',
-            'Notification preferences',
-            'Health score weighting',
-            'Weekly briefing preferences',
-            'Quarterly reviews',
-            'Historical database',
-            'Executive personas'
-          ]
-            .map(
-              (item) => `
-                <div class="integration-tile">
-                  <div class="label">Placeholder</div>
-                  <h4>${item}</h4>
-                  <p>This will become a connected control or configuration surface in a later implementation sprint.</p>
-                </div>
-              `
-            )
-            .join('')}
-        </div>
-      </section>
-      <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Future integration sources</div><h3>Connected intelligence placeholders</h3></div></div>
-        <div class="integration-grid">
-          ${appState.data.futureIntegrations
-            .map(
-              (item) => `
-                <div class="integration-tile">
-                  <h4>${item}</h4>
-                  <p>Will become a connected intelligence source in future versions of EP Intelligence.</p>
-                </div>
-              `
-            )
-            .join('')}
-        </div>
-      </section>
-    </div>
-  `;
-}
-
-function financialHealthPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Financial Health Score</div><h3>Dedicated score breakdown</h3></div><p>The score should be trusted because it is explained, weighted, and reviewable.</p></div>
-        <div class="grid-4">
-          <div class="stat-card"><div class="label">Current score</div><strong>${appState.data.welcome.score}</strong><p>${appState.data.welcome.label}</p></div>
-          <div class="stat-card"><div class="label">Previous score</div><strong>${appState.data.welcome.previous}</strong><p>Used as the immediate comparison point.</p></div>
-          <div class="stat-card"><div class="label">Trend</div><strong>${appState.data.welcome.trend}</strong><p>The score is improving, but not for passive reasons.</p></div>
-          <div class="stat-card"><div class="label">Why it changed</div><strong>Cash and growth</strong><p>Revenue resilience and cash stability improved the score.</p></div>
-        </div>
-      </section>
-      <section class="chart-card"><div class="label">Historical scores</div><h4>Score history</h4>${lineChart({ labels: appState.data.charts.historicalScores.labels, values: appState.data.charts.historicalScores.values })}</section>
-      <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Weighting breakdown</div><h3>Current score components</h3></div></div>
-        <div class="health-breakdown">
-          <div class="register-row"><h4>Profit quality — 25%</h4><p>Improves when margin strength is stable and not dependent on one-off wins.</p></div>
-          <div class="register-row"><h4>Cash resilience — 25%</h4><p>Weighted highly because liquidity preserves decision quality.</p></div>
-          <div class="register-row"><h4>Working capital control — 20%</h4><p>Captures receivables, payables, and operating discipline.</p></div>
-          <div class="register-row"><h4>Growth quality — 15%</h4><p>Growth should be real, not vanity-driven.</p></div>
-          <div class="register-row"><h4>Governance confidence — 15%</h4><p>Approval-first behaviour and transparent reasoning increase trustworthiness.</p></div>
-        </div>
-      </section>
-      ${commentaryCard('Why the score changed', {
-        summary: 'The score improved because growth remained healthy and cash remained resilient despite mild margin softness.',
-        evidence: 'Revenue trend up, cash comfortable, but profit conversion slightly softer than ideal.',
-        confidence: 'Medium–High',
-        impact: 'A stronger score supports confidence, but should never replace direct judgment.',
-        risks: 'An improving score can still hide structural issues if weighting is not interpreted carefully.',
-        alternatives: 'Use custom weighting later, emphasise cash more, or increase governance weighting.',
-        action: 'Keep treating the score as an executive summary, not as the decision itself.',
-        missing: 'Custom weighting is a future feature and no live data sources are connected yet.'
-      })}
-    </div>
-  `;
-}
-
-function opportunityRegisterPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Opportunity Register</div><h3>Permanent upside register</h3></div><p>Every opportunity is framed for executive decision-making, not idea collection.</p></div>
-        <div class="register-list">
-          ${appState.data.opportunities
-            .map(
-              (item) => `
-                <article class="register-row">
-                  <div class="register-meta">${pill(item.category, 'info')}${pill(item.priority, item.priority === 'Immediate' ? 'warn' : 'good')}${pill(item.status, 'neutral')}</div>
-                  <h4>${item.title}</h4>
-                  <p>${item.description}</p>
-                  <div class="grid-4">
-                    <div><div class="label">Revenue increase</div><strong>${item.revenueIncrease}</strong></div>
-                    <div><div class="label">Profit increase</div><strong>${item.profitIncrease}</strong></div>
-                    <div><div class="label">Estimated cost</div><strong>${item.cost}</strong></div>
-                    <div><div class="label">ROI</div><strong>${item.roi}</strong></div>
-                    <div><div class="label">Time to implement</div><strong>${item.time}</strong></div>
-                    <div><div class="label">Confidence</div><strong>${item.confidence}</strong></div>
-                    <div><div class="label">Strategic priority</div><strong>${item.priority}</strong></div>
-                    <div><div class="label">Review date</div><strong>${item.reviewDate}</strong></div>
-                  </div>
-                </article>
-              `
-            )
-            .join('')}
-        </div>
-      </section>
-    </div>
-  `;
-}
-
-function riskRegisterPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Risk Register</div><h3>Permanent business risk register</h3></div><p>The Risk Register is designed to become a living executive document.</p></div>
-        <div class="register-list">
-          ${appState.data.risks
-            .map(
-              (item) => `
-                <article class="register-row">
-                  <div class="register-meta">${pill(item.level, item.level === 'High' ? 'risk' : 'warn')}${pill(item.trend, item.trend === 'Improving' ? 'good' : item.trend === 'Stable' ? 'neutral' : 'warn')}</div>
-                  <h4>${item.impact}</h4>
-                  <div class="grid-4">
-                    <div><div class="label">Probability</div><strong>${item.probability}</strong></div>
-                    <div><div class="label">Owner</div><strong>${item.owner}</strong></div>
-                    <div><div class="label">Review date</div><strong>${item.reviewDate}</strong></div>
-                    <div><div class="label">Trend</div><strong>${item.trend}</strong></div>
-                  </div>
-                  <p><strong>Recommended mitigation:</strong> ${item.mitigation}</p>
-                  <p><strong>AI commentary:</strong> ${item.commentary}</p>
-                </article>
-              `
-            )
-            .join('')}
-        </div>
-      </section>
-    </div>
-  `;
-}
-
-function quarterlyReviewPage() {
-  return `
-    <div class="page-grid">
-      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">Quarterly Executive Review</div><h3>Board-style quarterly review paper</h3></div><p>This page is designed to feel like a prepared board review, not an operations screen.</p></div>
-        <div class="grid-3">
-          <div class="page-note"><div class="label">Business performance</div><h4>Healthy with margin watchpoints</h4><p>Growth is positive, cash is strong, but margin conversion deserves active challenge.</p></div>
-          <div class="page-note"><div class="label">Lessons learned</div><h4>Small drifts compound fast</h4><p>Supplier concentration and discretionary spend drift become strategic issues sooner than expected.</p></div>
-          <div class="page-note"><div class="label">Executive summary</div><h4>Protect flexibility</h4><p>The quarter argues for better control and stronger confidence, not panic or unnecessary austerity.</p></div>
-        </div>
-      </section>
-      <div class="grid-2">
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Quarter highlights</div><h3>Performance review</h3></div></div><ul class="mini-list"><li>Revenue trends: improving</li><li>Profit trends: slightly softer</li><li>Cash trends: strong</li><li>Supplier trends: rising faster than ideal</li><li>KPI improvements: growth quality and visibility both better</li></ul></section>
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Recommendation review</div><h3>Accepted, rejected, revisited</h3></div></div><ul class="mini-list"><li>Recommendations accepted: cost restraint and supplier review</li><li>Recommendations rejected: none in placeholder set</li><li>Worth revisiting: capital investment timing and software stack review</li></ul></section>
       </div>
-      <div class="grid-2">
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Top opportunities</div><h3>Next quarter</h3></div></div><ul class="mini-list"><li>Improve supplier terms</li><li>Accelerate collections</li><li>Refine premium revenue mix</li></ul></section>
-        <section class="panel"><div class="panel-heading compact"><div><div class="eyebrow">Top risks</div><h3>Next quarter</h3></div></div><ul class="mini-list"><li>Margin softness persisting</li><li>Receivables timing reducing flexibility</li><li>Cost drift normalising if not challenged</li></ul></section>
-      </div>
-    </div>
-  `;
-}
-
-function boardMeetingPage() {
-  return `
-    <div class="board-stage">
-      <section class="board-hero">
-        <div class="panel">
-          <div class="eyebrow">Board Meeting Mode</div>
-          <div class="hero-title">Sunday Executive Briefing</div>
-          <p class="hero-summary">This mode turns the workspace into a weekly executive conversation. Instead of dashboards, the focus is on business health, executive reports, approvals, risks, and the best decisions for EP Golf Studios this week.</p>
-        </div>
-        <div class="score-tile">
-          <div class="label">Business Health Score</div>
-          <strong>${appState.data.welcome.score}</strong>
-          <small>${appState.data.welcome.label}</small>
-        </div>
-      </section>
-
-      <section class="board-report-grid">
-        <div class="panel"><div class="panel-heading compact"><div><div class="eyebrow">CEO Executive Summary</div><h3>Future integration placeholder</h3></div></div><p>This will later summarise strategic direction, major business trade-offs, and executive alignment.</p></div>
-        <div class="panel"><div class="panel-heading compact"><div><div class="eyebrow">CFO Executive Report</div><h3>Financial position this week</h3></div></div><p>${appState.data.weeklyBriefing.summary}</p></div>
-        <div class="panel"><div class="panel-heading compact"><div><div class="eyebrow">CMO Executive Report</div><h3>Placeholder</h3></div></div><p>Future marketing intelligence will explain demand quality, growth, and campaign effectiveness.</p></div>
-        <div class="panel"><div class="panel-heading compact"><div><div class="eyebrow">COO Executive Report</div><h3>Placeholder</h3></div></div><p>Future operations intelligence will explain delivery capacity, process friction, and execution risk.</p></div>
-      </section>
-
-      <section class="board-matrix">
-        <div class="mode-tile active"><div class="label">Top Opportunities</div><h3>${appState.data.opportunities[0].title}</h3><p>${appState.data.opportunities[0].description}</p></div>
-        <div class="mode-tile active"><div class="label">Top Risks</div><h3>${appState.data.risks[0].impact}</h3><p>${appState.data.risks[0].commentary}</p></div>
-        <div class="mode-tile active"><div class="label">Decisions Required</div><h3>${Object.values(appState.data.approvals).flat().length}</h3><p>Approval-first queue remains intentionally visible and controlled.</p></div>
-        <div class="mode-tile"><div class="label">Approvals Waiting</div><h3>6 active approvals</h3><p>Grouped by accounting, invoices, bills, categorisation, recommendations, and forecast assumptions.</p></div>
-        <div class="mode-tile"><div class="label">This Week's Priorities</div><h3>${appState.data.priorities[0].title}</h3><p>${appState.data.priorities[0].note}</p></div>
-        <div class="mode-tile"><div class="label">Questions Worth Asking</div><h3>Are we protecting flexibility?</h3><p>Challenge the assumptions around collections, margin, and spend before approving new commitments.</p></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-heading compact"><div><div class="eyebrow">Board Questions</div><h3>Questions worth asking this week</h3></div></div>
-        <ul class="board-question-list">
-          ${appState.data.weeklyBriefing.questions.map((item) => `<li>${item}</li>`).join('')}
-        </ul>
-      </section>
-    </div>
-  `;
-}
-
-function renderPage() {
-  if (appState.mode === 'board') return boardMeetingPage();
-
-  const renderers = {
-    workspace: workspacePage,
-    revenue: revenuePage,
-    profit: profitPage,
-    expenses: expensesPage,
-    'supplier-spend': supplierSpendPage,
-    'cash-flow': cashFlowPage,
-    vat: vatPage,
-    forecasting: forecastingPage,
-    'business-kpis': businessKpisPage,
-    'decision-journal': decisionJournalPage,
-    'weekly-briefings': weeklyBriefingsPage,
-    'approval-centre': approvalCentrePage,
-    settings: settingsPage,
-    'financial-health': financialHealthPage,
-    'opportunity-register': opportunityRegisterPage,
-    'risk-register': riskRegisterPage,
-    'quarterly-review': quarterlyReviewPage
+    `,
+    charts: []
   };
-
-  return (renderers[appState.currentPage] || workspacePage)();
 }
 
-function attachEvents() {
+function settingsView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Settings', title: 'Prototype controls and future connections', body: 'This page exists to make the future operating model clear before anything live is connected.' })}
+          ${pageQuestions('settings')}
+          <div class="settings-grid">
+            ${['QuickBooks', 'Starling', ...MOCK_DATA.settingsPlaceholders].map((item) => integrationTile(item)).join('')}
+          </div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Future integration placeholders', title: 'Connected intelligence sources', body: 'Each item below is intentionally a placeholder for future connection.' })}
+          <div class="tile-grid">
+            ${MOCK_DATA.integrations.map((item) => integrationTile(item)).join('')}
+          </div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Keyboard shortcuts', title: 'Fast navigation', body: 'Designed to make the workspace feel fast and executive-friendly.' })}
+          <div class="shortcut-grid">${MOCK_DATA.shortcuts.map((item) => `<div class="command-chip"><strong>${escapeHtml(item.keys)}</strong><span>${escapeHtml(item.action)}</span></div>`).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function financialHealthView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Financial Health Score', title: 'Score transparency', body: 'The score is useful because the weighting, movement, and recommendations are visible.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'pulse', label: 'Current score', value: String(MOCK_DATA.welcome.score), body: MOCK_DATA.welcome.label })}
+            ${statCard({ iconName: 'pulse', label: 'Previous score', value: String(MOCK_DATA.welcome.previousScore), body: 'Immediate comparison point.' })}
+            ${statCard({ iconName: 'trending-up', label: 'Trend', value: MOCK_DATA.welcome.trend, body: 'Higher because cash and growth quality improved.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Why it changed', value: 'Cash + growth', body: 'Margin softened slightly, but the broader balance still improved.' })}
+          </div>
+        </section>
+        ${pageQuestions('financial-health')}
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'KPI Gauge', title: 'Current score gauge', canvasId: 'chart-health-gauge', meta: 'Placeholder gauge using Chart.js.' })}
+          ${chartCard({ eyebrow: 'Historical Scores', title: 'Historical score trend', canvasId: 'chart-health-history', meta: 'How the score has evolved over time.' })}
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Weighting breakdown', title: 'Why the score looks the way it does' })}
+          <div class="tile-grid">${MOCK_DATA.kpis.weights.map((item) => insightCard({ eyebrow: item.weight, title: item.title, body: item.note, tone: 'neutral' })).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: [chartSpec('kpiGauge', 'chart-health-gauge', 'Financial health gauge'), chartSpec('historicalScores', 'chart-health-history', 'Historical score trend')]
+  };
+}
+
+function opportunityRegisterView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Opportunity Register', title: 'Permanent opportunity register', body: 'Each opportunity is structured for action, not just recorded as an idea.' })}
+          ${pageQuestions('opportunity-register')}
+          <div class="section-stack">
+            ${MOCK_DATA.opportunities
+              .map(
+                (entry) => registerRow({
+                  kicker: `${pill(entry.category, 'info')}${pill(entry.confidence, entry.confidence === 'High' ? 'good' : 'warn')}${pill(entry.strategicPriority, entry.strategicPriority === 'Immediate' ? 'warn' : 'good')}`,
+                  title: entry.title,
+                  body: entry.description,
+                  extra: `
+                    <div class="grid-4">
+                      ${statCard({ iconName: 'trending-up', label: 'Revenue increase', value: entry.revenueIncrease, body: 'Placeholder estimate.' })}
+                      ${statCard({ iconName: 'coins', label: 'Profit increase', value: entry.profitIncrease, body: 'Placeholder estimate.' })}
+                      ${statCard({ iconName: 'wallet', label: 'Estimated cost', value: entry.cost, body: 'Execution cost placeholder.' })}
+                      ${statCard({ iconName: 'calendar', label: 'Review date', value: entry.reviewDate, body: `Status: ${entry.status}` })}
+                    </div>
+                  `
+                })
+              )
+              .join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function riskRegisterView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Risk Register', title: 'Permanent risk register', body: 'A living document of business risk, mitigation, trend, and ownership.' })}
+          ${pageQuestions('risk-register')}
+          <div class="section-stack">
+            ${MOCK_DATA.risks
+              .map(
+                (risk) => registerRow({
+                  kicker: `${pill(risk.level, risk.level === 'High' ? 'risk' : 'warn')}${pill(risk.trend, risk.trend === 'Improving' ? 'good' : risk.trend === 'Stable' ? 'neutral' : 'warn')}`,
+                  title: risk.impact,
+                  body: risk.commentary,
+                  extra: `
+                    <div class="grid-4">
+                      ${statCard({ iconName: 'alert-triangle', label: 'Probability', value: risk.probability, body: 'Placeholder risk probability.' })}
+                      ${statCard({ iconName: 'shield', label: 'Mitigation', value: 'Plan active', body: risk.mitigation })}
+                      ${statCard({ iconName: 'home', label: 'Owner', value: risk.owner, body: 'Review owner placeholder.' })}
+                      ${statCard({ iconName: 'calendar', label: 'Review date', value: risk.reviewDate, body: `Trend: ${risk.trend}` })}
+                    </div>
+                  `
+                })
+              )
+              .join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function quarterlyReviewView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="board-shell">
+          ${sectionHeader({ eyebrow: 'Quarterly Executive Review', title: 'Prepared board paper', body: 'This page is intended to feel like a professionally prepared executive review rather than a dashboard.' })}
+          <div class="grid-3">
+            ${insightCard({ eyebrow: 'Business Performance', title: 'Healthy with margin watchpoints', body: 'Growth and cash remain positive, but margin quality deserves close control.', tone: 'info' })}
+            ${insightCard({ eyebrow: 'Recommendations Accepted', title: 'Control-focused wins', body: 'Cost restraint and supplier review were the most valuable accepted recommendations.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Lessons Learned', title: 'Small drifts compound fast', body: 'Supplier concentration and discretionary spend drift become strategic issues sooner than expected.', tone: 'warn' })}
+          </div>
+          <div class="grid-2">
+            ${insightCard({ eyebrow: 'Top Opportunities for Next Quarter', title: 'Collections, supplier terms, premium mix', body: 'These are the clearest routes to improving flexibility and margin quality.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Top Risks for Next Quarter', title: 'Margin softness, timing, and control drift', body: 'If left unchecked, these could erode strategic calm.', tone: 'risk' })}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function boardMeetingView() {
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="board-shell">
+          ${sectionHeader({ eyebrow: 'Board Meeting Mode', title: 'Sunday Executive Briefing', body: 'This mode transforms the workspace into a board conversation rather than a dashboard view.' })}
+          <div class="board-hero">
+            <div class="summary-banner">
+              <div class="hero-title">Leadership briefing for EP Golf Studios</div>
+              <p class="hero-summary">This board-focused view is designed to feel like sitting down with the executive team. Instead of pages and widgets, the emphasis is on the business health score, executive summaries, top opportunities, top risks, approvals waiting, and the best questions worth asking this week.</p>
+            </div>
+            <div class="score-tile">
+              <div class="label">Business Health Score</div>
+              <strong class="score-value">${MOCK_DATA.welcome.score}</strong>
+              <div class="score-note">${escapeHtml(MOCK_DATA.welcome.label)}</div>
+            </div>
+          </div>
+          <div class="board-shell-grid">
+            ${insightCard({ eyebrow: 'CEO Executive Summary', title: 'Future integration placeholder', body: 'This will later summarise strategic priorities, major trade-offs, and business direction.', tone: 'neutral' })}
+            ${insightCard({ eyebrow: 'CFO Executive Report', title: 'Current financial position', body: MOCK_DATA.weeklyBriefing.summary, tone: 'info' })}
+            ${insightCard({ eyebrow: 'CMO Executive Report', title: 'Placeholder', body: 'Future marketing intelligence will explain demand quality, campaign return, and brand momentum.', tone: 'neutral' })}
+            ${insightCard({ eyebrow: 'COO Executive Report', title: 'Placeholder', body: 'Future operations intelligence will explain capacity, delivery friction, and execution risk.', tone: 'neutral' })}
+          </div>
+          <div class="chart-grid board-mode-grid">
+            ${insightCard({ eyebrow: 'Top Opportunities', title: MOCK_DATA.opportunities[0].title, body: MOCK_DATA.opportunities[0].description, tone: 'good' })}
+            ${insightCard({ eyebrow: 'Top Risks', title: MOCK_DATA.risks[0].impact, body: MOCK_DATA.risks[0].commentary, tone: 'risk' })}
+            ${insightCard({ eyebrow: 'Decisions Required', title: '6 approvals waiting', body: 'The approval queue is visible and grouped to preserve control.', tone: 'warn' })}
+            ${insightCard({ eyebrow: 'This Week’s Priorities', title: MOCK_DATA.homepage.priorities[0].title, body: MOCK_DATA.homepage.priorities[0].note, tone: 'info' })}
+            ${insightCard({ eyebrow: 'Approvals Waiting', title: 'High signal, low noise', body: 'Accounting, invoices, bills, recommendations, and forecast assumptions are all visible in one governed queue.', tone: 'neutral' })}
+            ${insightCard({ eyebrow: 'Questions Worth Asking', title: 'Are we protecting flexibility?', body: 'Challenge assumptions around collections, margin, and spend before new commitments are approved.', tone: 'neutral' })}
+          </div>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Questions Worth Asking', title: 'Board conversation prompts' })}
+            <ul class="board-question-list">${MOCK_DATA.weeklyBriefing.questions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+          </section>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function renderView() {
+  if (state.mode === 'board') return boardMeetingView();
+  const renderers = {
+    workspace: workspaceView,
+    revenue: revenueView,
+    profit: profitView,
+    expenses: expensesView,
+    'supplier-spend': supplierSpendView,
+    'cash-flow': cashFlowView,
+    vat: vatView,
+    forecasting: forecastingView,
+    'business-kpis': businessKpisView,
+    'decision-journal': decisionJournalView,
+    'weekly-briefings': weeklyBriefingsView,
+    'approval-centre': approvalCentreView,
+    settings: settingsView,
+    'financial-health': financialHealthView,
+    'opportunity-register': opportunityRegisterView,
+    'risk-register': riskRegisterView,
+    'quarterly-review': quarterlyReviewView
+  };
+  return (renderers[state.page] || workspaceView)();
+}
+
+function attachPageEvents() {
   pageContent.querySelectorAll('[data-metric]').forEach((button) => {
     button.addEventListener('click', () => {
-      appState.activeMetric = button.dataset.metric;
+      state.activeMetric = button.dataset.metric;
       render();
     });
   });
 
-  pageContent.querySelectorAll('[data-question]').forEach((button) => {
+  pageContent.querySelectorAll('[data-quick-page]').forEach((button) => {
+    button.addEventListener('click', () => setPage(button.dataset.quickPage));
+  });
+
+  pageContent.querySelectorAll('.follow-up-chip').forEach((button) => {
     button.addEventListener('click', () => {
-      appState.activeQuestion = Number(button.dataset.question);
-      render();
+      state.activeQuestion = 0;
+      const question = button.dataset.followUp || '';
+      openCommandPalette(question);
     });
   });
 
-  pageContent.querySelectorAll('[data-page-link]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      setPage(link.dataset.pageLink);
-    });
-  });
-
-  pageContent.querySelectorAll('.supplier-link').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      const supplier = appState.data.suppliers.find((item) => item.id === link.dataset.supplier);
+  pageContent.querySelectorAll('.supplier-link').forEach((button) => {
+    button.addEventListener('click', () => {
+      const supplier = MOCK_DATA.suppliers.find((item) => item.id === button.dataset.supplier);
       if (!supplier) return;
-      const card = document.createElement('div');
-      card.className = 'drilldown-card';
-      card.innerHTML = `
-        <div class="label">Supplier drill-down placeholder</div>
-        <h4>${supplier.name}</h4>
-        <p>This placeholder page will later expand into a full supplier intelligence view with invoice history, term analysis, margin impact, and payment pattern review.</p>
-        <div class="drilldown-meta">${pill(supplier.risk + ' risk', supplier.risk === 'Low' ? 'good' : 'warn')}${pill(supplier.category, 'info')}</div>
-      `;
-      link.parentElement.appendChild(card);
-      link.remove();
+      const holder = document.createElement('div');
+      holder.className = 'drilldown-card';
+      holder.innerHTML = `${sectionHeader({ eyebrow: 'Supplier drill-down placeholder', title: supplier.name, body: 'This placeholder will later expand into invoice history, term analysis, payment timing, and margin contribution intelligence.' })}${insightCard({ eyebrow: 'Future view', title: 'Supplier drill-down page', body: 'Will include invoice history, term changes, category contribution, and AI supplier commentary.', tone: 'info' })}`;
+      button.replaceWith(holder);
     });
   });
 
   const search = document.getElementById('journal-search');
   if (search) {
     search.addEventListener('input', (event) => {
-      appState.journalQuery = event.target.value;
+      state.journalQuery = event.target.value;
       render();
     });
   }
+
+  pageContent.querySelectorAll('.quick-action-button').forEach((button) => {
+    button.addEventListener('click', () => openCommandPalette(button.textContent.trim()));
+  });
+}
+
+function renderCommandPalette() {
+  const query = state.commandQuery.trim().toLowerCase();
+  const pages = [...NAV_PRIMARY, ...NAV_SECONDARY]
+    .map(([id, label, iconName]) => ({ id, label, iconName, type: 'Page' }))
+    .concat(MOCK_DATA.homepage.quickActions.map((label) => ({ id: 'workspace', label, iconName: 'sparkles', type: 'Action' })));
+
+  const filtered = pages.filter((item) => item.label.toLowerCase().includes(query));
+
+  paletteResults.innerHTML = filtered
+    .map(
+      (item) => `
+        <button type="button" class="command-result" data-command-page="${item.id}">
+          <span class="card-kicker">${icon(item.iconName)}<span>${escapeHtml(item.label)}</span></span>
+          <small>${escapeHtml(item.type)}</small>
+        </button>
+      `
+    )
+    .join('');
+
+  paletteResults.querySelectorAll('[data-command-page]').forEach((button) => {
+    button.addEventListener('click', () => {
+      closeCommandPalette();
+      setMode('workspace');
+      setPage(button.dataset.commandPage);
+    });
+  });
+}
+
+function openCommandPalette(prefill = '') {
+  state.commandOpen = true;
+  state.commandQuery = prefill;
+  paletteBackdrop.classList.remove('hidden');
+  paletteBackdrop.setAttribute('aria-hidden', 'false');
+  paletteInput.value = prefill;
+  renderCommandPalette();
+  setTimeout(() => paletteInput.focus(), 0);
+}
+
+function closeCommandPalette() {
+  state.commandOpen = false;
+  paletteBackdrop.classList.add('hidden');
+  paletteBackdrop.setAttribute('aria-hidden', 'true');
+}
+
+function attachGlobalEvents() {
+  navSearch.value = state.navQuery;
+  navSearch.addEventListener('input', (event) => {
+    state.navQuery = event.target.value;
+    renderSidebar();
+  });
+
+  sidebarToggle.addEventListener('click', () => {
+    if (window.innerWidth <= 1080) {
+      state.sidebarOpen = !state.sidebarOpen;
+      appShell.classList.toggle('sidebar-open', state.sidebarOpen);
+    } else {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+      appShell.classList.toggle('sidebar-collapsed', state.sidebarCollapsed);
+      saveState();
+    }
+  });
+
+  themeToggle.addEventListener('click', () => setTheme(state.theme === 'dark' ? 'midnight' : 'dark'));
+  commandLauncher.addEventListener('click', () => openCommandPalette());
+  paletteClose.addEventListener('click', closeCommandPalette);
+  paletteBackdrop.addEventListener('click', (event) => {
+    if (event.target === paletteBackdrop) closeCommandPalette();
+  });
+  paletteInput.addEventListener('input', (event) => {
+    state.commandQuery = event.target.value;
+    renderCommandPalette();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    const isMetaK = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k';
+    if (isMetaK) {
+      event.preventDefault();
+      openCommandPalette();
+      return;
+    }
+    if (event.key === '/' && document.activeElement !== paletteInput && document.activeElement !== navSearch) {
+      event.preventDefault();
+      navSearch.focus();
+      return;
+    }
+    if (event.key.toLowerCase() === 'b' && !event.metaKey && !event.ctrlKey) {
+      setMode('board', { withLoading: true });
+      return;
+    }
+    if (event.key.toLowerCase() === 'w' && !event.metaKey && !event.ctrlKey) {
+      setMode('workspace', { withLoading: true });
+      return;
+    }
+    if (event.key === 'Escape') {
+      closeCommandPalette();
+      if (window.innerWidth <= 1080) {
+        state.sidebarOpen = false;
+        appShell.classList.remove('sidebar-open');
+      }
+    }
+  });
 }
 
 function render() {
-  const meta = PAGE_META[appState.currentPage] || PAGE_META.workspace;
-  pageTitle.textContent = appState.mode === 'board' ? 'Board Meeting Mode' : meta.title;
-  pageSubtitle.textContent =
-    appState.mode === 'board'
-      ? 'A Sunday-morning executive briefing view for leadership-level discussion.'
-      : meta.subtitle;
-  breadcrumb.textContent = appState.mode === 'board' ? 'EP Intelligence / Board Meeting' : `EP Intelligence / CFO Workspace / ${meta.title}`;
-
-  renderNav(primaryNav, NAV_PRIMARY);
-  renderNav(secondaryNav, NAV_SECONDARY);
-  renderModeSwitcher();
-
-  pageContent.innerHTML = renderPage();
-  attachEvents();
+  destroyCharts();
+  appShell.classList.toggle('sidebar-collapsed', state.sidebarCollapsed && window.innerWidth > 1080);
+  appShell.classList.toggle('sidebar-open', state.sidebarOpen && window.innerWidth <= 1080);
+  renderSidebar();
+  renderTopbar();
+  const view = renderView();
+  pageContent.innerHTML = view.html;
+  attachPageEvents();
+  renderCharts(view.charts);
+  pageContent.focus();
 }
 
-loadFromUrl();
-render();
+let skeletonTimer;
+function renderWithSkeleton() {
+  clearTimeout(skeletonTimer);
+  destroyCharts();
+  pageContent.innerHTML = loadingSkeleton();
+  skeletonTimer = setTimeout(() => render(), 140);
+}
+
+function validateStartup() {
+  const required = [primaryNav, secondaryNav, pageContent, modeSwitcher];
+  if (required.some((node) => !node)) {
+    throw new Error('EP Intelligence failed to initialise required DOM nodes.');
+  }
+}
+
+function bootstrap() {
+  validateStartup();
+  loadState();
+  loadFromUrl();
+  attachGlobalEvents();
+  setTheme(state.theme);
+  renderWithSkeleton();
+}
+
+bootstrap();

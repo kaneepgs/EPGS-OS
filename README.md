@@ -1,69 +1,123 @@
 # EP Intelligence
 
-EP Intelligence is an AI Executive Operating System for EP Golf Studios that helps the business make faster, better-informed, evidence-based decisions using connected data, transparent AI reasoning, historical intelligence, and approval-first automation.
+EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios.
 
-## Purpose
-
-This project defines the operating foundation for a multi-executive AI system that can support leadership across finance, marketing, operations, and strategy.
+This repo currently focuses on a **polished CFO Executive Workspace** built for demos, stakeholder presentations, and future live-integration planning — while staying entirely static and powered by realistic mock data.
 
 ## Current Sprint State
 
-### Sprint 1
+### Sprint 1 — Foundation
 
 Documentation and architecture foundation only.
 
 ### Sprint 2 — CFO Workspace v0.1
 
-The project now includes the first working CFO Workspace prototype homepage.
+Introduced the first working executive homepage with:
 
-- polished executive-style workspace experience
-- placeholder financial health score and summary
-- clickable executive summary cards
+- polished workspace layout
+- placeholder Financial Health Score
+- summary cards
 - priorities, opportunities, risks, and approval centre
-- Sunday weekly briefing preview
-- natural-language “Ask My CFO” experience with placeholder responses
+- weekly briefing preview
+- natural-language “Ask My CFO” placeholder experience
 
 ### Sprint 3 — CFO Executive Workspace v0.2
 
-The project now expands into a broader executive operating system prototype.
+Expanded the prototype into a larger static SPA with:
 
-- full pages for Revenue, Profit, Expenses, Supplier Spend, Cash Flow, VAT, Forecasting, Business KPIs, Decision Journal, Weekly Briefings, Approval Centre, and Settings
+- full CFO pages for Revenue, Profit, Expenses, Supplier Spend, Cash Flow, VAT, Forecasting, Business KPIs, Decision Journal, Weekly Briefings, Approval Centre, and Settings
 - dedicated Financial Health Score, Opportunity Register, Risk Register, and Quarterly Review pages
-- Board Meeting mode for a Sunday executive briefing experience
-- breadcrumb navigation, calmer transitions, richer charts, and more premium executive framing
-- searchable Decision Journal timeline and supplier drill-down placeholders
+- Board Meeting mode
+- breadcrumb navigation, searchable decision journal, and richer executive framing
 
-Still excluded from this sprint:
+### Sprint 4 — CFO Executive Workspace v0.3
 
-- no live API integrations
-- no live financial account connections
-- no automation or backend execution
+Polished the prototype into a more deployment-ready executive application with:
 
-## Initial Executive Domains
+- upgraded visual system, spacing, hierarchy, hover states, loading skeletons, and smoother transitions
+- improved responsive behaviour and dark-mode presentation
+- collapsible sidebar, page search, favourites, recently viewed pages, breadcrumbs, keyboard shortcuts, and command palette
+- reusable UI/component layer for cards, commentary, charts, approvals, navigation, and search
+- structured mock data layer separated into metrics, charts, forecasts, approvals, suppliers, risks, opportunities, and commentary
+- interactive Chart.js visualisations for revenue, profit, cash flow, expenses, suppliers, VAT, forecasting, and KPI gauges
+- richer AI executive commentary blocks with executive summary, evidence, confidence, impact, risks, alternatives, recommended action, missing information, and follow-up prompts
+- deployment-readiness assets including favicon, web manifest, metadata, package scripts, and cleaner static-project structure
 
-- CEO — business direction, priorities, risk, and strategic trade-offs
-- CFO — finance, accounting, forecasting, cash discipline, and commercial insight
-- COO — operational execution, capacity, process, and delivery discipline
-- CMO — growth, brand, marketing performance, and content effectiveness
+## Constraints
 
-## Core Design Principles
+This prototype intentionally remains:
+
+- **HTML + CSS + Vanilla JavaScript only**
+- **frontend-only**
+- **mock-data-only**
+- **without APIs, backend, auth, databases, external services, or automation**
+
+## Project Structure
+
+- `index.html` — main app shell and metadata
+- `assets/app.js` — application state, routing, rendering, and interactions
+- `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
+- `assets/data/mock-data.js` — structured mock executive/financial data
+- `assets/ui/components.js` — reusable UI render helpers
+- `assets/ui/charts.js` — Chart.js render/destroy helpers
+- `assets/vendor/chart.umd.js` — local Chart.js bundle for static hosting
+- `assets/favicon.svg` — favicon / OG image source
+- `assets/site.webmanifest` — install metadata
+- `docs/` — architecture and constitutional documents
+- `specifications/` — executive role specifications
+- `prompts/` — future OpenClaw executive build prompts
+- `skills/` — draft executive skills
+- `changelog/` — sprint history
+
+## Run Locally
+
+```bash
+npm install
+npm run vendor:chart
+npm run validate:js
+npm run serve
+```
+
+Then open:
+
+- `http://127.0.0.1:3012`
+
+## Deployment Targets
+
+The project is structured to be easy to host on:
+
+- Replit
+- Vercel
+- Hostinger static hosting / web hosting
+- any simple static web host
+
+No server runtime is required.
+
+## Validation
+
+Sprint 4 validation included:
+
+- `node --check assets/app.js`
+- local static serving via `python3 -m http.server`
+- rendered screenshot captures for:
+  - dashboard
+  - board meeting mode
+  - revenue page
+  - cash flow
+  - executive AI commentary
+  - mobile layout
+
+Validation artifacts are stored in `/data/.openclaw/workspace/.artifacts/`.
+
+## Design Principles
 
 1. Evidence before recommendation
 2. Approval before action
 3. Transparency before automation
 4. Historical learning over one-off analysis
 5. Executive collaboration over siloed advice
-
-## Repository Layout
-
-- `index.html` — CFO Workspace homepage prototype
-- `assets/` — CFO Workspace styling and interaction layer
-- `docs/` — constitutional, architectural, and decision-making foundations
-- `specifications/` — executive role definitions and responsibilities
-- `prompts/` — build prompts for OpenClaw-based executive implementation
-- `skills/` — draft skills for executive agents
-- `changelog/` — project evolution record
+6. Decision support over accounting-software aesthetics
 
 ## Near-Term Outcome
 
-The immediate goal is to pair the operating blueprint with a working executive user experience so later implementation can safely connect business systems, produce weekly executive briefings, preserve decision history, and support approval-first automation.
+The immediate goal is a premium static executive prototype that feels production-ready, gives EP Golf Studios a credible executive workspace for review/demo use, and creates a clean foundation for future live CFO, CMO, COO, and CEO workspaces.

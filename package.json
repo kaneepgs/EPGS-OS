@@ -1,0 +1,21 @@
+{
+  "name": "ep-intelligence",
+  "version": "0.3.0",
+  "private": true,
+  "description": "EP Intelligence executive-grade CFO workspace prototype for EP Golf Studios.",
+  "scripts": {
+    "serve": "python3 -m http.server 3012",
+    "validate:js": "node --check assets/app.js",
+    "vendor:chart": "mkdir -p assets/vendor && cp node_modules/chart.js/dist/chart.umd.js assets/vendor/chart.umd.js"
+  },
+  "keywords": [
+    "executive-workspace",
+    "cfo",
+    "prototype",
+    "chartjs"
+  ],
+  "license": "UNLICENSED",
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  }
+}

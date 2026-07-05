@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EP Intelligence — CFO Executive Workspace</title>
+    <meta
+      name="description"
+      content="EP Intelligence is an executive operating system prototype for EP Golf Studios, designed to help leadership make faster, better-informed financial decisions."
+    />
+    <meta name="theme-color" content="#07101a" />
+    <meta property="og:title" content="EP Intelligence — CFO Executive Workspace" />
+    <meta
+      property="og:description"
+      content="A polished executive-grade CFO workspace prototype for EP Golf Studios using realistic demo data only."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link rel="manifest" href="./assets/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,42 +27,84 @@
     <link rel="stylesheet" href="./assets/styles.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar">
+    <div class="app-shell" id="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
         <div class="brand-card">
           <div class="eyebrow">EP Intelligence</div>
           <h1>CFO Executive Workspace</h1>
-          <p>Premium decision support for EP Golf Studios — calm, evidence-based, approval-first.</p>
+          <p>Executive decision support for EP Golf Studios — calm, premium, approval-first.</p>
+        </div>
+
+        <div class="sidebar-tools">
+          <label class="search-shell sidebar-search" for="nav-search">
+            <span class="label">Page search</span>
+            <input id="nav-search" type="search" placeholder="Filter pages…" aria-label="Filter pages" />
+          </label>
         </div>
 
         <nav class="nav-group" id="primary-nav"></nav>
+
+        <section class="sidebar-section">
+          <div class="label">Favourites</div>
+          <div class="chip-list" id="sidebar-favourites"></div>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="label">Recently viewed</div>
+          <div class="chip-list" id="sidebar-recent"></div>
+        </section>
+
         <nav class="nav-group secondary" id="secondary-nav"></nav>
 
         <div class="sidebar-footer">
           <span class="status-dot"></span>
-          Demo intelligence environment only. No APIs, no automation, no live financial systems.
+          Demo financial intelligence only — no APIs, no automation, no live external systems.
         </div>
       </aside>
 
       <div class="main-column">
         <header class="topbar">
-          <div>
-            <div class="breadcrumb" id="breadcrumb"></div>
-            <h2 id="page-title"></h2>
-            <p id="page-subtitle"></p>
+          <div class="topbar-leading">
+            <button type="button" class="icon-button" id="sidebar-toggle" aria-label="Toggle sidebar"></button>
+            <div>
+              <div class="breadcrumb" id="breadcrumb"></div>
+              <h2 id="page-title"></h2>
+              <p id="page-subtitle"></p>
+            </div>
           </div>
 
           <div class="topbar-actions">
-            <div class="mode-switcher" id="mode-switcher"></div>
+            <button type="button" class="icon-button wide" id="command-launcher" aria-label="Open command palette">
+              <span class="command-hint">Ctrl/Cmd + K</span>
+            </button>
+            <div class="mode-switcher" id="mode-switcher" role="tablist" aria-label="View mode"></div>
+            <button type="button" class="icon-button" id="theme-toggle" aria-label="Toggle dark theme"></button>
           </div>
         </header>
 
         <main class="page-stage">
-          <section class="page-transition" id="page-content"></section>
+          <section class="page-transition" id="page-content" tabindex="-1"></section>
         </main>
       </div>
     </div>
 
+    <div class="palette-backdrop hidden" id="palette-backdrop" aria-hidden="true">
+      <div class="palette" role="dialog" aria-modal="true" aria-labelledby="palette-title">
+        <div class="palette-header">
+          <div>
+            <div class="eyebrow">Command Palette</div>
+            <h3 id="palette-title">Jump anywhere</h3>
+          </div>
+          <button type="button" class="icon-button" id="palette-close" aria-label="Close command palette"></button>
+        </div>
+        <div class="search-shell palette-search">
+          <input id="palette-input" type="search" placeholder="Search pages, reports, actions…" aria-label="Search command palette" />
+        </div>
+        <div class="palette-results" id="palette-results"></div>
+      </div>
+    </div>
+
+    <script src="./assets/vendor/chart.umd.js"></script>
     <script type="module" src="./assets/app.js"></script>
   </body>
 </html>

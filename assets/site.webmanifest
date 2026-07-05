@@ -1,0 +1,16 @@
+{
+  "name": "EP Intelligence",
+  "short_name": "EP Intel",
+  "description": "Executive-grade CFO workspace prototype for EP Golf Studios.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07101a",
+  "theme_color": "#07101a",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
