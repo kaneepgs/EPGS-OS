@@ -18,6 +18,51 @@ export const INTEGRATION_REGISTRY = Object.freeze([
     notes: 'Website Analytics can now hydrate from a generated GA4 snapshot while safely falling back to demo data when credentials or snapshot files are missing.'
   },
   {
+    id: 'unified-social',
+    label: 'Unified Social Provider',
+    provider: 'UnifiedSocialProvider',
+    service: 'MarketingService',
+    group: 'Marketing & Analytics',
+    status: 'Live-capable',
+    notes: 'Instagram, Facebook, LinkedIn, and X can now hydrate together from a generated local social snapshot while safely falling back to deterministic demo data.'
+  },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    provider: 'UnifiedSocialProvider',
+    service: 'MarketingService',
+    group: 'Marketing & Analytics',
+    status: 'Live-capable',
+    notes: 'Visual reach, reels/carousel performance, and audience growth can hydrate through the Unified Social Provider snapshot path.'
+  },
+  {
+    id: 'facebook',
+    label: 'Facebook',
+    provider: 'UnifiedSocialProvider',
+    service: 'MarketingService',
+    group: 'Marketing & Analytics',
+    status: 'Live-capable',
+    notes: 'Community reach, engagement, and social proof touchpoints can hydrate through the Unified Social Provider snapshot path.'
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    provider: 'UnifiedSocialProvider',
+    service: 'MarketingService',
+    group: 'Marketing & Analytics',
+    status: 'Live-capable',
+    notes: 'Executive authority, professional reach, and thought-leadership performance can hydrate through the Unified Social Provider snapshot path.'
+  },
+  {
+    id: 'x',
+    label: 'X',
+    provider: 'UnifiedSocialProvider',
+    service: 'MarketingService',
+    group: 'Marketing & Analytics',
+    status: 'Live-capable',
+    notes: 'Audience movement, conversation presence, and lighter-weight awareness signals can hydrate through the Unified Social Provider snapshot path.'
+  },
+  {
     id: 'gmail',
     label: 'Gmail',
     provider: 'GmailProvider',
@@ -43,42 +88,6 @@ export const INTEGRATION_REGISTRY = Object.freeze([
     group: 'Marketing & Analytics',
     status: 'Demo Mode',
     notes: 'Reserved for campaign performance, audience health, and email conversion data.'
-  },
-  {
-    id: 'linkedin',
-    label: 'LinkedIn',
-    provider: 'MarketingProvider',
-    service: 'MarketingService',
-    group: 'Marketing & Analytics',
-    status: 'Demo Mode',
-    notes: 'Reserved for executive authority, reach, and professional engagement signals.'
-  },
-  {
-    id: 'facebook',
-    label: 'Facebook',
-    provider: 'MarketingProvider',
-    service: 'MarketingService',
-    group: 'Marketing & Analytics',
-    status: 'Demo Mode',
-    notes: 'Reserved for community reach, engagement, and campaign touchpoints.'
-  },
-  {
-    id: 'instagram',
-    label: 'Instagram',
-    provider: 'MarketingProvider',
-    service: 'MarketingService',
-    group: 'Marketing & Analytics',
-    status: 'Demo Mode',
-    notes: 'Reserved for reach, visual performance, and top content momentum.'
-  },
-  {
-    id: 'x',
-    label: 'X',
-    provider: 'MarketingProvider',
-    service: 'MarketingService',
-    group: 'Marketing & Analytics',
-    status: 'Demo Mode',
-    notes: 'Reserved for audience movement, conversation volume, and content reach.'
   },
   {
     id: 'accounting',

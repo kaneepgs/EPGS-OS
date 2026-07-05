@@ -1777,6 +1777,12 @@ function cmoSocialOverviewView() {
             ${insightCard({ eyebrow: data.lowestContent.platform, title: data.lowestContent.title, body: data.lowestContent.metric, tone: 'warn' })}
           </section>
         </div>
+
+        <div class="grid-3">
+          ${insightCard({ eyebrow: 'Social Health Score', title: `${data.socialHealth?.score || '—'} / 100`, body: data.socialHealth?.summary || 'Social health summary unavailable.', tone: data.socialHealth?.tone || 'info' })}
+          ${insightCard({ eyebrow: 'Attribution', title: data.attribution?.bestAssistedChannel || 'Attribution summary', body: data.attribution?.summary || 'Attribution summary unavailable.', tone: 'info' })}
+          ${insightCard({ eyebrow: 'Competitor benchmark', title: data.competitorBenchmark?.leader || 'Benchmark summary', body: data.competitorBenchmark?.summary || 'Competitor benchmark summary unavailable.', tone: 'good' })}
+        </div>
       </div>
     `,
     charts: [
@@ -1939,6 +1945,18 @@ function cmoCampaignPerformanceView() {
         </div>
 
         <section class="panel">
+          ${sectionHeader({ eyebrow: 'Marketing attribution', title: data.attribution?.bestAssistedChannel || 'Attribution summary', body: data.attribution?.summary || 'Attribution summary unavailable.' })}
+          <div class="grid-3">
+            ${statCard({ iconName: 'coins', label: 'Attributed revenue', value: data.attribution?.revenueAttributed || '—', body: 'Deterministic attribution summary across the current marketing estate.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Best assisted channel', value: data.attribution?.bestAssistedChannel || '—', body: 'The channel doing the most visible assisted-demand work right now.' })}
+            ${statCard({ iconName: 'target', label: 'Weakest channel', value: data.attribution?.weakestChannel || '—', body: 'A candidate for lighter-touch maintenance unless its role becomes clearer.' })}
+          </div>
+          <div class="tile-grid">
+            ${(data.attribution?.touchpoints || []).map((item) => insightCard({ eyebrow: `${item.channel} · ${item.share}`, title: item.channel, body: item.note, tone: 'info' })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
           ${sectionHeader({ eyebrow: 'Campaign register', title: 'Current mock campaign set', body: 'Each campaign is framed as a strategic asset, not just a line in a report.' })}
           <div class="section-stack">
             ${data.campaigns
@@ -2022,7 +2040,7 @@ function cmoCompetitorAnalysisView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Competitor analysis', body: 'A placeholder executive comparison surface for future competitive intelligence.' })}
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Competitor analysis', body: 'A deterministic executive comparison surface for positioning, benchmark pressure, and where EP should attack with stronger proof.' })}
           ${renderRoutePillbar(SUBNAV.cmo)}
         </section>
 
@@ -2064,6 +2082,15 @@ function cmoCompetitorAnalysisView() {
             <div class="section-stack">${data.threats.map((item) => insightCard({ eyebrow: 'Threat', title: item, body: 'Strategic watchpoint placeholder.', tone: 'risk' })).join('')}</div>
           </section>
         </div>
+
+        ${data.benchmark ? `
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Benchmark summary', title: data.benchmark.leader || 'Competitive positioning', body: data.benchmark.summary || 'Competitive benchmark summary unavailable.' })}
+            <div class="tile-grid">
+              ${(data.benchmark.benchmark || []).map((item) => insightCard({ eyebrow: `${item.platform} · ${item.standing}`, title: `${item.score} / 100`, body: `${item.gap}. ${item.note}`, tone: item.standing === 'Leader' ? 'good' : item.standing === 'Underweight' ? 'warn' : 'info' })).join('')}
+            </div>
+          </section>
+        ` : ''}
       </div>
     `,
     charts: [
@@ -2211,7 +2238,7 @@ function cmoReportsView() {
           ${sectionHeader({ eyebrow: 'Reporting sections', title: 'What the v1.1 marketing pack now contains', body: 'The reporting layer now combines live summaries, deterministic findings, risks, and recommended actions.' })}
           <div class="tile-grid">
             ${data.sections.map((item) => insightCard({ eyebrow: 'Report section', title: item, body: 'This section is now part of the reusable marketing reporting pack.', tone: 'neutral' })).join('')}
-            ${insightCard({ eyebrow: 'New in v1.1', title: 'Marketing Intelligence Report', body: 'A proper executive marketing report now packages GA4, YouTube, cross-channel findings, risks, and recommended actions together.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'New in Sprint 18', title: 'Unified Social Provider', body: 'The marketing report now packages GA4, YouTube, Instagram, Facebook, LinkedIn, X, competitor benchmarking, attribution, risks, and recommended actions together.', tone: 'good' })}
           </div>
         </section>
 
@@ -2358,7 +2385,7 @@ function reportsOverviewView() {
     { title: 'Executive Timeline', body: 'Permanent business chronology of launches, milestones, and structural changes.', route: '/reports/executive-timeline' },
     { title: 'Decision Journal', body: 'Structured executive decision memory with reasons, outcomes, and linked KPIs.', route: '/reports/decision-journal' },
     { title: 'Strategic Goals', body: 'Persistent goals linked to metrics, decisions, and owners.', route: '/reports/strategic-goals' },
-    { title: 'Marketing Intelligence Report', body: 'Packaged GA4 + YouTube intelligence with source clarity, cross-channel findings, risks, and actions.', route: '/reports/cmo-reports' }
+    { title: 'Marketing Intelligence Report', body: 'Packaged GA4, YouTube, Unified Social, competitor benchmarking, attribution, risks, and actions.', route: '/reports/cmo-reports' }
   ];
   return {
     html: `
@@ -2693,8 +2720,14 @@ function marketingIntelligenceReportView() {
           </section>
         </div>
 
+        <div class="grid-3">
+          ${insightCard({ eyebrow: 'Social Health Score', title: `${data.socialHealth?.score || '—'} / 100`, body: data.socialSummary?.body || data.socialHealth?.summary || 'Unified social summary unavailable.', tone: data.socialHealth?.tone || 'info' })}
+          ${insightCard({ eyebrow: 'Attribution', title: data.attribution?.bestAssistedChannel || 'Attribution summary', body: data.attribution?.summary || 'Attribution summary unavailable.', tone: 'info' })}
+          ${insightCard({ eyebrow: 'Competitor benchmark', title: data.competitorBenchmark?.leader || 'Competitive positioning', body: data.competitorBenchmark?.summary || 'Competitor benchmark unavailable.', tone: 'good' })}
+        </div>
+
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Cross-channel findings', title: 'How website and YouTube now work together', body: 'These are deterministic findings generated from the current provider-backed marketing state.' })}
+          ${sectionHeader({ eyebrow: 'Cross-channel findings', title: 'How website, YouTube, and the social estate now work together', body: 'These are deterministic findings generated from the current provider-backed marketing state.' })}
           <div class="tile-grid">
             ${data.crossChannelFindings.map((item) => insightCard({ eyebrow: `${item.priority} · ${item.businessImpact}`, title: item.title, body: item.executiveSummary, tone: item.tone || toneFromPriority(item.priority) })).join('')}
           </div>
@@ -2711,6 +2744,21 @@ function marketingIntelligenceReportView() {
             ${sectionHeader({ eyebrow: 'Risks', title: 'What could limit return', body: 'The report should be honest about where marketing confidence is still capped.' })}
             <div class="section-stack">
               ${data.risks.map((item) => insightCard({ eyebrow: 'Risk', title: item.title, body: item.body, tone: item.tone || 'warn' })).join('')}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Competitor benchmark', title: data.competitorBenchmark?.leader || 'Competitive positioning', body: data.competitorBenchmark?.summary || 'Competitor benchmark summary unavailable.' })}
+            <div class="section-stack">
+              ${(data.competitorBenchmark?.benchmark || []).map((item) => insightCard({ eyebrow: `${item.platform} · ${item.standing}`, title: `${item.score} / 100`, body: `${item.gap}. ${item.note}`, tone: item.standing === 'Leader' ? 'good' : item.standing === 'Underweight' ? 'warn' : 'info' })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Attribution mix', title: data.attribution?.revenueAttributed || 'Attributed demand', body: data.attribution?.summary || 'Attribution summary unavailable.' })}
+            <div class="section-stack">
+              ${(data.attribution?.touchpoints || []).map((item) => insightCard({ eyebrow: `${item.channel} · ${item.share}`, title: item.channel, body: item.note, tone: 'info' })).join('')}
             </div>
           </section>
         </div>

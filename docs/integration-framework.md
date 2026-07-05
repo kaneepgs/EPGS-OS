@@ -56,8 +56,10 @@ Current state:
 - `MockProvider` remains the baseline provider
 - `AnalyticsProvider` is now the first live-capable provider and selectively overrides only Website Analytics when a generated GA4 snapshot exists
 - `YouTubeProvider` now composes on top of `AnalyticsProvider` and selectively overrides the YouTube portions of the marketing workspace when a generated local YouTube snapshot exists
-- Sprint 11 now packages those two live-capable paths into a reusable **Marketing Intelligence** layer without adding any new providers
-- placeholder providers remain registered for Finance, Marketing, CRM, Calendar, and AI
+- `UnifiedSocialProvider` now composes on top of `YouTubeProvider` and can selectively overlay Instagram, Facebook, LinkedIn, and X from one generated local social snapshot while preserving per-platform demo fallback
+- Sprint 11 packages GA4 + YouTube into a reusable **Marketing Intelligence** layer, and Sprint 18 extends that same layer with social health, attribution, competitor benchmarking, and cross-platform reporting without adding direct browser-side APIs
+- `GmailProvider` and `CalendarProvider` extend the same runtime pattern into communications and operations
+- placeholder providers remain registered for Finance, CRM, and AI
 
 Rules:
 
@@ -75,7 +77,7 @@ It:
 - creates the provider registry
 - instantiates the services
 - instantiates the intelligence layer through `IntelligenceService`
-- assembles marketing-health, source-status, reporting, and memory-milestone outputs from the provider-backed marketing workspace
+- assembles marketing-health, social-health, source-status, attribution, competitor benchmarking, reporting, and memory-milestone outputs from the provider-backed marketing workspace
 - exports `WORKSPACE_DATA` for the current runtime
 - exports `APP_RUNTIME` for configuration and architecture inspection
 
@@ -85,7 +87,7 @@ This file is the main swap-point for future mode changes.
 
 Only one real runtime mode exists today:
 
-- **Demo Mode** — the wider app stays demo-first, while individual providers may still expose safe selective overlays such as the Sprint 8 GA4 Website Analytics snapshot and the Sprint 10 YouTube snapshot path
+- **Demo Mode** — the wider app stays demo-first, while individual providers may still expose safe selective overlays such as the Sprint 8 GA4 Website Analytics snapshot, the Sprint 10 YouTube snapshot path, the Sprint 18 Unified Social snapshot path, the Gmail snapshot path, and the Google Calendar snapshot path
 
 A future mode is reserved but not active:
 
@@ -110,10 +112,12 @@ In Sprint 8, `marketing` moved to `AnalyticsProvider`, which internally decides 
 
 In Sprint 10, `marketing` now binds to `YouTubeProvider`, which composes on top of `AnalyticsProvider` so GA4 Website Analytics and live YouTube channel data can both flow through the same domain without any route-level rewrites.
 
-In Sprint 11, that same single `marketing` domain is used to generate:
+In Sprint 11 and Sprint 18, that same single `marketing` domain is used to generate:
 
 - the Marketing Health Score
+- the Social Health Score
 - clearer hybrid live/demo source coverage cards
+- deterministic attribution and competitor benchmark summaries
 - the packaged Marketing Intelligence Report
 - derived marketing milestones written into provider-independent Executive Memory
 

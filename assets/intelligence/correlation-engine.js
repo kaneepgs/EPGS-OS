@@ -1,4 +1,4 @@
-import { parseCurrency, parsePercent, parseRangeMidpoint } from './engine-utils.js';
+import { average, parseCurrency, parsePercent, parseRangeMidpoint } from './engine-utils.js';
 
 function metricLookup(metrics = []) {
   return Object.fromEntries(
@@ -10,7 +10,7 @@ function metricLookup(metrics = []) {
 
 export function createCorrelationEngine({ confidenceEngine }) {
   return Object.freeze({
-    evaluate({ executive, finance, marketing, communications, approvals }, { health }) {
+    evaluate({ executive, finance, marketing, communications, approvals, operations = {} }, { health }) {
       const revenueTrend = parsePercent(finance.metrics?.find((item) => item.key === 'revenue')?.trend);
       const profitTrend = parsePercent(finance.metrics?.find((item) => item.key === 'profit')?.trend);
       const currentCash = parseCurrency(finance.metrics?.find((item) => item.key === 'cash')?.value);
@@ -57,6 +57,19 @@ export function createCorrelationEngine({ confidenceEngine }) {
       const youtubeAverageViews = parseCurrency(youtubeMetrics['Average Views / Video']);
       const isLiveYouTube = youtubeDataSource.state === 'live-youtube';
       const topYoutubeVideo = marketing.platforms?.youtube?.topContent?.[0] || marketing.contentLibrary?.items?.find((item) => item.platform === 'YouTube')?.title || 'the strongest tracked YouTube upload';
+      const socialRankings = marketing.socialOverview?.rankings || [];
+      const topSocialPlatform = socialRankings[0] || null;
+      const weakestSocialPlatform = socialRankings[socialRankings.length - 1] || null;
+      const socialAverageScore = average(socialRankings.map((item) => Number(item.score || 0)));
+      const socialAverageGrowth = average(socialRankings.map((item) => parsePercent(item.growth, 0)));
+      const socialAttribution = marketing.campaignPerformance?.attribution || {};
+      const attributionTouchpoints = socialAttribution.touchpoints || [];
+      const competitorBenchmark = marketing.competitorAnalysis?.benchmark || {};
+      const competitorGrowthAvg = parsePercent(competitorBenchmark.competitorGrowthAvg, 0);
+      const epGrowthAvg = parsePercent(competitorBenchmark.epGrowthAvg, 0);
+      const liveSocialPlatforms = ['instagram', 'facebook', 'linkedin', 'x']
+        .map((key) => marketing.platforms?.[key]?.dataSource?.state || '')
+        .filter((state) => String(state).startsWith('live-')).length;
 
       const correlations = [];
 
@@ -210,6 +223,100 @@ export function createCorrelationEngine({ confidenceEngine }) {
           prioritySignal: { financialImpact: 81, customerImpact: 79, strategicImportance: 84, timeSensitivity: 75, confidence: confidence.score },
           confidence,
           tone: 'good'
+        });
+      }
+
+      if (socialRankings.length) {
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.91, crossFunctional: 1, consistency: 0.86 });
+        correlations.push({
+          id: 'social-momentum-stack',
+          title: 'The social estate now has a clear performance hierarchy',
+          executiveSummary: `${topSocialPlatform?.platform || 'The strongest social channel'} is leading the social estate at ${topSocialPlatform?.score || '—'}/100 while ${weakestSocialPlatform?.platform || 'the weakest channel'} remains the lightest-return channel. The opportunity is to sequence one proof-led story across Instagram, Facebook, LinkedIn, and X instead of treating every platform as an equal planning problem.`,
+          supportingEvidence: socialRankings.map((item) => `${item.platform}: ${item.score}/100 with ${item.growth} growth.`),
+          businessImpact: 'Social performance → Channel focus → Marketing efficiency',
+          financialImpact: 'Better social channel focus should improve content return and reduce the amount of effort wasted on low-signal distribution.',
+          responsibleDepartment: 'CMO / Content',
+          prioritySignal: { financialImpact: 78, customerImpact: 72, strategicImportance: 86, timeSensitivity: 76, confidence: confidence.score },
+          confidence,
+          tone: socialAverageScore >= 75 ? 'good' : 'warn'
+        });
+      }
+
+      if (socialRankings.some((item) => String(item.platform).toLowerCase().includes('linkedin'))) {
+        const linkedIn = socialRankings.find((item) => String(item.platform).toLowerCase().includes('linkedin'));
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.85, crossFunctional: 0.85, consistency: 0.82 });
+        correlations.push({
+          id: 'linkedin-authority-gap',
+          title: 'LinkedIn has authority value, but it should stay deliberate',
+          executiveSummary: `LinkedIn is currently running at ${linkedIn?.score || '—'}/100 with ${linkedIn?.growth || '—'} growth. It has enough strategic value to justify attention, but only if it is used as a premium trust surface rather than treated like another generic posting slot.`,
+          supportingEvidence: [
+            `LinkedIn score: ${linkedIn?.score || '—'}/100.`,
+            `LinkedIn growth: ${linkedIn?.growth || '—'}.`,
+            `The current marketing mix already includes higher-reach channels for volume and awareness.`
+          ],
+          businessImpact: 'Executive authority → Trust-building → Lead quality',
+          financialImpact: 'The right LinkedIn asset can strengthen premium positioning and improve downstream conversion quality more than a high volume of lower-signal posts.',
+          responsibleDepartment: 'CMO / Founder Brand',
+          prioritySignal: { financialImpact: 67, customerImpact: 71, strategicImportance: 82, timeSensitivity: 64, confidence: confidence.score },
+          confidence,
+          tone: linkedIn?.score >= 70 ? 'info' : 'warn'
+        });
+      }
+
+      if (weakestSocialPlatform && String(weakestSocialPlatform.platform).toLowerCase().includes('x')) {
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.88, crossFunctional: 0.8, consistency: 0.89 });
+        correlations.push({
+          id: 'x-channel-drag',
+          title: 'X is the weakest social return channel in the current stack',
+          executiveSummary: `${weakestSocialPlatform.platform} is currently the weakest social return channel at ${weakestSocialPlatform.score}/100. Unless it serves a very specific positioning or conversation purpose, the better move is likely to reallocate part of that effort into the strongest proof-led channels and website conversion work.`,
+          supportingEvidence: [
+            `${weakestSocialPlatform.platform} score: ${weakestSocialPlatform.score}/100.`,
+            `Growth: ${weakestSocialPlatform.growth}.`,
+            `Top social channel: ${topSocialPlatform?.platform || '—'} at ${topSocialPlatform?.score || '—'}/100.`
+          ],
+          businessImpact: 'Content effort → Channel selection → Return on execution',
+          financialImpact: 'Reducing low-return channel effort should free time for higher-value content and conversion work without increasing team workload.',
+          responsibleDepartment: 'CMO / Content Ops',
+          prioritySignal: { financialImpact: 72, customerImpact: 58, strategicImportance: 79, timeSensitivity: 83, confidence: confidence.score },
+          confidence,
+          tone: 'warn'
+        });
+      }
+
+      if (competitorBenchmark.summary) {
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.84, crossFunctional: 0.92, consistency: 0.83 });
+        correlations.push({
+          id: 'competitor-pressure-window',
+          title: 'Competitor benchmarking should sharpen EP’s premium positioning',
+          executiveSummary: `${competitorBenchmark.summary} The right response is not more generic output; it is to lean harder into premium proof, trust, and high-conviction educational themes where EP can feel more distinctive than larger or noisier competitors.`,
+          supportingEvidence: [
+            `EP average social growth: ${competitorBenchmark.epGrowthAvg || '—'}.`,
+            `Competitor growth baseline: ${competitorBenchmark.competitorGrowthAvg || '—'}.`,
+            `Strongest EP channel: ${competitorBenchmark.leader || topSocialPlatform?.platform || '—'}.`,
+            `Weakest EP channel: ${competitorBenchmark.laggard || weakestSocialPlatform?.platform || '—'}.`
+          ],
+          businessImpact: 'Competitor benchmarking → Positioning → Marketing strategy',
+          financialImpact: 'Better benchmark-aware positioning should improve the odds that content effort compounds into brand preference instead of blending into the market noise.',
+          responsibleDepartment: 'CEO / CMO',
+          prioritySignal: { financialImpact: 73, customerImpact: 76, strategicImportance: 84, timeSensitivity: 68, confidence: confidence.score },
+          confidence,
+          tone: epGrowthAvg >= competitorGrowthAvg ? 'good' : 'warn'
+        });
+      }
+
+      if (attributionTouchpoints.length) {
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.86, crossFunctional: 1, consistency: 0.84 });
+        correlations.push({
+          id: 'attribution-clarity-gap',
+          title: 'Attribution is strong enough to guide decisions, but not strong enough to overcomplicate',
+          executiveSummary: `${socialAttribution.summary || 'The attribution view is now visible across the marketing estate.'} The best use of this layer is to clarify which channels and themes deserve more effort next, without pretending the system has native closed-loop precision yet.`,
+          supportingEvidence: attributionTouchpoints.slice(0, 5).map((item) => `${item.channel}: ${item.share}${item.note ? ` — ${item.note}` : ''}`),
+          businessImpact: 'Attribution visibility → Channel decisions → Commercial focus',
+          financialImpact: `Decision-grade attribution should help protect and grow the currently tracked ${socialAttribution.revenueAttributed || marketing.campaignPerformance?.revenueAttribution || 'attributed demand'} without adding avoidable complexity.`,
+          responsibleDepartment: 'CMO / Website',
+          prioritySignal: { financialImpact: 76, customerImpact: 64, strategicImportance: 82, timeSensitivity: 70, confidence: confidence.score },
+          confidence,
+          tone: liveSocialPlatforms > 0 || isLiveGa4 || isLiveYouTube ? 'good' : 'info'
         });
       }
 

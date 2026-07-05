@@ -99,3 +99,7 @@
 - Added CEO-facing operations widgets, Google Calendar-aware recommendations, executive briefing schedule summaries, operations timeline events, search coverage, and provider-independent memory milestones.
 - Extended integration status, provider architecture documentation, approval routing, and AI Assistant prompts so Google Calendar now appears as a first-class operations provider rather than a placeholder future integration.
 - Documented Google Calendar provider setup, OAuth scope, security model, lifecycle, and troubleshooting guidance.
+- Added Sprint 18 and introduced `UnifiedSocialProvider` plus `scripts/sync-social-snapshot.mjs` so Instagram, Facebook, LinkedIn, and X can hydrate together from a generated local social snapshot while preserving deterministic demo fallback.
+- Added a Social Health Score, unified social source coverage, deterministic marketing attribution, competitor benchmarking, and cross-platform executive social reporting across the CEO dashboard, CMO workspace, reports, settings, and runtime state.
+- Extended deterministic intelligence, recommendations, and correlations so social momentum, LinkedIn authority, X drag, competitor pressure, and attribution clarity now flow through the existing executive reasoning layer without adding direct browser-side APIs.
+- Updated roadmap, release metadata, demo handoff docs, and integration-framework documentation so Sprint 18 now sits cleanly on top of the existing provider/service/intelligence architecture.

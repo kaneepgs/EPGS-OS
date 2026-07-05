@@ -42,6 +42,66 @@ export function createRecommendationEngine({ priorityEngine }) {
           priorityFactors: { financialImpact: 80, customerImpact: 76, strategicImportance: 81, timeSensitivity: 69, confidence: lookup['youtube-live-momentum']?.confidence?.score || lookup['marketing-revenue-growth']?.confidence?.score || 84 }
         },
         {
+          id: 'social-proof-sequencing',
+          recommendation: 'Sequence Instagram, Facebook, LinkedIn, and X around the strongest proof-led theme instead of posting channel by channel',
+          why: lookup['social-momentum-stack']?.executiveSummary || 'Cross-platform reach is strongest when one high-conviction proof story is adapted across the whole social estate.',
+          expectedBenefit: 'Improves social efficiency, keeps the strongest message consistent, and increases the chance that authority turns into bookings rather than isolated engagement.',
+          risk: 'Low',
+          confidence: lookup['social-momentum-stack']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['social-momentum-stack']?.confidence?.score || 78,
+          estimatedValue: marketing.campaignPerformance?.revenueAttribution || 'Higher cross-platform return from existing content effort',
+          suggestedOwner: 'CMO / Content Lead',
+          priorityFactors: { financialImpact: 79, customerImpact: 74, strategicImportance: 86, timeSensitivity: 77, confidence: lookup['social-momentum-stack']?.confidence?.score || 78 }
+        },
+        {
+          id: 'linkedin-authority-asset',
+          recommendation: 'Publish the next LinkedIn authority asset as a deliberate trust-building move, not a leftover channel post',
+          why: lookup['linkedin-authority-gap']?.executiveSummary || 'LinkedIn has strategic authority value, but only when it is treated as a premium positioning surface rather than filler output.',
+          expectedBenefit: 'Strengthens professional trust, improves premium brand positioning, and gives the executive team a more credible authority layer beyond pure reach channels.',
+          risk: 'Low–Medium',
+          confidence: lookup['linkedin-authority-gap']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['linkedin-authority-gap']?.confidence?.score || 74,
+          estimatedValue: 'Higher downstream lead quality and stronger executive authority positioning',
+          suggestedOwner: 'CMO / Founder Brand',
+          priorityFactors: { financialImpact: 68, customerImpact: 73, strategicImportance: 82, timeSensitivity: 66, confidence: lookup['linkedin-authority-gap']?.confidence?.score || 74 }
+        },
+        {
+          id: 'x-effort-reallocation',
+          recommendation: 'Reduce X effort and deliberately reallocate the saved time into higher-return channels',
+          why: lookup['x-channel-drag']?.executiveSummary || 'The weakest social channel should earn its place instead of quietly consuming attention.',
+          expectedBenefit: 'Improves return on team effort and sharpens channel discipline without increasing overall workload.',
+          risk: 'Low',
+          confidence: lookup['x-channel-drag']?.confidence?.label || 'High',
+          confidenceScore: lookup['x-channel-drag']?.confidence?.score || 82,
+          estimatedValue: 'Recovered content time for stronger YouTube, Instagram, and website conversion work',
+          suggestedOwner: 'CMO / Content Ops',
+          priorityFactors: { financialImpact: 72, customerImpact: 58, strategicImportance: 79, timeSensitivity: 81, confidence: lookup['x-channel-drag']?.confidence?.score || 82 }
+        },
+        {
+          id: 'competitor-benchmark-attack',
+          recommendation: 'Use competitor benchmarking to attack with premium proof and trust instead of chasing publishing volume blindly',
+          why: lookup['competitor-pressure-window']?.executiveSummary || 'Competitor pressure should sharpen positioning, not provoke scattered output.',
+          expectedBenefit: 'Preserves brand clarity while improving the odds that social and content effort actually reinforces EP’s premium position.',
+          risk: 'Low–Medium',
+          confidence: lookup['competitor-pressure-window']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['competitor-pressure-window']?.confidence?.score || 75,
+          estimatedValue: 'Stronger competitive positioning across the next campaign cycle',
+          suggestedOwner: 'CMO / CEO',
+          priorityFactors: { financialImpact: 74, customerImpact: 76, strategicImportance: 84, timeSensitivity: 70, confidence: lookup['competitor-pressure-window']?.confidence?.score || 75 }
+        },
+        {
+          id: 'marketing-attribution-discipline',
+          recommendation: 'Keep the marketing attribution view deliberately simple and decision-grade',
+          why: lookup['attribution-clarity-gap']?.executiveSummary || 'Attribution is useful when it clarifies choices, not when it creates false precision.',
+          expectedBenefit: 'Improves weekly decision quality around which channels, campaigns, and content themes deserve more effort next.',
+          risk: 'Low',
+          confidence: lookup['attribution-clarity-gap']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['attribution-clarity-gap']?.confidence?.score || 73,
+          estimatedValue: marketing.campaignPerformance?.revenueAttribution || '£18.6k currently tracked attributed demand',
+          suggestedOwner: 'CMO / Website',
+          priorityFactors: { financialImpact: 77, customerImpact: 66, strategicImportance: 83, timeSensitivity: 71, confidence: lookup['attribution-clarity-gap']?.confidence?.score || 73 }
+        },
+        {
           id: 'youtube-cadence-protect',
           recommendation: 'Protect a consistent YouTube publishing cadence while live momentum is visible',
           why: lookup['youtube-publishing-consistency']?.executiveSummary || 'The strongest authority channel should not rely on sporadic output.',

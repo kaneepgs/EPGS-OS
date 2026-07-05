@@ -4,7 +4,7 @@ export const APP_MODES = Object.freeze({
   demo: {
     key: 'demo',
     label: 'Demo Mode',
-    description: 'The wider executive workspace stays demo-first, with optional provider-level overlays such as the Sprint 8 GA4 Website Analytics snapshot path.',
+    description: 'The wider executive workspace stays demo-first, with optional provider-level overlays such as GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshot paths.',
     allowLiveIntegrations: false,
     available: true
   },
@@ -26,7 +26,7 @@ export const APP_CONFIG = Object.freeze({
   releaseVersion: RELEASE_CONFIG.version,
   releaseLabel: RELEASE_CONFIG.releaseLabel,
   releaseCodename: RELEASE_CONFIG.codename,
-  notes: 'Sprint 14 adds a Google Calendar-backed Operations Calendar path through the existing provider/service/intelligence architecture, preserving demo-first behaviour while allowing selective GA4, YouTube, Gmail, and Google Calendar snapshot overlays when local generated data is available.'
+  notes: 'Sprint 18 adds the Unified Social Provider for Instagram, Facebook, LinkedIn, and X through the existing provider/service/intelligence architecture, preserving demo-first behaviour while allowing selective GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshot overlays when local generated data is available.'
 });
 
 export function currentModeConfig() {

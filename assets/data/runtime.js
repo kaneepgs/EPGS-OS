@@ -1,7 +1,7 @@
 import { APP_CONFIG, currentModeConfig } from '../config/app-config.js';
 import { buildReleaseWorkspace } from '../config/release-config.js';
 import { RAW_MOCK_DATA } from './mock-data.js';
-import { loadGeneratedGa4Snapshot, loadGeneratedYouTubeSnapshot, loadGeneratedGmailSnapshot, loadGeneratedCalendarSnapshot } from './live-data-loader.js';
+import { loadGeneratedGa4Snapshot, loadGeneratedYouTubeSnapshot, loadGeneratedSocialSnapshot, loadGeneratedGmailSnapshot, loadGeneratedCalendarSnapshot } from './live-data-loader.js';
 import { createProviderRegistry } from '../providers/provider-registry.js';
 import { createTimelineService } from '../services/timeline-service.js';
 import { createApprovalService } from '../services/approval-service.js';
@@ -16,9 +16,10 @@ import { createMemoryService } from '../memory/memory-service.js';
 
 const GA4_SNAPSHOT = await loadGeneratedGa4Snapshot();
 const YOUTUBE_SNAPSHOT = await loadGeneratedYouTubeSnapshot();
+const SOCIAL_SNAPSHOT = await loadGeneratedSocialSnapshot();
 const GMAIL_SNAPSHOT = await loadGeneratedGmailSnapshot();
 const CALENDAR_SNAPSHOT = await loadGeneratedCalendarSnapshot();
-const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT, youtubeSnapshot: YOUTUBE_SNAPSHOT, gmailSnapshot: GMAIL_SNAPSHOT, calendarSnapshot: CALENDAR_SNAPSHOT });
+const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT, youtubeSnapshot: YOUTUBE_SNAPSHOT, socialSnapshot: SOCIAL_SNAPSHOT, gmailSnapshot: GMAIL_SNAPSHOT, calendarSnapshot: CALENDAR_SNAPSHOT });
 const LIVE_DATA_SUMMARY = providerRegistry.getLiveDataSummary();
 const timelineService = createTimelineService(providerRegistry);
 const approvalService = createApprovalService(providerRegistry);
@@ -108,6 +109,11 @@ function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number.isFinite(value) ? value : min));
 }
 
+function average(values = []) {
+  const valid = values.filter((value) => Number.isFinite(value));
+  return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : 0;
+}
+
 function toneFromScore(score) {
   if (score >= 85) return 'good';
   if (score >= 72) return 'info';
@@ -126,40 +132,187 @@ function youtubeMetricLookup(stats = []) {
 function buildMarketingSourceStatus(marketing = {}) {
   const website = marketing.websiteAnalytics?.dataSource || {};
   const youtube = marketing.platforms?.youtube?.dataSource || {};
-  const isLiveGa4 = website.state === 'live-ga4';
-  const isLiveYouTube = youtube.state === 'live-youtube';
-  const liveCount = Number(isLiveGa4) + Number(isLiveYouTube);
+  const socialPlatforms = [
+    ['instagram', 'Instagram'],
+    ['facebook', 'Facebook'],
+    ['linkedin', 'LinkedIn'],
+    ['x', 'X']
+  ].map(([key, label]) => {
+    const platform = marketing.platforms?.[key] || {};
+    const source = platform.dataSource || {};
+    const isLive = String(source.state || '').startsWith('live-');
+    return {
+      label,
+      status: isLive ? 'Live social snapshot' : 'Demo fallback',
+      body: source.body || `${label} source state unavailable.`,
+      tone: source.tone || (isLive ? 'good' : 'warn'),
+      state: source.state || 'demo-fallback'
+    };
+  });
+
+  const cards = [
+    {
+      label: 'Website Analytics',
+      status: website.state === 'live-ga4' ? 'Live GA4 snapshot' : 'Demo fallback',
+      body: website.body || 'Website Analytics source state unavailable.',
+      tone: website.state === 'live-ga4' ? 'good' : 'warn',
+      state: website.state || 'demo-fallback'
+    },
+    {
+      label: 'YouTube',
+      status: youtube.state === 'live-youtube' ? 'Live YouTube snapshot' : 'Demo fallback',
+      body: youtube.body || 'YouTube source state unavailable.',
+      tone: youtube.state === 'live-youtube' ? 'good' : 'warn',
+      state: youtube.state || 'demo-fallback'
+    },
+    ...socialPlatforms
+  ];
+
+  const liveCount = cards.filter((item) => String(item.state).startsWith('live-')).length;
+  const socialLiveCount = socialPlatforms.filter((item) => String(item.state).startsWith('live-')).length;
+  const totalTracked = cards.length;
 
   return {
     liveCount,
-    totalTracked: 2,
-    label: liveCount === 2 ? 'Hybrid live marketing intelligence active' : liveCount === 1 ? 'Partially live marketing intelligence active' : 'Marketing intelligence is demo-led',
-    body: liveCount === 2
-      ? 'GA4 Website Analytics and YouTube are live through generated local snapshots, while the rest of the marketing estate remains in Demo Mode.'
-      : liveCount === 1
-        ? 'One marketing provider path is live and the rest of the marketing estate remains in Demo Mode.'
-        : 'All marketing views are still using the demo baseline until a local GA4 or YouTube snapshot is available.',
-    tone: liveCount === 2 ? 'good' : liveCount === 1 ? 'info' : 'warn',
-    cards: [
-      {
-        label: 'Website Analytics',
-        status: isLiveGa4 ? 'Live GA4 snapshot' : 'Demo fallback',
-        body: website.body || 'Website Analytics source state unavailable.',
-        tone: isLiveGa4 ? 'good' : 'warn'
-      },
-      {
-        label: 'YouTube',
-        status: isLiveYouTube ? 'Live YouTube snapshot' : 'Demo fallback',
-        body: youtube.body || 'YouTube source state unavailable.',
-        tone: isLiveYouTube ? 'good' : 'warn'
-      },
-      {
-        label: 'Other channels',
-        status: 'Demo Mode',
-        body: 'Instagram, Facebook, LinkedIn, X, and campaign-level attribution remain demo-only in v1.1.',
-        tone: 'neutral'
-      }
-    ]
+    totalTracked,
+    socialLiveCount,
+    label:
+      liveCount === totalTracked
+        ? 'Fully live marketing intelligence active'
+        : liveCount >= 3
+          ? 'Mostly live marketing intelligence active'
+          : liveCount >= 1
+            ? 'Hybrid live marketing intelligence active'
+            : 'Marketing intelligence is demo-led',
+    body:
+      liveCount === totalTracked
+        ? 'GA4, YouTube, Instagram, Facebook, LinkedIn, and X are all flowing through live snapshot-backed provider paths.'
+        : liveCount >= 3
+          ? `Several marketing provider paths are now live, including ${socialLiveCount}/4 social platforms, while the remaining channels safely stay in Demo Mode.`
+          : liveCount >= 1
+            ? `At least one marketing provider path is live, while the rest of the estate safely stays demo-backed. Social coverage currently has ${socialLiveCount}/4 live platform paths.`
+            : 'All marketing views are still using the demo baseline until local snapshot files are supplied.',
+    tone: liveCount >= 3 ? 'good' : liveCount >= 1 ? 'info' : 'warn',
+    cards
+  };
+}
+
+function buildMarketingAttributionSummary(marketing = {}) {
+  const existing = marketing.campaignPerformance?.attribution;
+  if (existing?.touchpoints?.length) return existing;
+
+  const rankings = marketing.socialOverview?.rankings || [];
+  const totalScore = rankings.reduce((sum, item) => sum + Number(item.score || 0), 0) || 1;
+  return {
+    summary: `${rankings[0]?.platform || 'The strongest channel'} currently carries the clearest assisted-demand signal, while ${rankings[rankings.length - 1]?.platform || 'the weakest channel'} remains the lightest commercial return channel.`,
+    revenueAttributed: marketing.campaignPerformance?.revenueAttribution || '£18.6k',
+    bestAssistedChannel: rankings[0]?.platform || 'YouTube',
+    bestConversionChannel: rankings[1]?.platform || rankings[0]?.platform || 'Instagram',
+    weakestChannel: rankings[rankings.length - 1]?.platform || 'X',
+    confidence: 'Low',
+    touchpoints: rankings.map((item) => ({
+      channel: item.platform,
+      share: `${Math.round((Number(item.score || 0) / totalScore) * 100)}%`,
+      note: item.note
+    })),
+    mix: rankings.map((item) => ({
+      channel: item.platform,
+      share: Math.round((Number(item.score || 0) / totalScore) * 100),
+      note: item.note
+    }))
+  };
+}
+
+function buildCompetitorBenchmarkSummary(marketing = {}) {
+  const existing = marketing.competitorAnalysis?.benchmark;
+  if (existing?.benchmark?.length) return existing;
+
+  const rankings = marketing.socialOverview?.rankings || [];
+  const competitors = marketing.competitorAnalysis?.competitors || [];
+  const competitorGrowthAvg = average(competitors.map((item) => parseMetricNumber(item.growth, 0)));
+  const epGrowthAvg = average(rankings.map((item) => parseMetricNumber(item.growth, 0)));
+  return {
+    summary: epGrowthAvg >= competitorGrowthAvg
+      ? `EP's tracked social growth is ahead of the competitor baseline, led by ${rankings[0]?.platform || 'the strongest channel'}.`
+      : `EP's tracked social growth is slightly behind the competitor baseline, so the best route is to press the strongest proof-led channels harder instead of spreading effort evenly.`,
+    competitorGrowthAvg: formatDelta(competitorGrowthAvg),
+    epGrowthAvg: formatDelta(epGrowthAvg),
+    leader: rankings[0]?.platform || 'YouTube',
+    laggard: rankings[rankings.length - 1]?.platform || 'X',
+    benchmark: rankings.map((item) => ({
+      platform: item.platform,
+      score: item.score,
+      gap: `${item.score >= 72 ? '+' : ''}${item.score - 72} pts vs market baseline`,
+      standing: item.score >= 85 ? 'Leader' : item.score >= 75 ? 'Competitive' : item.score >= 65 ? 'Challenger' : 'Underweight',
+      note: item.note
+    }))
+  };
+}
+
+function buildSocialHealthScore(marketing = {}, sourceStatus = buildMarketingSourceStatus(marketing)) {
+  const rankings = marketing.socialOverview?.rankings || [];
+  const combined = marketing.socialOverview?.combined || {};
+  const attribution = buildMarketingAttributionSummary(marketing);
+  const benchmark = buildCompetitorBenchmarkSummary(marketing);
+  const top = rankings[0] || {};
+  const weakest = rankings[rankings.length - 1] || {};
+  const averageScore = average(rankings.map((item) => Number(item.score || 0)));
+  const averageGrowth = average(rankings.map((item) => parseMetricNumber(item.growth, 0)));
+  const bestShare = Number(attribution.mix?.[0]?.share || 0);
+  const score = Math.round(clamp(
+    averageScore * 0.45
+    + Math.max(averageGrowth, 0) * 4.2
+    + Math.min(bestShare * 0.55, 18)
+    + Math.min(sourceStatus.socialLiveCount * 5, 20)
+  ));
+
+  const components = [
+    {
+      label: 'Platform strength',
+      value: `${Math.round(averageScore || 0)} / 100 avg`,
+      score: clamp(averageScore || 0),
+      body: `${top.platform || 'Top platform'} leads the current estate, while ${weakest.platform || 'the weakest platform'} is the lowest-return channel.`
+    },
+    {
+      label: 'Audience growth',
+      value: formatDelta(averageGrowth || 0),
+      score: clamp(58 + Math.max(averageGrowth, -4) * 5),
+      body: 'Average growth across the tracked social estate.'
+    },
+    {
+      label: 'Cross-platform scale',
+      value: combined.followers || '—',
+      score: clamp(54 + Math.min(parseMetricNumber(combined.followers, 0) / 3200, 36)),
+      body: 'Combined audience across YouTube, Instagram, Facebook, LinkedIn, and X.'
+    },
+    {
+      label: 'Attribution clarity',
+      value: attribution.revenueAttributed || '—',
+      score: clamp(52 + Math.min((attribution.mix || []).length * 7, 26) + Math.min(bestShare * 0.35, 12)),
+      body: attribution.summary
+    },
+    {
+      label: 'Competitive position',
+      value: benchmark.epGrowthAvg || '—',
+      score: clamp(60 + Math.max(parseMetricNumber(benchmark.epGrowthAvg, 0) - parseMetricNumber(benchmark.competitorGrowthAvg, 0), -5) * 4),
+      body: benchmark.summary
+    }
+  ];
+
+  return {
+    score,
+    label: score >= 85 ? 'Strong' : score >= 75 ? 'Stable' : score >= 65 ? 'Needs attention' : 'At risk',
+    trend: `${top.platform || 'The top channel'} leads the social estate while ${weakest.platform || 'the weakest channel'} remains the lowest-return route.`,
+    confidence: sourceStatus.socialLiveCount >= 3 ? 'High' : sourceStatus.socialLiveCount >= 1 ? 'Medium' : 'Low',
+    sourceStatus: `${sourceStatus.socialLiveCount}/4 live social platform paths`,
+    tone: toneFromScore(score),
+    summary: `Social performance is healthiest when the strongest proof-led theme is adapted across the top channels instead of being rebuilt separately for each platform. ${benchmark.summary}`,
+    components,
+    topPlatform: top.platform || 'YouTube',
+    weakestPlatform: weakest.platform || 'X',
+    sourceCards: sourceStatus.cards.filter((item) => ['Instagram', 'Facebook', 'LinkedIn', 'X'].includes(item.label)),
+    attribution,
+    competitorBenchmark: benchmark
   };
 }
 
@@ -168,6 +321,7 @@ function buildMarketingHealthScore(marketing = {}, intelligence = {}, sourceStat
   const websiteMeta = marketing.websiteAnalytics?.snapshotMeta || {};
   const youtubeMetrics = youtubeMetricLookup(marketing.platforms?.youtube?.stats || []);
   const youtubeMeta = marketing.platforms?.youtube?.snapshotMeta || {};
+  const socialHealth = buildSocialHealthScore(marketing, sourceStatus);
   const topYoutubeItem = (marketing.contentLibrary?.items || [])
     .filter((item) => item.platform === 'YouTube')
     .sort((left, right) => parseMetricNumber(right.views) - parseMetricNumber(left.views))[0];
@@ -198,22 +352,16 @@ function buildMarketingHealthScore(marketing = {}, intelligence = {}, sourceStat
       body: 'Movement versus the prior website period.'
     },
     {
-      label: 'YouTube subscribers',
+      label: 'YouTube authority',
       value: youtubeMetrics.Subscribers || '—',
       score: clamp(50 + Math.min(subscribers / 3200, 34)),
-      body: 'Authority-channel audience scale.'
+      body: 'Authority-channel audience scale and momentum.'
     },
     {
-      label: 'Recent YouTube views',
-      value: youtubeMetrics['Views (28 days)'] || '—',
-      score: clamp(50 + Math.min(views28Days / 7000, 34)),
-      body: 'Tracked visibility over the active window.'
-    },
-    {
-      label: 'Publishing cadence',
-      value: youtubeMetrics['Publishing Activity'] || `${uploadsLast28Days} uploads in last 28 days`,
-      score: clamp(50 + uploadsLast28Days * 3.8),
-      body: 'Consistency of recent video output.'
+      label: 'Social Health Score',
+      value: `${socialHealth.score} / 100`,
+      score: socialHealth.score,
+      body: socialHealth.summary
     },
     {
       label: 'Content performance',
@@ -226,38 +374,57 @@ function buildMarketingHealthScore(marketing = {}, intelligence = {}, sourceStat
       value: conversionRate > 0 ? `${conversionRate.toFixed(1)}%` : `${bookings + enquiries} key actions`,
       score: clamp(38 + Math.min(conversionRate * 10, 24) + Math.min((bookings + enquiries) * 1.5, 20) + Math.min(signups / 40, 12)),
       body: 'Bookings, enquiries, sign-ups, and conversion quality.'
+    },
+    {
+      label: 'Publishing cadence',
+      value: youtubeMetrics['Publishing Activity'] || `${uploadsLast28Days} uploads in last 28 days`,
+      score: clamp(50 + uploadsLast28Days * 3.8),
+      body: 'Consistency of recent video output.'
     }
   ];
 
-  const positiveSignals = [sessionGrowth > 0, views28Days > 150000, uploadsLast28Days >= 4].filter(Boolean).length;
+  const positiveSignals = [sessionGrowth > 0, views28Days > 150000, uploadsLast28Days >= 4, socialHealth.score >= 80].filter(Boolean).length;
+  const intelligenceScore = intelligence.health?.cmo?.score || Math.round(components.reduce((sum, item) => sum + item.score, 0) / components.length);
+  const blendedScore = Math.round(average([intelligenceScore, socialHealth.score, components.reduce((sum, item) => sum + item.score, 0) / components.length]));
 
   return {
-    score: intelligence.health?.cmo?.score || Math.round(components.reduce((sum, item) => sum + item.score, 0) / components.length),
-    label: intelligence.health?.cmo?.label || 'Stable',
-    trend: sessionGrowth > 0 ? `Up ${formatDelta(sessionGrowth)} on website demand while YouTube remains the strongest authority channel.` : 'Mixed: authority remains strong, but website demand is not clearly improving.',
-    confidence: sourceStatus.liveCount === 2 ? 'High' : sourceStatus.liveCount === 1 ? 'Medium' : 'Low',
-    sourceStatus: `${sourceStatus.liveCount}/${sourceStatus.totalTracked} marketing provider paths live`,
-    tone: toneFromScore(intelligence.health?.cmo?.score || 0),
-    summary: positiveSignals >= 2
-      ? 'Marketing is performing like a real executive growth system now: live website demand and live YouTube authority are visible together, but conversion capture still needs tightening.'
+    score: blendedScore,
+    label: intelligence.health?.cmo?.label || (blendedScore >= 85 ? 'Strong' : blendedScore >= 75 ? 'Stable' : 'Needs attention'),
+    trend: sessionGrowth > 0
+      ? `Up ${formatDelta(sessionGrowth)} on website demand while ${socialHealth.topPlatform} is leading the social estate.`
+      : `Mixed: ${socialHealth.topPlatform} remains strongest, but conversion capture still needs tightening.`,
+    confidence: sourceStatus.liveCount >= 4 ? 'High' : sourceStatus.liveCount >= 2 ? 'Medium' : 'Low',
+    sourceStatus: `${sourceStatus.liveCount}/${sourceStatus.totalTracked} tracked marketing paths live`,
+    tone: toneFromScore(blendedScore),
+    summary: positiveSignals >= 3
+      ? 'Marketing is behaving like a coordinated executive growth system now: website demand, YouTube authority, and cross-platform social performance are visible together, but conversion capture still decides how much of that becomes commercial value.'
       : 'Marketing has promising signals, but the dashboard still needs either more live coverage or stronger conversion capture before confidence should increase materially.',
     components,
-    sourceCards: sourceStatus.cards
+    sourceCards: sourceStatus.cards,
+    socialHealth
   };
 }
 
 function buildMarketingIntelligenceReport({ marketing = {}, intelligence = {}, memory = {}, health = {}, sourceStatus = {}, website = {}, youtube = {} }) {
   const correlations = intelligence.correlations || [];
   const memoryTimeline = memory.timeline || [];
+  const socialHealth = health.socialHealth || buildSocialHealthScore(marketing, sourceStatus);
+  const attribution = socialHealth.attribution || buildMarketingAttributionSummary(marketing);
+  const competitorBenchmark = socialHealth.competitorBenchmark || buildCompetitorBenchmarkSummary(marketing);
   const findings = correlations.filter((item) => [
     'ga4-live-demand-signal',
     'youtube-live-momentum',
     'youtube-website-demand-loop',
     'youtube-publishing-consistency',
     'website-enquiry-conversion-link',
-    'content-opportunity-proof-loop'
+    'content-opportunity-proof-loop',
+    'social-momentum-stack',
+    'linkedin-authority-gap',
+    'x-channel-drag',
+    'competitor-pressure-window',
+    'attribution-clarity-gap'
   ].includes(item.id));
-  const recommendations = (intelligence.recommendations || []).filter((item) => /CMO|Sales|Website/.test(item.suggestedOwner || '')).slice(0, 4);
+  const recommendations = (intelligence.recommendations || []).filter((item) => /CMO|Sales|Website|Content|Founder/.test(item.suggestedOwner || '')).slice(0, 6);
   const marketingMilestones = [
     memoryTimeline.find((item) => /website milestone/i.test(item.category) || /live ga4 window/i.test(item.title)),
     memoryTimeline.find((item) => /youtube milestone/i.test(item.category)),
@@ -267,10 +434,11 @@ function buildMarketingIntelligenceReport({ marketing = {}, intelligence = {}, m
 
   return {
     title: 'Marketing Intelligence Report',
-    subtitle: 'EP Intelligence v1.1 — Marketing Intelligence',
-    summary: `Marketing health is ${health.score || '—'}/100 (${health.label || 'Stable'}) with ${health.sourceStatus || sourceStatus.label || 'hybrid source coverage'}. The strongest live signal is that YouTube authority and website demand are now visible together, while the clearest unresolved issue is turning that traffic into more booking intent.`,
+    subtitle: 'EP Intelligence v1.1 — Social Providers v1.0',
+    summary: `Marketing health is ${health.score || '—'}/100 (${health.label || 'Stable'}) with ${health.sourceStatus || sourceStatus.label || 'hybrid source coverage'}. ${socialHealth.topPlatform} leads the social estate at ${socialHealth.score}/100 social health, while the clearest unresolved issue remains turning current attention into more booking intent and cleaner attribution confidence.`,
     sourceStatus,
     health,
+    socialHealth,
     ga4Summary: {
       title: website.source?.label || 'Website Analytics source',
       body: website.summary || marketing.websiteAnalytics?.summary || 'Website analytics summary unavailable.'
@@ -279,7 +447,13 @@ function buildMarketingIntelligenceReport({ marketing = {}, intelligence = {}, m
       title: youtube.source?.label || 'YouTube source',
       body: youtube.summary || marketing.platforms?.youtube?.dataSource?.body || 'YouTube summary unavailable.'
     },
+    socialSummary: {
+      title: 'Unified social performance',
+      body: socialHealth.summary
+    },
     crossChannelFindings: findings,
+    competitorBenchmark,
+    attribution,
     opportunities: recommendations.map((item) => ({
       title: item.recommendation,
       body: item.expectedBenefit,
@@ -287,7 +461,7 @@ function buildMarketingIntelligenceReport({ marketing = {}, intelligence = {}, m
       priority: item.priority,
       tone: item.tone || 'warn'
     })),
-    risks: correlations.filter((item) => item.tone === 'warn' || item.tone === 'risk').slice(0, 4).map((item) => ({
+    risks: correlations.filter((item) => item.tone === 'warn' || item.tone === 'risk').slice(0, 5).map((item) => ({
       title: item.title,
       body: item.financialImpact || item.executiveSummary,
       tone: item.tone || 'warn'
@@ -432,7 +606,8 @@ const MEMORY_DATA = memoryService.getWorkspace({
   opportunities: CEO_DATA.executiveOpportunities
 });
 const MARKETING_SOURCE_STATUS = buildMarketingSourceStatus(CMO_DATA);
-const MARKETING_HEALTH = buildMarketingHealthScore(CMO_DATA, INTELLIGENCE, MARKETING_SOURCE_STATUS);
+const SOCIAL_HEALTH = buildSocialHealthScore(CMO_DATA, MARKETING_SOURCE_STATUS);
+const MARKETING_HEALTH = { ...buildMarketingHealthScore(CMO_DATA, INTELLIGENCE, MARKETING_SOURCE_STATUS), socialHealth: SOCIAL_HEALTH };
 const MARKETING_INTELLIGENCE_REPORT = buildMarketingIntelligenceReport({
   marketing: CMO_DATA,
   intelligence: INTELLIGENCE,
@@ -497,11 +672,22 @@ export const WORKSPACE_DATA = Object.freeze({
     },
     socialOverview: {
       ...CMO_DATA.socialOverview,
-      sourceStatus: MARKETING_SOURCE_STATUS
+      sourceStatus: MARKETING_SOURCE_STATUS,
+      socialHealth: SOCIAL_HEALTH,
+      attribution: MARKETING_INTELLIGENCE_REPORT.attribution,
+      competitorBenchmark: MARKETING_INTELLIGENCE_REPORT.competitorBenchmark
     },
     websiteAnalytics: {
       ...CMO_DATA.websiteAnalytics,
       sourceStatus: MARKETING_SOURCE_STATUS
+    },
+    campaignPerformance: {
+      ...CMO_DATA.campaignPerformance,
+      attribution: MARKETING_INTELLIGENCE_REPORT.attribution
+    },
+    competitorAnalysis: {
+      ...CMO_DATA.competitorAnalysis,
+      benchmark: MARKETING_INTELLIGENCE_REPORT.competitorBenchmark
     },
     contentLibrary: {
       ...CMO_DATA.contentLibrary,
@@ -562,6 +748,7 @@ export const APP_RUNTIME = Object.freeze({
     insightCount: INTELLIGENCE.insights.executive.length,
     recommendationCount: INTELLIGENCE.recommendations.length,
     marketingHealthScore: MARKETING_HEALTH.score,
+    socialHealthScore: SOCIAL_HEALTH.score,
     marketingSourceStatus: MARKETING_HEALTH.sourceStatus,
     inboxVisibleItems: COMMUNICATIONS_DATA.counts.visible,
     operationsVisibleItems: OPERATIONS_DATA.todaySchedule?.length || 0
@@ -585,5 +772,11 @@ export const APP_RUNTIME = Object.freeze({
     nextAppointment: OPERATIONS_DATA.todaySchedule?.find((item) => !item.isAllDay)?.title || '',
     calendarName: OPERATIONS_DATA.providerSummary?.calendarName || '',
     health: OPERATIONS_DATA.providerSummary?.health || ''
+  },
+  marketing: {
+    liveSocialPlatforms: MARKETING_SOURCE_STATUS.socialLiveCount,
+    topSocialPlatform: SOCIAL_HEALTH.topPlatform,
+    weakestSocialPlatform: SOCIAL_HEALTH.weakestPlatform,
+    attributedRevenue: MARKETING_INTELLIGENCE_REPORT.attribution?.revenueAttributed || ''
   }
 });

@@ -50,6 +50,12 @@ Included milestones:
 - Operations Calendar
 - Operational scheduling intelligence
 - Approval-first scheduling actions
+- Unified Social Provider
+- Social Health Score
+- Cross-platform reporting
+- Executive social intelligence
+- Competitor benchmarking
+- Marketing attribution
 
 ## v1.2 — Business Operations
 
@@ -74,14 +80,14 @@ Planned:
 
 ## v1.4 — Social Intelligence
 
-Planned:
+Planned formal release packaging:
 
-- Instagram
-- Facebook
-- LinkedIn
-- X
-- Unified Social Intelligence
-- Competitor Benchmarking
+- Unified Social Provider release consolidation
+- Social Health Score
+- Cross-platform reporting
+- Executive social intelligence
+- Competitor benchmarking
+- Marketing attribution
 
 ## v2.0 — Executive Operating System
 

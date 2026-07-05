@@ -4,7 +4,7 @@ EP Intelligence is a frontend-only AI Executive Operating System prototype for E
 
 It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
 
-The formal shipped release is still **v1.1 — Marketing Intelligence**, but the platform now also has post-v1.1 **Executive Inbox** and **Operations Calendar** extensions, so leadership can read live website demand, live YouTube authority, inbox pressure, and scheduling capacity together through one executive shell while still falling back safely to demo data.
+The formal shipped release is still **v1.1 — Marketing Intelligence**, but the platform now also has post-v1.1 **Executive Inbox**, **Operations Calendar**, and **Unified Social Provider** extensions, so leadership can read live website demand, live YouTube authority, cross-platform social performance, inbox pressure, and scheduling capacity together through one executive shell while still falling back safely to demo data.
 
 ## Release & Roadmap
 
@@ -205,7 +205,7 @@ This prototype intentionally remains:
 - **HTML + CSS + Vanilla JavaScript only**
 - **frontend-only in the browser**
 - **no browser-side secrets or direct GA4 calls from the UI**
-- **mostly demo-mode**, with Website Analytics, YouTube, Executive Inbox, and Operations Calendar eligible for optional local snapshot hydration
+- **mostly demo-mode**, with Website Analytics, YouTube, Unified Social, Executive Inbox, and Operations Calendar eligible for optional local snapshot hydration
 - **without backend services, databases, authentication, or automation inside the product itself**
 
 ## Project Structure
@@ -225,10 +225,10 @@ This prototype intentionally remains:
 - `assets/config/shell-config.js` — route, navigation, and page-question metadata
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
 - `assets/data/mock-data.js` — raw structured demo datasets
-- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4, YouTube, and Gmail snapshots
+- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshots
 - `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, marketing-health/reporting state, and runtime workspace data
 - `assets/memory/` — provider-independent executive memory stores, seed data, knowledge graph generation, and memory service
-- `assets/providers/` — active mock provider, live-capable analytics, YouTube, and Gmail providers, future provider placeholders, and provider registry
+- `assets/providers/` — active mock provider, live-capable analytics, YouTube, Unified Social, Gmail, and Google Calendar providers, future provider placeholders, and provider registry
 - `assets/services/` — business logic layer for executive, finance, marketing, communications, approvals, reports, timeline, integration status, and intelligence assembly
 - `assets/intelligence/` — deterministic executive reasoning engines for insights, correlations, recommendations, priority, health, narratives, and confidence
 - `assets/ui/components.js` — reusable UI render helpers
@@ -457,4 +457,4 @@ From this point forward:
 
 The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System**, giving EP Golf Studios a credible AI-Chief-of-Staff-style **CEO Dashboard** plus integrated prototype depth across the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
 
-After Sprint 10, the product has a real integration framework, a deterministic Executive Intelligence Engine, a provider-independent Executive Memory layer, and two live snapshot paths (GA4 + YouTube) beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core with durable business context instead of replacing it.
+After Sprint 18, the product has a real integration framework, a deterministic Executive Intelligence Engine, a provider-independent Executive Memory layer, and five live-capable snapshot paths (GA4, YouTube, Unified Social, Gmail, and Google Calendar) beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core with durable business context instead of replacing it.

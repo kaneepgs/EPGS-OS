@@ -53,13 +53,22 @@ export function createHealthEngine(config) {
       const platformRankings = marketing.socialOverview?.rankings || [];
       const topPlatform = platformRankings[0]?.score || 86;
       const bottomPlatform = platformRankings[platformRankings.length - 1]?.score || 58;
+      const rankingAverage = average(platformRankings.map((item) => Number(item.score || 0))) || average([topPlatform, bottomPlatform]);
+      const rankingGrowthAverage = average(platformRankings.map((item) => parsePercent(item.growth, 0)));
       const campaignRoi = parsePercent(marketing.campaignPerformance?.roi);
+      const attribution = marketing.campaignPerformance?.attribution || {};
+      const attributionMix = attribution.mix || [];
+      const attributionCoverage = attributionMix.length ? attributionMix.reduce((sum, item) => sum + Number(item.share || 0), 0) : 0;
+      const competitorBenchmark = marketing.competitorAnalysis?.benchmark || {};
       const websiteMetrics = metricLookup(marketing.websiteAnalytics?.metrics || []);
       const websiteDataSource = marketing.websiteAnalytics?.dataSource || {};
       const websiteSnapshotMeta = marketing.websiteAnalytics?.snapshotMeta || {};
       const youtubeMetrics = metricLookup(marketing.platforms?.youtube?.stats || []);
       const youtubeDataSource = marketing.platforms?.youtube?.dataSource || {};
       const youtubeSnapshotMeta = marketing.platforms?.youtube?.snapshotMeta || {};
+      const socialLiveCount = ['instagram', 'facebook', 'linkedin', 'x']
+        .map((key) => marketing.platforms?.[key]?.dataSource?.state || '')
+        .filter((state) => String(state).startsWith('live-')).length;
       const websiteSessions = parseCurrency(websiteMetrics.Sessions || marketing.dashboard?.metrics?.visitors);
       const websiteSessionGrowth = Number(websiteSnapshotMeta.sessionsDeltaPct ?? healthDelta * 2 ?? 0);
       const websiteConversionRate = parsePercent(websiteMetrics['Conversion Rate']);
@@ -71,21 +80,31 @@ export function createHealthEngine(config) {
       const youtubeAverageViews = parseCurrency(youtubeMetrics['Average Views / Video']);
       const youtubeUploads = Number(youtubeSnapshotMeta.uploadsLast28Days || 0);
       const youtubeGrowthPct = parsePercent(youtubeMetrics['Audience Growth']);
-      const liveSourceCount = Number(websiteDataSource.state === 'live-ga4') + Number(youtubeDataSource.state === 'live-youtube');
+      const liveSourceCount = Number(websiteDataSource.state === 'live-ga4') + Number(youtubeDataSource.state === 'live-youtube') + socialLiveCount;
+
+      const socialHealthScore = clamp(
+        48
+        + rankingAverage * 0.28
+        + rankingGrowthAverage * 2.6
+        + Math.min(socialLiveCount * 4, 12)
+        + Math.min(Math.max(attributionCoverage - 90, 0) * 0.08, 8)
+      );
 
       const cmoComponents = {
         audienceMomentum: clamp(
-          58
-          + Math.min((websiteSessions || visitors) / 180, 18)
-          + Math.min(youtubeSubscribers / 5000, 14)
-          + liveSourceCount * 4
+          56
+          + Math.min((websiteSessions || visitors) / 180, 16)
+          + Math.min(youtubeSubscribers / 5000, 12)
+          + Math.min(rankingAverage / 5, 16)
+          + liveSourceCount * 3
         ),
         engagementQuality: clamp(
-          56
-          + Math.min(parseCurrency(marketing.dashboard?.metrics?.engagement) / 2200, 12)
-          + Math.min(youtubeViews28Days / 12000, 16)
-          + Math.min(youtubeAverageViews / 2500, 10)
-          + Math.min(topPlatform / 10, 8)
+          54
+          + Math.min(parseCurrency(marketing.dashboard?.metrics?.engagement) / 2200, 10)
+          + Math.min(youtubeViews28Days / 12000, 14)
+          + Math.min(youtubeAverageViews / 2500, 8)
+          + Math.min(topPlatform / 8, 12)
+          + Math.min(rankingGrowthAverage * 2, 10)
         ),
         conversionStrength: clamp(
           40
@@ -94,15 +113,18 @@ export function createHealthEngine(config) {
           + Math.min((websiteSignups || signups) / 45, 10)
           + Math.min(websiteBookings * 2, 12)
           + Math.min(websiteConversionRate * 8, 12)
+          + Math.min(parseCurrency(marketing.campaignPerformance?.leads) / 12, 10)
         ),
-        channelFocus: clamp(66 + (topPlatform - bottomPlatform) * 0.35 + liveSourceCount * 5),
+        channelFocus: clamp(60 + (topPlatform - bottomPlatform) * 0.35 + socialHealthScore * 0.25 + liveSourceCount * 3),
         executionCadence: clamp(
-          52
-          + Math.max(websiteSessionGrowth, 0) * 0.9
-          + Math.min(youtubeUploads * 2.6, 18)
+          50
+          + Math.max(websiteSessionGrowth, 0) * 0.8
+          + Math.min(youtubeUploads * 2.4, 16)
           + Math.min(Math.max(youtubeGrowthPct, 0) * 4, 10)
+          + Math.min(Math.max(rankingGrowthAverage, 0) * 3.5, 12)
           + campaignRoi * 4
-          + (marketing.campaignPerformance?.activeCampaigns || 0) * 2
+          + (marketing.campaignPerformance?.activeCampaigns || 0) * 1.8
+          + (competitorBenchmark.epGrowthAvg ? parsePercent(competitorBenchmark.epGrowthAvg, 0) : 0)
         )
       };
       const cmoScore = weightedScore(Object.entries(cmoComponents), weights.cmo);
@@ -152,7 +174,10 @@ export function createHealthEngine(config) {
         cmo: {
           score: Math.round(cmoScore),
           label: healthLabel(cmoScore, thresholds),
-          components: cmoComponents
+          components: {
+            ...cmoComponents,
+            socialHealth: socialHealthScore
+          }
         },
         overall: {
           score: Math.round(overallScore),

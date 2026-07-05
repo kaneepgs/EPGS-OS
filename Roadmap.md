@@ -20,15 +20,18 @@ Only one major initiative should normally appear here.
 
 ### Current
 
-- Sprint 15 — Accounting Provider v1.0
-- Live Finance
-- Accounting-backed CFO replacement beneath the service layer
-- Deterministic finance forecasting from provider data
+- Sprint 18 — Social Providers v1.0
+- Unified Social Provider
+- Social Health Score
+- Cross-platform reporting
+- Executive social intelligence
+- Competitor benchmarking
+- Marketing attribution
 - Demo fallback preserved
 
 ### Status
 
-🟡 Ready
+🟡 In progress
 
 ## NEXT
 
@@ -36,17 +39,16 @@ The **Next** section contains the next two to four planned initiatives.
 
 These should be considered committed priorities unless changed by the product owner.
 
-1. Booking Intelligence
-2. Mailchimp Provider
-3. Instagram / Facebook Provider
-4. LinkedIn Provider
+1. Accounting Provider v1.0
+2. Booking Intelligence
+3. Mailchimp Provider
+4. CRM / Customer Intelligence
 
 ## LATER
 
 The **Later** section contains larger initiatives that are planned but intentionally scheduled after the Next items.
 
-- X Provider
-- CRM Provider
+- X formal direct-provider expansion
 - Staff Portal
 - Multi-location support
 - Predictive Forecasting
@@ -102,10 +104,10 @@ Items can move from Icebox into Later when prioritised.
 ### v1.5 — Marketing Expansion
 
 - Mailchimp
-- Instagram
-- Facebook
-- LinkedIn
-- X
+- Paid media / attribution refinement
+- CRM-linked demand intelligence
+- Cross-channel campaign execution
+- Social provider consolidation into formal release packaging
 
 ### v2.0 — Executive Operating System
 

@@ -10,6 +10,7 @@
     "vendor:chart": "mkdir -p assets/vendor && cp node_modules/chart.js/dist/chart.umd.js assets/vendor/chart.umd.js",
     "ga4:sync": "node scripts/sync-ga4-snapshot.mjs",
     "youtube:sync": "node scripts/sync-youtube-snapshot.mjs",
+    "social:sync": "node scripts/sync-social-snapshot.mjs",
     "gmail:sync": "node scripts/sync-gmail-snapshot.mjs",
     "calendar:sync": "node scripts/sync-calendar-snapshot.mjs"
   },

@@ -4,10 +4,10 @@ export const RELEASE_CONFIG = Object.freeze({
   releaseLabel: 'v1.1',
   codename: 'Marketing Intelligence',
   releaseDate: '2026-07-05',
-  buildNumber: '2026.07.05.4',
-  currentSprint: 'Sprint 14',
+  buildNumber: '2026.07.05.5',
+  currentSprint: 'Sprint 18',
   environment: 'Demo',
-  environmentDetail: 'Demo-first executive shell with selective GA4, YouTube, Gmail, and Google Calendar snapshot overlays when local generated data is available.',
+  environmentDetail: 'Demo-first executive shell with selective GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshot overlays when local generated data is available.',
   changelogPath: 'CHANGELOG.md',
   roadmapPath: 'Roadmap.md',
   sprintHistoryPath: 'changelog/CHANGELOG.md',
@@ -28,6 +28,7 @@ export function buildReleaseWorkspace({ liveData = {} } = {}) {
     .map(([key]) => {
       if (key === 'ga4') return 'GA4';
       if (key === 'youtube') return 'YouTube';
+      if (key === 'social') return 'Unified Social';
       if (key === 'gmail') return 'Gmail';
       if (key === 'calendar') return 'Google Calendar';
       return String(key).toUpperCase();

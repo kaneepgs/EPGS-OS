@@ -6,9 +6,9 @@
 
 It has now moved from a CFO-first prototype into a broader **Executive Operating System** with a true **CEO Intelligence Dashboard** at the centre.
 
-Today it is still primarily a **demo product**, but it now has four controlled live-data paths: **Website Analytics** can hydrate from a locally generated GA4 snapshot, **YouTube** can hydrate from a locally generated channel snapshot, **Executive Inbox** can hydrate from a locally generated Gmail snapshot, and **Operations Calendar** can hydrate from a locally generated Google Calendar snapshot.
+Today it is still primarily a **demo product**, but it now has five controlled live-data paths: **Website Analytics** can hydrate from a locally generated GA4 snapshot, **YouTube** can hydrate from a locally generated channel snapshot, **Unified Social** can hydrate Instagram, Facebook, LinkedIn, and X from a locally generated social snapshot, **Executive Inbox** can hydrate from a locally generated Gmail snapshot, and **Operations Calendar** can hydrate from a locally generated Google Calendar snapshot.
 
-The formal shipped release remains **EP Intelligence v1.1 — Marketing Intelligence**, with Gmail and Google Calendar currently layered on top as post-v1.1 platform extensions.
+The formal shipped release remains **EP Intelligence v1.1 — Marketing Intelligence**, with Unified Social, Gmail, and Google Calendar currently layered on top as post-v1.1 platform extensions.
 
 ## Release and roadmap references
 
@@ -33,7 +33,7 @@ Release metadata is now centralised in `assets/config/release-config.js`, so the
 - a live-capable **YouTube provider path** for channel totals, recent uploads, visibility, and content-library items
 - a live-capable **Gmail provider path** for Executive Inbox triage, communications intelligence, and approval-first inbox actions
 - a live-capable **Google Calendar provider path** for Operations Calendar, capacity visibility, scheduling-risk detection, timeline events, search coverage, and approval-first operational actions
-- a reusable **Marketing Intelligence Report** that packages GA4 + YouTube into one executive report
+- a reusable **Marketing Intelligence Report** that now packages GA4, YouTube, Unified Social, competitor benchmarking, and attribution into one executive report
 - a proper **Marketing Health Score** with score, trend, confidence, and source status
 - provider-independent **Executive Memory** that now stores marketing milestones as part of the business timeline
 - a dedicated **Executive Inbox** with deterministic business email classification and CEO-ready summaries
@@ -59,7 +59,7 @@ Release metadata is now centralised in `assets/config/release-config.js`, so the
 - no automation
 - no live financial data yet
 
-The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics**, **YouTube**, **Gmail / Executive Inbox**, and **Google Calendar / Operations Calendar** when credentials are added and snapshots are synced.
+The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics**, **YouTube**, **Unified Social**, **Gmail / Executive Inbox**, and **Google Calendar / Operations Calendar** when credentials are added and snapshots are synced.
 
 ## How to open it locally
 
@@ -126,7 +126,7 @@ This is intentionally still a prototype.
 - most non-finance / non-marketing modules are still placeholders, though Operations now has a real executive scheduling surface
 - no save/sync between users or devices
 - no real approvals or workflow execution
-- only Website Analytics, YouTube, Executive Inbox, and Operations Calendar are live-capable today, all through manual local snapshot sync
+- only Website Analytics, YouTube, Unified Social, Executive Inbox, and Operations Calendar are live-capable today, all through manual local snapshot sync
 - no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
 
 ## Current roadmap position
@@ -135,18 +135,21 @@ The product roadmap is now managed in `Roadmap.md`.
 
 Current **Now** focus:
 
-- Sprint 15 — Accounting Provider v1.0
-- Live Finance
-- Accounting-backed CFO replacement beneath the service layer
-- Deterministic finance forecasting from provider data
+- Sprint 18 — Social Providers v1.0
+- Unified Social Provider
+- Social Health Score
+- Cross-platform reporting
+- Executive social intelligence
+- Competitor benchmarking
+- Marketing attribution
 - Demo fallback preserved
 
 Current **Next** priorities:
 
-1. Booking Intelligence
-2. Mailchimp Provider
-3. Instagram / Facebook Provider
-4. LinkedIn Provider
+1. Accounting Provider v1.0
+2. Booking Intelligence
+3. Mailchimp Provider
+4. CRM / Customer Intelligence
 
 ## Suggested positioning when presenting it
 
@@ -154,6 +157,6 @@ Describe it as:
 
 > “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance, Marketing, executive communications, and business operations scheduling.”
 
-You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a dedicated **Executive Inbox**, a dedicated **Operations Calendar**, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube + Gmail + Google Calendar** provider paths, with the rest of the business architecture prepared for future module builds.
+You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a dedicated **Executive Inbox**, a dedicated **Operations Calendar**, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube + Unified Social + Gmail + Google Calendar** provider paths, with the rest of the business architecture prepared for future module builds.
 
 After each completed release, update `CHANGELOG.md` for the formal release summary, then advance `Roadmap.md`, then move detailed sprint notes into `changelog/CHANGELOG.md`.

@@ -79,7 +79,7 @@ Say:
 
 Then add:
 
-> “Website Analytics can now read from a locally generated GA4 snapshot, and YouTube can now read from a locally generated channel snapshot. Sprint 11 packages those into a proper Marketing Intelligence release while keeping the rest of the product in safe Demo Mode.”
+> “Website Analytics can now read from a locally generated GA4 snapshot, YouTube can now read from a locally generated channel snapshot, and Sprint 18 adds a Unified Social Provider so Instagram, Facebook, LinkedIn, and X can all hydrate through one generated local social snapshot path while keeping the rest of the product in safe Demo Mode.”
 
 ## 6) Open Executive Inbox
 
@@ -140,7 +140,7 @@ Show:
 
 Say:
 
-> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report is the first example of a proper packaged functional report, and Board Meeting Mode now also has communications-aware and operations-aware executive context rather than ignoring the inbox or the schedule.”
+> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report now packages website demand, YouTube authority, cross-platform social health, attribution, competitor benchmarking, risks, and actions into one executive readout, while Board Meeting Mode also has communications-aware and operations-aware context rather than ignoring the inbox or the schedule.”
 
 ## 9) Open AI Assistant
 
