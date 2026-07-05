@@ -6,13 +6,28 @@ EP Intelligence is an AI Executive Operating System for EP Golf Studios that hel
 
 This project defines the operating foundation for a multi-executive AI system that can support leadership across finance, marketing, operations, and strategy.
 
-## Sprint Scope
+## Current Sprint State
 
-This sprint is focused on documentation and architecture only.
+### Sprint 1
 
-- No live API integrations yet
-- No live financial account connections yet
-- No automated execution of significant actions
+Documentation and architecture foundation only.
+
+### Sprint 2 — CFO Workspace v0.1
+
+The project now includes the first working CFO Workspace prototype homepage.
+
+- polished executive-style workspace experience
+- placeholder financial health score and summary
+- clickable executive summary cards
+- priorities, opportunities, risks, and approval centre
+- Sunday weekly briefing preview
+- natural-language “Ask My CFO” experience with placeholder responses
+
+Still excluded from this sprint:
+
+- no live API integrations
+- no live financial account connections
+- no automation or backend execution
 
 ## Initial Executive Domains
 
@@ -31,6 +46,8 @@ This sprint is focused on documentation and architecture only.
 
 ## Repository Layout
 
+- `index.html` — CFO Workspace homepage prototype
+- `assets/` — CFO Workspace styling and interaction layer
 - `docs/` — constitutional, architectural, and decision-making foundations
 - `specifications/` — executive role definitions and responsibilities
 - `prompts/` — build prompts for OpenClaw-based executive implementation
@@ -39,4 +56,4 @@ This sprint is focused on documentation and architecture only.
 
 ## Near-Term Outcome
 
-The immediate goal is to define a strong operating blueprint so later implementation can safely connect business systems, produce weekly executive briefings, preserve decision history, and support approval-first automation.
+The immediate goal is to pair the operating blueprint with a working executive user experience so later implementation can safely connect business systems, produce weekly executive briefings, preserve decision history, and support approval-first automation.

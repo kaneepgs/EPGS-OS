@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EP Intelligence — CFO Workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="eyebrow">EP Intelligence</div>
+          <h1>CFO Workspace</h1>
+          <p>An executive operating layer for decision-making, not accounting admin.</p>
+        </div>
+
+        <nav class="nav">
+          <a href="#workspace" class="nav-link active">Workspace</a>
+          <a href="#revenue" class="nav-link">Revenue</a>
+          <a href="#profit" class="nav-link">Profit</a>
+          <a href="#expenses" class="nav-link">Expenses</a>
+          <a href="#supplier-spend" class="nav-link">Supplier Spend</a>
+          <a href="#cash-flow" class="nav-link">Cash Flow</a>
+          <a href="#vat" class="nav-link">VAT</a>
+          <a href="#forecasts" class="nav-link">Forecasts</a>
+          <a href="#business-kpis" class="nav-link">Business KPIs</a>
+          <a href="#approval-centre" class="nav-link">Approval Centre</a>
+          <a href="#decision-journal" class="nav-link">Decision Journal</a>
+          <a href="#weekly-briefings" class="nav-link">Weekly Briefings</a>
+          <a href="#settings" class="nav-link">Settings</a>
+        </nav>
+
+        <div class="sidebar-note">
+          <span class="status-dot"></span>
+          Placeholder executive environment only — no APIs or automations active.
+        </div>
+      </aside>
+
+      <main class="workspace" id="workspace">
+        <section class="hero-panel panel">
+          <div>
+            <div class="eyebrow">Good morning, Kane.</div>
+            <h2>Your CFO is ready.</h2>
+            <p class="hero-summary" id="status-summary"></p>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="score-card">
+              <span>Financial Health Score</span>
+              <strong id="health-score"></strong>
+              <small id="health-label"></small>
+            </div>
+            <div class="narrative-card">
+              <span>Current Status</span>
+              <p id="health-narrative"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-block" id="business-kpis">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Executive Summary</span>
+              <h3>What matters right now</h3>
+            </div>
+            <p>Click any metric to see the CFO readout and what to do next.</p>
+          </div>
+
+          <div class="metric-grid" id="metric-grid"></div>
+
+          <div class="detail-card panel" id="metric-detail"></div>
+        </section>
+
+        <section class="two-column-grid">
+          <div class="panel" id="profit">
+            <div class="section-heading compact">
+              <div>
+                <span class="eyebrow">My Priorities</span>
+                <h3>Top three CFO priorities</h3>
+              </div>
+            </div>
+            <div class="priority-list" id="priority-list"></div>
+          </div>
+
+          <div class="panel" id="revenue">
+            <div class="section-heading compact">
+              <div>
+                <span class="eyebrow">Weekly Briefing</span>
+                <h3>Sunday briefing preview</h3>
+              </div>
+            </div>
+            <div class="briefing-preview" id="briefing-preview"></div>
+          </div>
+        </section>
+
+        <section class="two-column-grid">
+          <div class="panel" id="forecasts">
+            <div class="section-heading compact">
+              <div>
+                <span class="eyebrow">Opportunities</span>
+                <h3>Where the CFO sees upside</h3>
+              </div>
+            </div>
+            <div class="stack-list" id="opportunities-list"></div>
+          </div>
+
+          <div class="panel" id="cash-flow">
+            <div class="section-heading compact">
+              <div>
+                <span class="eyebrow">Risks</span>
+                <h3>What needs watching</h3>
+              </div>
+            </div>
+            <div class="stack-list" id="risks-list"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="approval-centre">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Approval Centre</span>
+              <h3>Actions waiting for Kane</h3>
+            </div>
+            <p>Nothing here executes automatically. This is an approval-first workspace.</p>
+          </div>
+          <div class="approval-grid" id="approval-grid"></div>
+        </section>
+
+        <section class="panel" id="supplier-spend">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Ask My CFO</span>
+              <h3>Work with the CFO in plain English</h3>
+            </div>
+            <p>Suggested questions use placeholder responses in this sprint.</p>
+          </div>
+
+          <div class="chat-layout">
+            <div class="chat-prompts" id="chat-prompts"></div>
+            <div class="chat-response">
+              <div class="chat-bubble user" id="chat-question"></div>
+              <div class="chat-bubble assistant" id="chat-answer"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="three-column-grid footer-grid">
+          <div class="panel mini-panel" id="expenses">
+            <span class="eyebrow">Expenses</span>
+            <h3>Expense discipline</h3>
+            <p>Spend is manageable, but travel and contractor costs are trending above plan.</p>
+          </div>
+
+          <div class="panel mini-panel" id="vat">
+            <span class="eyebrow">VAT</span>
+            <h3>VAT watch</h3>
+            <p>Liability is provisioned, but timing of invoice capture needs tightening before submission week.</p>
+          </div>
+
+          <div class="panel mini-panel" id="decision-journal">
+            <span class="eyebrow">Decision Journal</span>
+            <h3>Current memory</h3>
+            <p>The workspace will later preserve recommendations, approvals, and outcomes for quarterly review.</p>
+          </div>
+
+          <div class="panel mini-panel" id="weekly-briefings">
+            <span class="eyebrow">Weekly Briefings</span>
+            <h3>Cadence</h3>
+            <p>Sunday is the main CFO briefing cycle, with manual generation available during the week.</p>
+          </div>
+
+          <div class="panel mini-panel" id="settings">
+            <span class="eyebrow">Settings</span>
+            <h3>Current mode</h3>
+            <p>Demo data only. No external systems connected. No autonomous actions enabled.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>
