@@ -1,6 +1,6 @@
 import { APP_CONFIG, currentModeConfig } from '../config/app-config.js';
 import { RAW_MOCK_DATA } from './mock-data.js';
-import { loadGeneratedGa4Snapshot } from './live-data-loader.js';
+import { loadGeneratedGa4Snapshot, loadGeneratedYouTubeSnapshot } from './live-data-loader.js';
 import { createProviderRegistry } from '../providers/provider-registry.js';
 import { createTimelineService } from '../services/timeline-service.js';
 import { createApprovalService } from '../services/approval-service.js';
@@ -13,7 +13,8 @@ import { createIntelligenceService } from '../services/intelligence-service.js';
 import { createMemoryService } from '../memory/memory-service.js';
 
 const GA4_SNAPSHOT = await loadGeneratedGa4Snapshot();
-const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT });
+const YOUTUBE_SNAPSHOT = await loadGeneratedYouTubeSnapshot();
+const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT, youtubeSnapshot: YOUTUBE_SNAPSHOT });
 const timelineService = createTimelineService(providerRegistry);
 const approvalService = createApprovalService(providerRegistry);
 const financeService = createFinanceService(providerRegistry);
@@ -78,6 +79,14 @@ function formatDelta(value) {
   return `${number >= 0 ? '+' : ''}${number.toFixed(1)}%`;
 }
 
+function youtubeMetricLookup(stats = []) {
+  return Object.fromEntries(
+    stats
+      .filter((entry) => Array.isArray(entry) && entry.length >= 2)
+      .map(([label, value]) => [String(label), value])
+  );
+}
+
 function buildCeoWebsiteIntelligence(websiteAnalytics = {}) {
   const metrics = metricLookup(websiteAnalytics.metrics || []);
   const source = websiteAnalytics.dataSource || { label: 'Demo fallback active', body: 'Website Analytics is using demo data.', tone: 'warn', state: 'demo-fallback' };
@@ -139,7 +148,68 @@ function buildCeoWebsiteIntelligence(websiteAnalytics = {}) {
   };
 }
 
+function buildCeoYoutubeIntelligence(youtubePlatform = {}) {
+  const metrics = youtubeMetricLookup(youtubePlatform.stats || []);
+  const source = youtubePlatform.dataSource || { label: 'Demo fallback active', body: 'YouTube is using demo data.', tone: 'warn', state: 'demo-fallback' };
+  const snapshotMeta = youtubePlatform.snapshotMeta || {};
+
+  return {
+    source,
+    summary: source.state === 'live-youtube'
+      ? `Live YouTube channel data is now active for ${source.channelId || 'the configured channel'}. The CEO can now see subscriber movement, tracked view momentum, publishing cadence, and top-video performance without leaving EP Intelligence.`
+      : 'YouTube intelligence is currently using demo data until a local live snapshot is available.',
+    channelId: source.channelId || '',
+    syncedAt: source.syncedAt || null,
+    isLive: source.state === 'live-youtube',
+    kpis: [
+      {
+        iconName: 'sparkles',
+        label: 'Subscribers',
+        value: metrics.Subscribers || '—',
+        body: 'Current channel size as a direct executive trust and authority signal.',
+        meta: source.label
+      },
+      {
+        iconName: 'grid',
+        label: 'Total Views',
+        value: metrics['Total Views'] || '—',
+        body: 'All-time channel visibility, useful for understanding accumulated authority.',
+        meta: source.label
+      },
+      {
+        iconName: 'trending-up',
+        label: 'Views (28 days)',
+        value: metrics['Views (28 days)'] || '—',
+        body: 'Tracked recent visibility used to judge current content momentum.',
+        meta: snapshotMeta.historyCoverageLabel || source.label
+      },
+      {
+        iconName: 'target',
+        label: 'Subscribers Gained',
+        value: metrics['Subscribers Gained'] || '—',
+        body: 'Tracked subscriber movement over the active local history window.',
+        meta: snapshotMeta.historyCoverageLabel || source.label
+      },
+      {
+        iconName: 'book-open',
+        label: 'Videos Published',
+        value: metrics['Videos Published'] || '—',
+        body: 'Publishing volume helps the CEO judge consistency, not just isolated hits.',
+        meta: source.label
+      },
+      {
+        iconName: 'pulse',
+        label: 'Audience Growth',
+        value: metrics['Audience Growth'] || '—',
+        body: 'Subscriber growth rate over the active tracking window.',
+        meta: snapshotMeta.historyCoverageLabel || source.label
+      }
+    ]
+  };
+}
+
 const CEO_WEBSITE_INTELLIGENCE = buildCeoWebsiteIntelligence(CMO_DATA.websiteAnalytics);
+const CEO_YOUTUBE_INTELLIGENCE = buildCeoYoutubeIntelligence(CMO_DATA.platforms?.youtube);
 const MEMORY_DATA = memoryService.getWorkspace({
   executive: CEO_DATA,
   finance: CFO_DATA,
@@ -157,6 +227,7 @@ export const WORKSPACE_DATA = Object.freeze({
     businessTimeline: [...INTELLIGENCE.timelineEvents, ...MEMORY_DATA.timeline, ...CEO_DATA.businessTimeline],
     intelligence: INTELLIGENCE.ceo,
     websiteIntelligence: CEO_WEBSITE_INTELLIGENCE,
+    youtubeIntelligence: CEO_YOUTUBE_INTELLIGENCE,
     memory: MEMORY_DATA.dashboard,
     businessHealthScore: {
       ...CEO_DATA.businessHealthScore,

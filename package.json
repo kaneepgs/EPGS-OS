@@ -1,14 +1,15 @@
 {
   "name": "ep-intelligence",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
-  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, integration-framework architecture, deterministic intelligence engine, and GA4 website analytics provider for EP Golf Studios.",
+  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, provider architecture, deterministic intelligence engine, GA4 website analytics, and YouTube live channel overlays for EP Golf Studios.",
   "scripts": {
     "serve": "python3 -m http.server 3012",
     "validate:js": "node --check assets/app.js",
     "vendor:chart": "mkdir -p assets/vendor && cp node_modules/chart.js/dist/chart.umd.js assets/vendor/chart.umd.js",
-    "ga4:sync": "node scripts/sync-ga4-snapshot.mjs"
+    "ga4:sync": "node scripts/sync-ga4-snapshot.mjs",
+    "youtube:sync": "node scripts/sync-youtube-snapshot.mjs"
   },
   "keywords": [
     "executive-workspace",
@@ -18,6 +19,7 @@
     "integration-framework",
     "intelligence-engine",
     "ga4",
+    "youtube",
     "prototype",
     "chartjs"
   ],

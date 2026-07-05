@@ -32,14 +32,26 @@ export function createRecommendationEngine({ priorityEngine }) {
         {
           id: 'video-proof-expansion',
           recommendation: 'Extend the strongest proof-led YouTube content into website and email journeys',
-          why: lookup['marketing-revenue-growth']?.executiveSummary || 'The strongest-performing marketing assets are already shaping demand quality.',
+          why: lookup['youtube-live-momentum']?.executiveSummary || lookup['marketing-revenue-growth']?.executiveSummary || 'The strongest-performing marketing assets are already shaping demand quality.',
           expectedBenefit: 'Builds authority, supports lead quality, and compounds current revenue momentum across owned channels.',
           risk: 'Low',
-          confidence: lookup['marketing-revenue-growth']?.confidence?.label || 'High',
-          confidenceScore: lookup['marketing-revenue-growth']?.confidence?.score || 84,
+          confidence: lookup['youtube-live-momentum']?.confidence?.label || lookup['marketing-revenue-growth']?.confidence?.label || 'High',
+          confidenceScore: lookup['youtube-live-momentum']?.confidence?.score || lookup['marketing-revenue-growth']?.confidence?.score || 84,
           estimatedValue: marketing.campaignPerformance?.revenueAttribution || '£18.6k attributed demand support',
           suggestedOwner: 'CMO',
-          priorityFactors: { financialImpact: 80, customerImpact: 76, strategicImportance: 81, timeSensitivity: 69, confidence: lookup['marketing-revenue-growth']?.confidence?.score || 84 }
+          priorityFactors: { financialImpact: 80, customerImpact: 76, strategicImportance: 81, timeSensitivity: 69, confidence: lookup['youtube-live-momentum']?.confidence?.score || lookup['marketing-revenue-growth']?.confidence?.score || 84 }
+        },
+        {
+          id: 'youtube-cadence-protect',
+          recommendation: 'Protect a consistent YouTube publishing cadence while live momentum is visible',
+          why: lookup['youtube-publishing-consistency']?.executiveSummary || 'The strongest authority channel should not rely on sporadic output.',
+          expectedBenefit: 'Preserves compounding authority, supports steady traffic generation, and reduces the risk of momentum drifting between major uploads.',
+          risk: 'Low–Medium',
+          confidence: lookup['youtube-publishing-consistency']?.confidence?.label || lookup['youtube-live-momentum']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['youtube-publishing-consistency']?.confidence?.score || lookup['youtube-live-momentum']?.confidence?.score || 78,
+          estimatedValue: 'More consistent authority and demand support from the strongest content channel',
+          suggestedOwner: 'CMO',
+          priorityFactors: { financialImpact: 74, customerImpact: 72, strategicImportance: 85, timeSensitivity: 80, confidence: lookup['youtube-publishing-consistency']?.confidence?.score || lookup['youtube-live-momentum']?.confidence?.score || 78 }
         },
         {
           id: 'supplier-term-review',

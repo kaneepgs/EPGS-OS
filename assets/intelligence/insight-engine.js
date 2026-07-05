@@ -48,11 +48,11 @@ export function createInsightEngine() {
       ].filter(Boolean);
 
       const cmoInsights = [
-        insightFromCorrelation(correlations.find((item) => item.id === 'marketing-revenue-growth') || correlations[0], [recommendationLookup['video-proof-expansion']?.recommendation].filter(Boolean)),
+        insightFromCorrelation(correlations.find((item) => item.id === 'youtube-live-momentum') || correlations.find((item) => item.id === 'marketing-revenue-growth') || correlations[0], [recommendationLookup['video-proof-expansion']?.recommendation, recommendationLookup['youtube-cadence-protect']?.recommendation].filter(Boolean)),
         insightFromCorrelation(correlations.find((item) => item.id === 'website-conversion-gap') || correlations[0], [recommendationLookup['website-conversion-sprint']?.recommendation].filter(Boolean)),
         normalizeExecutiveInsight({
           title: 'Marketing health is improving with clearer channel winners',
-          executiveSummary: `CMO health scores ${health.cmo.score}/100 because YouTube and Instagram are building momentum, but value capture will improve faster if conversion pathways tighten alongside content output.`,
+          executiveSummary: `CMO health scores ${health.cmo.score}/100 because YouTube is now visible through the live provider path and Instagram continues to support momentum, but value capture will improve faster if conversion pathways tighten alongside disciplined content output.`,
           supportingEvidence: [marketing.dashboard?.bestPlatform, marketing.dashboard?.worstPlatform, marketing.dashboard?.metrics?.visitors, marketing.dashboard?.metrics?.enquiries].filter(Boolean),
           confidenceScore: 82,
           confidence: 'High',

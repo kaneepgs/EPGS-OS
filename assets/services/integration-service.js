@@ -15,12 +15,12 @@ export function createIntegrationService(registry, { executiveService, financeSe
         layers: [
           { title: 'Presentation Layer', body: 'Routes and views render stable executive UI components and never talk directly to raw data sources.', tone: 'info' },
           { title: 'Business Logic Layer', body: 'Services shape dashboard-ready data, enforce contracts, and hide provider-specific detail from the UI.', tone: 'good' },
-          { title: 'Data Provider Layer', body: 'Providers expose interchangeable domain data. Sprint 8 adds the first live-capable path by letting AnalyticsProvider overlay GA4 Website Analytics data while preserving demo fallback.', tone: 'warn' }
+          { title: 'Data Provider Layer', body: 'Providers expose interchangeable domain data. Sprint 10 extends the live-capable path by letting AnalyticsProvider overlay GA4 Website Analytics data and YouTubeProvider overlay live channel data while preserving demo fallback.', tone: 'warn' }
         ],
         flow: [
           'UI route → service method',
           'service method → domain provider',
-          'provider → structured dataset or generated GA4 snapshot',
+          'provider → structured dataset or generated live snapshot',
           'service → contract normalization',
           'normalized result → intelligence/runtime composition',
           'runtime result → executive workspace UI'

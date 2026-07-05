@@ -4,7 +4,7 @@ EP Intelligence is a frontend-only AI Executive Operating System prototype for E
 
 It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
 
-Sprint 9 adds a provider-independent **Executive Memory & Knowledge Graph** layer so the business can now retain events, decisions, goals, recurring issues, milestones, and deterministic historical context independently of any live provider.
+Sprint 10 adds a live **YouTube Provider** on top of the existing architecture, so the business can now consume generated local channel snapshots for subscribers, visibility, uploads, content library items, and deterministic executive insight — while still falling back safely to demo data.
 
 ## Current Sprint State
 
@@ -133,6 +133,18 @@ Added the long-term memory of the business without changing the frontend-only ar
 - upgraded the CEO Dashboard, Reports, AI Memory / Context route, global search, and Settings to consume memory-backed business context
 - added configurable retention settings for timeline history, completed decisions, archived goals, and memory categories
 
+### Sprint 10 — YouTube Provider v1.0
+
+Added the second live provider path without changing the wider architecture:
+
+- introduced a dedicated `YouTubeProvider` that overlays only the **YouTube portions of the CMO workspace** while preserving the existing demo baseline for Instagram, Facebook, LinkedIn, and X
+- added `scripts/sync-youtube-snapshot.mjs` plus `npm run youtube:sync` to fetch channel totals, recent uploads, tracked visibility, and content-library-ready video data from the YouTube Data API
+- added generated local snapshot loading and safe fallback through `assets/data/live-data-loader.js`
+- updated the CEO Dashboard so leadership can now see **YouTube subscribers, total views, tracked recent views, subscriber movement, and publishing activity** inside the executive shell
+- fed live YouTube signals into the deterministic intelligence layer for briefing, cross-department correlations, recommendations, and timeline events
+- updated Content Library and the YouTube platform page so recent uploads and top-performing tracked videos replace the old demo entries automatically
+- kept Executive Memory fully provider-independent and left the rest of the product in **Demo Mode** except for the selective GA4 + YouTube overlays
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -140,7 +152,7 @@ This prototype intentionally remains:
 - **HTML + CSS + Vanilla JavaScript only**
 - **frontend-only in the browser**
 - **no browser-side secrets or direct GA4 calls from the UI**
-- **mostly demo-mode**, with only Website Analytics eligible for optional GA4 hydration through a locally generated snapshot
+- **mostly demo-mode**, with Website Analytics and YouTube eligible for optional local snapshot hydration
 - **without backend services, databases, authentication, or automation inside the product itself**
 
 ## Project Structure
@@ -156,10 +168,10 @@ This prototype intentionally remains:
 - `assets/config/shell-config.js` — route, navigation, and page-question metadata
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
 - `assets/data/mock-data.js` — raw structured demo datasets
-- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4 snapshot
+- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4 and YouTube snapshots
 - `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, and runtime workspace data
 - `assets/memory/` — provider-independent executive memory stores, seed data, knowledge graph generation, and memory service
-- `assets/providers/` — active mock provider, live-capable analytics provider, future provider placeholders, and provider registry
+- `assets/providers/` — active mock provider, live-capable analytics and YouTube providers, future provider placeholders, and provider registry
 - `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, integration status, and intelligence assembly
 - `assets/intelligence/` — deterministic executive reasoning engines for insights, correlations, recommendations, priority, health, narratives, and confidence
 - `assets/ui/components.js` — reusable UI render helpers
@@ -168,8 +180,10 @@ This prototype intentionally remains:
 - `assets/favicon.svg` — favicon / OG image source
 - `assets/site.webmanifest` — install metadata
 - `scripts/sync-ga4-snapshot.mjs` — local GA4 snapshot sync script for Sprint 8
+- `scripts/sync-youtube-snapshot.mjs` — local YouTube snapshot sync script for Sprint 10
 - `docs/` — architecture and constitutional documents
 - `docs/executive-memory.md` — Executive Memory and Knowledge Graph architecture guide
+- `docs/youtube-provider.md` — YouTube provider setup, lifecycle, fallback, and troubleshooting guide
 - `specifications/` — executive role specifications
 - `prompts/` — future OpenClaw executive build prompts
 - `skills/` — draft executive skills
@@ -190,6 +204,14 @@ Optional GA4 sync for Website Analytics only:
 cp .env.example .env.local
 # add GA4 credentials locally
 npm run ga4:sync
+```
+
+Optional YouTube sync for the marketing workspace:
+
+```bash
+cp .env.example .env.local
+# add YOUTUBE_API_KEY and YOUTUBE_CHANNEL_ID locally
+npm run youtube:sync
 ```
 
 Then open:
@@ -213,7 +235,7 @@ The project is structured to be easy to host on:
 
 No server runtime is required for the UI itself.
 
-If you want live Website Analytics, run the local GA4 sync script first so the static frontend can read the generated snapshot file.
+If you want live Website Analytics or live YouTube channel data, run the relevant local sync script first so the static frontend can read the generated snapshot file.
 
 ## Validation
 
@@ -324,6 +346,32 @@ Sprint 9 validation includes:
   - Timeline
   - Memory Search
 
+Sprint 10 validation includes:
+
+- `node --check assets/app.js`
+- syntax checks across the full `assets/` tree and `scripts/sync-youtube-snapshot.mjs`
+- `npm run youtube:sync` using a local environment file to generate a live YouTube snapshot successfully
+- runtime validation confirming:
+  - `APP_RUNTIME.config.liveData.youtube.available === true`
+  - YouTube now binds through `YouTubeProvider`
+  - CMO combined totals update from live YouTube data
+  - CEO YouTube intelligence cards render from the live snapshot
+  - Content Library replaces demo YouTube entries with live recent uploads
+- scripted route validation for:
+  - `?route=/cmo/youtube`
+  - `?route=/cmo/social-media-overview`
+  - `?route=/ceo`
+  - `?route=/settings/integrations`
+  - `?route=/cmo/content-library`
+- fallback validation by temporarily removing the generated YouTube snapshot and confirming a clean automatic return to demo content
+- validation that no JavaScript errors or console warnings appear during the scripted walkthrough
+- captured screenshots for:
+  - YouTube Dashboard
+  - Social Overview
+  - CEO Dashboard
+  - Integration Status
+  - Content Library
+
 ## Design Principles
 
 1. Evidence before recommendation
@@ -338,4 +386,4 @@ Sprint 9 validation includes:
 
 The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System**, giving EP Golf Studios a credible AI-Chief-of-Staff-style **CEO Dashboard** plus integrated prototype depth across the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
 
-After Sprint 9, the product has a real integration framework, a deterministic Executive Intelligence Engine, and a provider-independent Executive Memory layer beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core with durable business context instead of replacing it.
+After Sprint 10, the product has a real integration framework, a deterministic Executive Intelligence Engine, a provider-independent Executive Memory layer, and two live snapshot paths (GA4 + YouTube) beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core with durable business context instead of replacing it.

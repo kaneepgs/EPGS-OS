@@ -659,6 +659,7 @@ function ceoDashboardView() {
   const data = WORKSPACE_DATA.ceo;
   const intelligence = WORKSPACE_DATA.intelligence;
   const website = data.websiteIntelligence;
+  const youtube = data.youtubeIntelligence;
   return {
     html: `
       <div class="page-grid">
@@ -699,6 +700,7 @@ function ceoDashboardView() {
             <div class="section-stack">
               ${insightCard({ eyebrow: 'Business impact', title: intelligence.insights.topInsight.businessImpact, body: intelligence.insights.topInsight.financialImpact, tone: 'info' })}
               ${insightCard({ eyebrow: 'Website data source', title: website.source.label, body: website.source.body, tone: website.source.tone || 'info' })}
+              ${insightCard({ eyebrow: 'YouTube data source', title: youtube.source.label, body: youtube.source.body, tone: youtube.source.tone || 'info' })}
               ${insightCard({ eyebrow: 'Supporting evidence', title: `${intelligence.insights.topInsight.confidence} confidence`, body: intelligence.insights.topInsight.supportingEvidence.join(' '), tone: 'good' })}
             </div>
           </div>
@@ -715,6 +717,17 @@ function ceoDashboardView() {
           <div class="grid-2">
             ${insightCard({ eyebrow: 'Executive readout', title: website.isLive ? 'Live demand visibility is now active' : 'Demo fallback remains active', body: website.summary, tone: website.source.tone || 'info' })}
             ${insightCard({ eyebrow: 'Fallback behaviour', title: website.isLive ? 'Live GA4 is isolated to website analytics' : 'Website metrics are safely falling back', body: website.isLive ? 'If the GA4 snapshot disappears, the CEO and CMO views automatically revert to demo website intelligence without breaking the broader dashboard.' : 'A missing snapshot does not break the CEO Dashboard. It simply returns website intelligence to the structured demo baseline.', tone: website.isLive ? 'good' : 'warn' })}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'YouTube Intelligence', title: youtube.source.label, body: youtube.source.body })}
+          <div class="grid-3">
+            ${youtube.kpis.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+          </div>
+          <div class="grid-2">
+            ${insightCard({ eyebrow: 'Executive readout', title: youtube.isLive ? 'Live channel visibility is now active' : 'Demo fallback remains active', body: youtube.summary, tone: youtube.source.tone || 'info' })}
+            ${insightCard({ eyebrow: 'Fallback behaviour', title: youtube.isLive ? 'Live YouTube is isolated to one provider path' : 'YouTube metrics are safely falling back', body: youtube.isLive ? 'If the generated YouTube snapshot disappears, the CMO and CEO views automatically revert to demo YouTube data without breaking the rest of the workspace.' : 'A missing YouTube snapshot does not break the dashboard. It simply returns YouTube to the structured demo baseline.', tone: youtube.isLive ? 'good' : 'warn' })}
           </div>
         </section>
 
@@ -825,7 +838,7 @@ function ceoDashboardView() {
         </section>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Cross-Department Intelligence', title: 'What the business signals mean when linked together', body: website.isLive ? 'These correlations are generated before the interface renders them, with live GA4 website signals now feeding the CEO view.' : 'These correlations are generated before the interface renders them.' })}
+          ${sectionHeader({ eyebrow: 'Cross-Department Intelligence', title: 'What the business signals mean when linked together', body: website.isLive && youtube.isLive ? 'These correlations are generated before the interface renders them, with live GA4 website signals and live YouTube channel data now feeding the CEO view.' : website.isLive ? 'These correlations are generated before the interface renders them, with live GA4 website signals now feeding the CEO view.' : youtube.isLive ? 'These correlations are generated before the interface renders them, with live YouTube channel data now feeding the CEO view.' : 'These correlations are generated before the interface renders them.' })}
           <div class="tile-grid">
             ${WORKSPACE_DATA.intelligence.correlations.map((item) => insightCard({ eyebrow: `${item.priority} · ${item.businessImpact}`, title: item.title, body: item.executiveSummary, tone: item.tone || toneFromPriority(item.priority) })).join('')}
           </div>
@@ -1413,8 +1426,9 @@ function cmoToneFromRating(rating) {
 function cmoPlatformCommentary(platform) {
   const name = platform.label;
   const growth = platform.stats.find(([label]) => label === 'Audience Growth')?.[1] || 'Growth placeholder';
-  const engagement = platform.stats.find(([label]) => label === 'Engagement Rate')?.[1] || 'Engagement placeholder';
-  const cadence = platform.stats.find(([label]) => label === 'Posting Frequency')?.[1] || 'Cadence placeholder';
+  const engagement = platform.stats.find(([label]) => label === 'Engagement Rate')?.[1] || platform.stats.find(([label]) => label === 'Average Views / Video')?.[1] || 'Engagement placeholder';
+  const cadence = platform.stats.find(([label]) => label === 'Posting Frequency')?.[1] || platform.stats.find(([label]) => label === 'Publishing Activity')?.[1] || 'Cadence placeholder';
+  const isLive = platform.dataSource?.state === 'live-youtube';
   return {
     title: `${name} Executive Commentary`,
     data: {
@@ -1425,7 +1439,7 @@ function cmoPlatformCommentary(platform) {
       risks: `If ${name} publishing becomes inconsistent or drifts away from the formats that already perform well, growth quality could soften quickly.`,
       alternatives: 'Increase publishing cadence, focus more tightly on top-performing content formats, or maintain a selective cadence while resources stay concentrated elsewhere.',
       action: `Preserve the highest-performing themes on ${name}, keep cadence deliberate, and use this page to decide whether the next effort should scale or narrow.`,
-      missing: `All ${name} data remains realistic mock/demo data only in this sprint.`,
+      missing: isLive ? `${name} is now using the live provider path, but other social platforms and deeper attribution remain in Demo Mode.` : `All ${name} data remains realistic mock/demo data only in this sprint.`,
       followUp: [`What content performs best on ${name}?`, `Should ${name} get more effort next week?`, `What is the next approval-worthy action on ${name}?`]
     }
   };
@@ -1569,6 +1583,13 @@ function cmoSocialOverviewView() {
           </div>
         </section>
 
+        ${data.dataSource ? `
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Live social overlay', title: data.dataSource.label, body: data.dataSource.body })}
+            ${insightCard({ eyebrow: 'What changed', title: 'YouTube now uses the live provider path', body: 'Cross-platform combined follower, view, and engagement totals now incorporate the generated YouTube snapshot while Instagram, Facebook, LinkedIn, and X remain in Demo Mode.', tone: data.dataSource.tone || 'good' })}
+          </section>
+        ` : ''}
+
         <div class="grid-2">
           <section class="panel">
             ${sectionHeader({ eyebrow: 'Top content', title: 'What is working best', body: 'High-performing content should shape the next round of marketing effort.' })}
@@ -1601,6 +1622,13 @@ function cmoPlatformView(key, route) {
           ${renderRoutePillbar(SUBNAV.cmo)}
           <div class="grid-4">${pairStats(data.stats, 'Platform-level marketing metric.')}</div>
         </section>
+
+        ${data.dataSource ? `
+          <section class="panel">
+            ${sectionHeader({ eyebrow: `${data.label} data source`, title: data.dataSource.label, body: data.dataSource.body })}
+            ${insightCard({ eyebrow: data.dataSource.state === 'live-youtube' ? 'Live provider path' : 'Demo fallback path', title: data.dataSource.channelId ? `Channel ${data.dataSource.channelId}` : `${data.label} demo data`, body: data.dataSource.syncedAt ? `Last synced ${data.dataSource.syncedAt}.` : 'No live sync timestamp is currently available.', tone: data.dataSource.tone || 'info' })}
+          </section>
+        ` : ''}
 
         ${pageQuestions(route)}
 
@@ -2656,6 +2684,8 @@ function settingsView() {
 }
 
 function settingsIntegrationStatusView() {
+  const ga4 = APP_RUNTIME.config.liveData.ga4;
+  const youtube = APP_RUNTIME.config.liveData.youtube;
   const groups = Object.entries(
     WORKSPACE_DATA.settings.integrationStatus.reduce((acc, entry) => {
       acc[entry.group] = acc[entry.group] || [];
@@ -2667,13 +2697,13 @@ function settingsIntegrationStatusView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics can now hydrate from a generated GA4 snapshot when configured.' })}
+          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics and YouTube can now hydrate from generated local snapshots when configured.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
-            ${statCard({ iconName: 'check-circle', label: 'Current state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.detail })}
+            ${statCard({ iconName: 'check-circle', label: 'GA4 state', value: ga4.status, body: ga4.detail })}
+            ${statCard({ iconName: 'sparkles', label: 'YouTube state', value: youtube.status, body: youtube.detail })}
             ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Every future integration still has a status surface.' })}
-            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider is now active for marketing with safe fallback to demo data.' })}
-            ${statCard({ iconName: 'sparkles', label: 'Goal', value: 'Selective live data', body: 'Only Website Analytics is eligible for live GA4 hydration while Executive Memory stays provider-independent.' })}
+            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider and YouTubeProvider now support selective live overlays for marketing with safe fallback to demo data.' })}
           </div>
         </section>
 
@@ -2682,7 +2712,7 @@ function settingsIntegrationStatusView() {
             .map(
               ([group, entries]) => `
                 <section class="panel">
-                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics may now be live for Website Analytics only; every other entry remains in Demo Mode.' })}
+                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics and YouTube may now be live on their specific provider paths; every other entry remains in Demo Mode.' })}
                   <div class="section-stack">
                     ${entries
                       .map((entry) =>
@@ -2690,7 +2720,7 @@ function settingsIntegrationStatusView() {
                           kicker: `${pill(entry.status, 'info')}${pill(entry.provider, 'neutral')}${pill(entry.service, 'good')}`,
                           title: entry.label,
                           body: entry.notes,
-                          meta: `Registration key: ${entry.id}`
+                          meta: `${entry.detail || 'No extra integration detail yet.'} Registration key: ${entry.id}`
                         })
                       )
                       .join('')}
@@ -2713,26 +2743,26 @@ function settingsConfigurationView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics is hydrated from a locally generated GA4 snapshot, while Executive Memory persists separately.' })}
+          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics and YouTube are hydrated from locally generated snapshots, while Executive Memory persists separately.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'settings', label: 'Active mode', value: config.activeMode.label, body: config.activeMode.description })}
-            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider selectively overrides marketing website analytics.' })}
+            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider and YouTubeProvider now selectively override the marketing domain.' })}
             ${statCard({ iconName: 'shield', label: 'GA4 state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.notes || APP_RUNTIME.config.liveData.ga4.detail })}
-            ${statCard({ iconName: 'book-open', label: 'Architecture version', value: APP_RUNTIME.config.architectureVersion, body: 'Sprint 9 adds the Executive Memory layer without changing the wider provider architecture.' })}
+            ${statCard({ iconName: 'sparkles', label: 'YouTube state', value: APP_RUNTIME.config.liveData.youtube.status, body: APP_RUNTIME.config.liveData.youtube.notes || APP_RUNTIME.config.liveData.youtube.detail })}
           </div>
         </section>
 
         <div class="grid-2">
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but Future Live Mode is explicitly reserved in config.' })}
+            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but selective GA4 and YouTube overlays can still enrich the marketing workspace while Future Live Mode remains reserved.' })}
             <div class="section-stack">
               ${config.availableModes
                 .map((mode) =>
                   insightCard({
                     eyebrow: mode.available ? 'Available now' : 'Reserved for later',
                     title: mode.label,
-                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available ? 'A selective GA4 overlay is currently available for Website Analytics only.' : 'No live snapshot is currently active.'}` : mode.description,
+                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available || APP_RUNTIME.config.liveData.youtube.available ? `Current overlays: ${[APP_RUNTIME.config.liveData.ga4.available ? 'GA4 Website Analytics' : null, APP_RUNTIME.config.liveData.youtube.available ? 'YouTube channel data' : null].filter(Boolean).join(' + ')}.` : 'No live snapshot is currently active.'}` : mode.description,
                     tone: mode.available ? 'good' : 'warn'
                   })
                 )
@@ -2740,7 +2770,7 @@ function settingsConfigurationView() {
             </div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while Sprint 8 allows marketing to bind to AnalyticsProvider without forcing any dashboard rewrites.' })}
+            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while Sprint 10 lets marketing bind to YouTubeProvider on top of AnalyticsProvider without forcing any dashboard rewrites.' })}
             <div class="section-stack">
               ${config.domainBindings
                 .map((binding) =>

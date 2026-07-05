@@ -2,11 +2,11 @@ export const INTEGRATION_REGISTRY = Object.freeze([
   {
     id: 'youtube',
     label: 'YouTube',
-    provider: 'AnalyticsProvider',
+    provider: 'YouTubeProvider',
     service: 'MarketingService',
     group: 'Marketing & Analytics',
-    status: 'Demo Mode',
-    notes: 'Reserved for channel growth, video performance, and watch-time insights.'
+    status: 'Live-capable',
+    notes: 'Channel totals, tracked 28-day deltas, recent uploads, and top-video content can now hydrate from a generated local YouTube snapshot while safely falling back to demo data.'
   },
   {
     id: 'google-analytics',

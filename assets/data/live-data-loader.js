@@ -1,4 +1,5 @@
-const SNAPSHOT_PATH = new URL('./generated/ga4-live-snapshot.json', import.meta.url);
+const GA4_SNAPSHOT_PATH = new URL('./generated/ga4-live-snapshot.json', import.meta.url);
+const YOUTUBE_SNAPSHOT_PATH = new URL('./generated/youtube-live-snapshot.json', import.meta.url);
 
 function fallbackSnapshot(reason = 'Generated GA4 snapshot not found. Demo fallback remains active.') {
   return {
@@ -16,13 +17,13 @@ function fallbackSnapshot(reason = 'Generated GA4 snapshot not found. Demo fallb
 export async function loadGeneratedGa4Snapshot() {
   try {
     if (typeof window !== 'undefined' && typeof fetch === 'function') {
-      const response = await fetch(SNAPSHOT_PATH, { cache: 'no-store' });
+      const response = await fetch(GA4_SNAPSHOT_PATH, { cache: 'no-store' });
       if (!response.ok) return fallbackSnapshot(`Snapshot request returned ${response.status}.`);
       return response.json();
     }
 
     const { readFile } = await import('node:fs/promises');
-    const raw = await readFile(SNAPSHOT_PATH, 'utf8');
+    const raw = await readFile(GA4_SNAPSHOT_PATH, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
     if (error?.code === 'ENOENT') {
@@ -32,5 +33,40 @@ export async function loadGeneratedGa4Snapshot() {
       return fallbackSnapshot('Generated GA4 snapshot could not be parsed. Demo fallback remains active.');
     }
     return fallbackSnapshot('GA4 snapshot loading failed. Demo fallback remains active.');
+  }
+}
+
+function fallbackYouTubeSnapshot(reason = 'Generated YouTube snapshot not found. Demo fallback remains active.') {
+  return {
+    integrationId: 'youtube',
+    available: false,
+    status: 'Demo Fallback',
+    state: 'demo-fallback',
+    source: 'MockProvider',
+    reason,
+    checkedAt: new Date().toISOString(),
+    notes: 'Run npm run youtube:sync after adding a YouTube API key and channel ID to enable live channel data.'
+  };
+}
+
+export async function loadGeneratedYouTubeSnapshot() {
+  try {
+    if (typeof window !== 'undefined' && typeof fetch === 'function') {
+      const response = await fetch(YOUTUBE_SNAPSHOT_PATH, { cache: 'no-store' });
+      if (!response.ok) return fallbackYouTubeSnapshot(`Snapshot request returned ${response.status}.`);
+      return response.json();
+    }
+
+    const { readFile } = await import('node:fs/promises');
+    const raw = await readFile(YOUTUBE_SNAPSHOT_PATH, 'utf8');
+    return JSON.parse(raw);
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      return fallbackYouTubeSnapshot('Generated YouTube snapshot not found. Demo fallback remains active.');
+    }
+    if (error instanceof SyntaxError) {
+      return fallbackYouTubeSnapshot('Generated YouTube snapshot could not be parsed. Demo fallback remains active.');
+    }
+    return fallbackYouTubeSnapshot('YouTube snapshot loading failed. Demo fallback remains active.');
   }
 }

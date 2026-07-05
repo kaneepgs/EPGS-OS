@@ -37,6 +37,17 @@ export function createCorrelationEngine({ confidenceEngine }) {
       const websiteSignups = parseCurrency(websiteMetrics['Email Sign-ups']);
       const sessionsDeltaPct = Number(websiteSnapshotMeta.sessionsDeltaPct ?? 0);
       const isLiveGa4 = websiteDataSource.state === 'live-ga4';
+      const youtubeMetrics = metricLookup(marketing.platforms?.youtube?.stats || []);
+      const youtubeDataSource = marketing.platforms?.youtube?.dataSource || {};
+      const youtubeSnapshotMeta = marketing.platforms?.youtube?.snapshotMeta || {};
+      const youtubeSubscribers = parseCurrency(youtubeMetrics.Subscribers);
+      const youtubeViews28Days = parseCurrency(youtubeMetrics['Views (28 days)']);
+      const youtubeVideosPublished = parseCurrency(youtubeMetrics['Videos Published']);
+      const youtubeSubscribersGained = parseCurrency(youtubeMetrics['Subscribers Gained']);
+      const youtubeGrowthPct = parsePercent(youtubeMetrics['Audience Growth']);
+      const youtubeAverageViews = parseCurrency(youtubeMetrics['Average Views / Video']);
+      const isLiveYouTube = youtubeDataSource.state === 'live-youtube';
+      const topYoutubeVideo = marketing.platforms?.youtube?.topContent?.[0] || marketing.contentLibrary?.items?.find((item) => item.platform === 'YouTube')?.title || 'the strongest tracked YouTube upload';
 
       const correlations = [];
 
@@ -78,6 +89,49 @@ export function createCorrelationEngine({ confidenceEngine }) {
           financialImpact: 'Traffic gains may continue to outpace decision-grade commercial attribution until conversion capture becomes stronger or cleaner.',
           responsibleDepartment: 'CEO / CMO / Website',
           prioritySignal: { financialImpact: 82, customerImpact: 77, strategicImportance: 86, timeSensitivity: 81, confidence: confidence.score },
+          confidence,
+          tone: 'warn'
+        });
+      }
+
+      if (isLiveYouTube && youtubeSubscribers > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.94, crossFunctional: 1, consistency: 0.89 });
+        correlations.push({
+          id: 'youtube-live-momentum',
+          title: 'Live YouTube confirms video-led authority is compounding',
+          executiveSummary: `YouTube is now live with ${youtubeMetrics.Subscribers || '—'} subscribers, ${youtubeMetrics['Views (28 days)'] || '—'} tracked views over the active window, and ${youtubeMetrics['Subscribers Gained'] || '—'} net subscriber movement. Leadership now has direct visibility into the channel that is most likely reinforcing authority, traffic quality, and downstream demand.`,
+          supportingEvidence: [
+            `Data source: ${youtubeDataSource.label || 'YouTube snapshot'}.`,
+            `Tracked window: ${youtubeMetrics['Tracked Window'] || youtubeSnapshotMeta.historyCoverageLabel || 'Current live sync'}.`,
+            `Videos published total ${youtubeMetrics['Videos Published'] || '—'}.`,
+            `Audience growth ${youtubeMetrics['Audience Growth'] || '—'}.`,
+            `Top tracked video: ${topYoutubeVideo}.`
+          ],
+          businessImpact: 'CMO → Website demand → Executive authority',
+          financialImpact: 'Live YouTube channel data improves confidence that proof-led content is strengthening demand quality rather than only adding surface-level reach.',
+          responsibleDepartment: 'CEO / CMO',
+          prioritySignal: { financialImpact: 83, customerImpact: 78, strategicImportance: 91, timeSensitivity: 76, confidence: confidence.score },
+          confidence,
+          tone: youtubeGrowthPct >= 0 ? 'good' : 'warn'
+        });
+      }
+
+      if (isLiveYouTube && youtubeViews28Days > 0 && youtubeVideosPublished <= 2) {
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.88, crossFunctional: 1, consistency: 0.81 });
+        correlations.push({
+          id: 'youtube-publishing-consistency',
+          title: 'YouTube performance is strong enough to justify publishing discipline',
+          executiveSummary: `Tracked YouTube visibility remains meaningful, but only ${youtubeMetrics['Publishing Activity'] || `${youtubeVideosPublished} upload${youtubeVideosPublished === 1 ? '' : 's'} in the last 28 days`} is currently visible. The risk is not weak content quality — it is allowing the strongest authority channel to run below its compounding potential.`,
+          supportingEvidence: [
+            `Views over the active window: ${youtubeMetrics['Views (28 days)'] || '—'}.`,
+            `Subscribers gained: ${youtubeMetrics['Subscribers Gained'] || '—'}.`,
+            `Average views per video: ${youtubeMetrics['Average Views / Video'] || '—'}.`,
+            `Top tracked video: ${topYoutubeVideo}.`
+          ],
+          businessImpact: 'Content cadence → Authority growth → Website demand',
+          financialImpact: 'A steadier publishing rhythm could convert current YouTube momentum into more consistent traffic and enquiry support without broadening channel complexity.',
+          responsibleDepartment: 'CMO',
+          prioritySignal: { financialImpact: 77, customerImpact: 71, strategicImportance: 86, timeSensitivity: 82, confidence: confidence.score },
           confidence,
           tone: 'warn'
         });

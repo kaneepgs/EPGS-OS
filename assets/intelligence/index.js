@@ -27,8 +27,20 @@ export function createExecutiveIntelligenceEngine(config) {
         body: marketing.websiteAnalytics?.dataSource?.body || 'Live GA4 website analytics are now available.'
       });
     }
+    if (marketing.platforms?.youtube?.dataSource?.state === 'live-youtube') {
+      events.push({
+        id: 'timeline-youtube-live-sync',
+        time: 'Now',
+        type: 'YouTube live data',
+        title: 'YouTube channel snapshot is live',
+        body: marketing.platforms?.youtube?.dataSource?.body || 'Live YouTube channel data is now available.'
+      });
+    }
     if (correlations.find((item) => item.id === 'marketing-revenue-growth')) {
       events.push({ id: 'timeline-marketing-demand', time: 'Now', type: 'Marketing milestone', title: 'Marketing momentum converted into revenue support', body: `Revenue and marketing momentum are rising together. Recommended next action: ${recommendations.find((item) => item.id === 'video-proof-expansion')?.recommendation || 'Scale the strongest channel.'}` });
+    }
+    if (correlations.find((item) => item.id === 'youtube-live-momentum')) {
+      events.push({ id: 'timeline-youtube-authority', time: 'This week', type: 'Content momentum', title: 'YouTube authority is now visible in live data', body: correlations.find((item) => item.id === 'youtube-live-momentum')?.executiveSummary || 'The strongest content channel now has live provider visibility.' });
     }
     if (correlations.find((item) => item.id === 'cash-supplier-pressure')) {
       events.push({ id: 'timeline-cash-warning', time: 'Now', type: 'Cash warning', title: 'Supplier inflation is tightening forecast cash flexibility', body: `Current cash ${finance.metrics?.find((item) => item.key === 'cash')?.value} versus forecast ${finance.forecasts?.cash}.` });
@@ -52,7 +64,7 @@ export function createExecutiveIntelligenceEngine(config) {
       risks: extras.risks || insight?.financialImpact || 'No specific risk narrative available.',
       alternatives: extras.alternatives || 'Proceed now, stage a narrower intervention, or defer until a stronger signal appears.',
       action: recommendation?.recommendation || insight?.suggestedActions?.[0] || extras.action || 'Review the relevant executive recommendation.',
-      missing: 'Intelligence remains deterministic and provider-backed. Website Analytics may hydrate from a local GA4 snapshot while the wider product stays in Demo Mode.',
+      missing: 'Intelligence remains deterministic and provider-backed. Website Analytics and YouTube may hydrate from local generated snapshots while the wider product stays in Demo Mode.',
       followUp: extras.followUp || [
         'What changed most materially?',
         'Which recommendation creates the fastest value?',

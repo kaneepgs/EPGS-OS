@@ -75,3 +75,9 @@
 - Added a structured knowledge graph linking departments, goals, risks, opportunities, KPIs, approvals, recommendations, timeline events, and decisions.
 - Added new report routes for Executive Timeline, Decision Journal, and Strategic Goals, plus memory-backed report context and search coverage.
 - Documented the new memory architecture in the README and architecture manual and added `docs/executive-memory.md`.
+- Added Sprint 10 and introduced `YouTubeProvider` as the second live provider path beneath the executive UI.
+- Added `scripts/sync-youtube-snapshot.mjs` plus `npm run youtube:sync` so EP Intelligence can fetch live YouTube channel totals, recent uploads, tracked visibility, and content-library-ready video entries without exposing credentials to the browser.
+- Added generated YouTube snapshot loading and safe fallback handling in `assets/data/live-data-loader.js` and provider registration/runtime wiring in `assets/providers/provider-registry.js` and `assets/data/runtime.js`.
+- Updated the marketing workspace so the CMO Dashboard, Social Overview, YouTube page, and Content Library now replace demo YouTube content with live snapshot data while other social platforms remain in Demo Mode.
+- Updated the CEO Dashboard and deterministic intelligence layer so leadership now sees YouTube subscribers, total views, tracked recent views, subscriber movement, publishing activity, YouTube-aware correlations, recommendations, and timeline events.
+- Documented the provider lifecycle, configuration, fallback model, and troubleshooting in `README.md`, `docs/integration-framework.md`, and new `docs/youtube-provider.md`.

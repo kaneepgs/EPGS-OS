@@ -55,6 +55,7 @@ Current state:
 
 - `MockProvider` remains the baseline provider
 - `AnalyticsProvider` is now the first live-capable provider and selectively overrides only Website Analytics when a generated GA4 snapshot exists
+- `YouTubeProvider` now composes on top of `AnalyticsProvider` and selectively overrides the YouTube portions of the marketing workspace when a generated local YouTube snapshot exists
 - placeholder providers remain registered for Finance, Marketing, CRM, Calendar, and AI
 
 Rules:
@@ -82,7 +83,7 @@ This file is the main swap-point for future mode changes.
 
 Only one real runtime mode exists today:
 
-- **Demo Mode** — the wider app stays demo-first, while individual providers may still expose safe selective overlays such as the Sprint 8 GA4 Website Analytics snapshot
+- **Demo Mode** — the wider app stays demo-first, while individual providers may still expose safe selective overlays such as the Sprint 8 GA4 Website Analytics snapshot and the Sprint 10 YouTube snapshot path
 
 A future mode is reserved but not active:
 
@@ -103,7 +104,9 @@ The provider registry currently binds these domains:
 
 In Sprint 6 and Sprint 7, each of these bound to `MockProvider`.
 
-In Sprint 8, `marketing` now binds to `AnalyticsProvider`, which internally decides whether to return demo marketing data or a selective GA4 Website Analytics overlay.
+In Sprint 8, `marketing` moved to `AnalyticsProvider`, which internally decides whether to return demo marketing data or a selective GA4 Website Analytics overlay.
+
+In Sprint 10, `marketing` now binds to `YouTubeProvider`, which composes on top of `AnalyticsProvider` so GA4 Website Analytics and live YouTube channel data can both flow through the same domain without any route-level rewrites.
 
 In future live work, the binding should change before any dashboard code changes are considered.
 
@@ -166,6 +169,7 @@ Use `<Domain>Provider` naming.
 Examples:
 
 - `AnalyticsProvider`
+- `YouTubeProvider`
 - `FinanceProvider`
 - `CalendarProvider`
 
@@ -210,6 +214,40 @@ When adding a real integration:
 
 That sequence is the main architectural promise of Sprint 6.
 
+## Snapshot-Based Live Provider Pattern
+
+Sprint 8 and Sprint 10 now establish the preferred pattern for low-risk live integrations inside EP Intelligence:
+
+1. **Local sync script** fetches live data using credentials that never ship to the browser
+2. the script writes a generated snapshot into `assets/data/generated/`
+3. `assets/data/live-data-loader.js` safely loads that snapshot at runtime
+4. the provider overlays only the relevant workspace surfaces
+5. if the snapshot is missing, invalid, or stale, the provider falls back to demo data without breaking the UI
+
+This pattern now exists for:
+
+- `scripts/sync-ga4-snapshot.mjs` → `AnalyticsProvider`
+- `scripts/sync-youtube-snapshot.mjs` → `YouTubeProvider`
+
+## YouTube Provider Lifecycle
+
+`YouTubeProvider` is the first provider in EP Intelligence that composes on top of another active provider.
+
+Its lifecycle is:
+
+1. `AnalyticsProvider` builds the marketing workspace, including any GA4 website overlay
+2. `YouTubeProvider` receives that already-shaped workspace
+3. it overlays only:
+   - CMO dashboard combined totals impacted by YouTube
+   - social overview YouTube-driven figures
+   - the dedicated YouTube platform page
+   - Content Library YouTube items
+   - integration status metadata
+4. the service layer remains unchanged
+5. the intelligence layer receives the updated marketing workspace and generates deterministic YouTube-aware insights
+
+This composition approach is the template for future platform integrations that need to enrich only part of an existing domain.
+
 ## Relationship to the Intelligence Engine
 
 Sprint 7 adds a deterministic intelligence layer above the service layer.
@@ -224,5 +262,5 @@ The intended flow is now:
 
 This means future work can evolve in two directions independently:
 
-- **provider evolution** — replacing Demo Mode data with real data sources, starting with the Sprint 8 GA4 snapshot path
+- **provider evolution** — replacing Demo Mode data with real data sources, starting with the Sprint 8 GA4 snapshot path and Sprint 10 YouTube snapshot path
 - **reasoning evolution** — improving correlation, recommendation, and narrative logic, later including optional LLM enhancement

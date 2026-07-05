@@ -19,9 +19,9 @@ export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
   shellName: 'EP Intelligence',
-  architectureVersion: 'v0.4',
+  architectureVersion: 'v0.5',
   providerStrategy: 'provider-service-intelligence-contract',
-  notes: 'Sprint 9 adds a provider-independent Executive Memory and Knowledge Graph layer using structured files and local storage, while keeping the wider product in Demo Mode except for the selective GA4 Website Analytics snapshot path.'
+  notes: 'Sprint 10 adds a YouTube provider snapshot path on top of the existing GA4 website analytics overlay, while keeping Executive Memory provider-independent and the wider product in Demo Mode.'
 });
 
 export function currentModeConfig() {
