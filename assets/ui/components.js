@@ -218,11 +218,11 @@ export function supplierCard(supplier) {
   `;
 }
 
-export function searchRow({ value = '' }) {
+export function searchRow({ id = 'page-search', value = '', placeholder = 'Search…', label = 'Search' }) {
   return `
     <div class="search-shell">
       ${icon('search')}
-      <input id="journal-search" type="text" value="${escapeHtml(value)}" placeholder="Search decisions, reasoning, status, outcomes..." aria-label="Search decision journal" />
+      <input id="${escapeHtml(id)}" type="text" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}" aria-label="${escapeHtml(label)}" />
     </div>
   `;
 }

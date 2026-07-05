@@ -56,6 +56,19 @@ Restructured EP Intelligence into a broader executive operating system shell wit
 - polished placeholder module landing pages for CMO, COO, Sales, Customer Success, Operations, HR, and Projects
 - route support using static-friendly query routing such as `?route=/ceo`, `?route=/cfo`, and `?route=/reports/board-meeting`
 
+### Sprint 5B — CMO Executive Workspace v0.1
+
+Built the first full **Chief Marketing Officer workspace** inside the CEO shell, including:
+
+- a dedicated **Marketing Dashboard** with Marketing Health Score, performance summary, platform winners/losers, opportunities, risks, approvals, and weekly briefing
+- a full **Social Media Overview** with combined metrics, platform rankings, top/lowest content, and cross-platform charts
+- dedicated platform pages for **YouTube, Instagram, Facebook, LinkedIn, and X** with realistic placeholder metrics, trend charts, top content, and recent posts
+- executive pages for **Website Analytics, Email Marketing, Campaign Performance, Content Library, Competitor Analysis, Marketing Calendar, AI Marketing Advisor, Marketing Reports, and CMO Settings**
+- structured modular mock datasets for social, website, email, campaigns, competitors, calendar, and AI marketing commentary
+- continued approval-first behaviour for marketing actions such as publishing posts, videos, email campaigns, website updates, blog posts, and LinkedIn articles
+
+EP Intelligence now contains both a complete **CFO workspace** and a complete first-pass **CMO workspace** inside the same executive operating system shell.
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -73,7 +86,7 @@ This prototype intentionally remains:
 - `index.html` — main app shell and metadata
 - `assets/app.js` — application state, routing, rendering, and interactions
 - `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
-- `assets/data/mock-data.js` — structured mock data for CEO, CFO, approvals, reports, AI Assistant, and placeholder modules
+- `assets/data/mock-data.js` — structured mock data for CEO, CFO, CMO, approvals, reports, AI Assistant, and placeholder modules
 - `assets/ui/components.js` — reusable UI render helpers
 - `assets/ui/charts.js` — Chart.js render/destroy helpers
 - `assets/vendor/chart.umd.js` — local Chart.js bundle for static hosting
@@ -102,6 +115,7 @@ Optional examples:
 
 - `http://127.0.0.1:3012/?route=/ceo`
 - `http://127.0.0.1:3012/?route=/cfo`
+- `http://127.0.0.1:3012/?route=/cmo`
 - `http://127.0.0.1:3012/?route=/reports/board-meeting`
 
 ## Deployment Targets
@@ -134,6 +148,14 @@ Sprint 5A validation included:
 
 Validation artifacts are stored in `/data/.openclaw/workspace/.artifacts/`.
 
+Sprint 5B validation included:
+
+- `node --check assets/app.js`
+- `node --check assets/data/mock-data.js`
+- all CMO routes rendering successfully in headless Chromium
+- captured screenshots for Marketing Dashboard, Social Media Overview, YouTube, Website Analytics, AI Marketing Advisor, Marketing Calendar, and Mobile Layout
+- source check confirming no app-side `console.*` usage outside the vendored Chart.js file
+
 ## Design Principles
 
 1. Evidence before recommendation
@@ -146,4 +168,4 @@ Validation artifacts are stored in `/data/.openclaw/workspace/.artifacts/`.
 
 ## Near-Term Outcome
 
-The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System shell**, giving EP Golf Studios a credible CEO-level home page, a preserved CFO module, and clear expansion paths for future CMO, COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
+The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System shell**, giving EP Golf Studios a credible CEO-level home page plus live prototype depth in both the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.

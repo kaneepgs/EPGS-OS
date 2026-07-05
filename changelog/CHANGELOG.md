@@ -31,3 +31,10 @@
 - Refactored the mock data structure around CEO overview data, CFO data, approvals, reports, AI Assistant, module placeholders, and route metadata.
 - Added static-friendly query route support such as `?route=/ceo`, `?route=/cfo`, and `?route=/reports/board-meeting`.
 - Captured Sprint 5A validation screenshots for CEO Dashboard, CFO inside the new shell, CMO placeholder, Approvals, Reports, AI Assistant, and mobile navigation.
+- Added Sprint 5B and replaced the placeholder CMO landing page with a full CMO Executive Workspace v0.1.
+- Added a dedicated Marketing Dashboard, Social Media Overview, individual YouTube / Instagram / Facebook / LinkedIn / X pages, Website Analytics, Email Marketing, Campaign Performance, Content Library, Competitor Analysis, Marketing Calendar, AI Marketing Advisor, Marketing Reports, and CMO Settings.
+- Expanded the mock-data architecture with structured CMO datasets for social media, website analytics, email marketing, campaigns, competitors, calendar planning, and AI marketing commentary.
+- Extended the shell routing so all CMO child routes load inside the same static query-route model as CFO.
+- Added searchable CMO content-library behaviour while preserving the existing sidebar search and command palette patterns.
+- Updated the board-level shell so marketing now appears as a real executive reporting stream rather than a placeholder.
+- Captured Sprint 5B validation screenshots for Marketing Dashboard, Social Media Overview, YouTube, Website Analytics, AI Marketing Advisor, Marketing Calendar, and mobile layout.

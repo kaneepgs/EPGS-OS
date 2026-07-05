@@ -12,8 +12,8 @@ Today it is a **demo product**, not a live operating platform.
 
 - **CEO Dashboard** as the application home page
 - a complete **CFO module** inside the wider shell
+- a complete first-pass **CMO module** inside the wider shell
 - placeholder module landing pages for:
-  - CMO
   - COO
   - Sales
   - Customer Success
@@ -62,20 +62,22 @@ Start with these in order:
 
 1. **CEO Dashboard** — the new executive home page
 2. **CFO** — shows the most complete module in the system
-3. **Approvals** — shows business-wide approval thinking
-4. **Reports** — shows the reporting layer and board structure
-5. **AI Assistant** — shows the future executive AI direction
+3. **CMO** — now shows the first full executive marketing workspace
+4. **Approvals** — shows business-wide approval thinking
+5. **Reports** — shows the reporting layer and board structure
+6. **AI Assistant** — shows the future executive AI direction
 
 ## Key pages to show
 
 - **CEO Dashboard** — whole-business overview
 - **CFO Workspace** — complete finance module within the shell
 - **CFO Revenue / Cash Flow / Supplier Spend** — strongest decision-support examples
+- **CMO Marketing Dashboard** — executive marketing command centre
+- **CMO Social Media Overview / YouTube / Website Analytics / AI Marketing Advisor** — strongest marketing examples
 - **Approvals** — centralised business-wide approval centre
 - **Reports** — shared reporting structure
 - **Board Meeting Mode** — leadership / board presentation view
 - **AI Assistant** — future AI reasoning and briefing area
-- **CMO placeholder** — example of how future modules slot into the shell
 
 ## Current limitations
 
@@ -83,19 +85,19 @@ This is intentionally still a prototype.
 
 - all data is mock/demo data
 - charts are illustrative, not connected to real systems
-- placeholder modules are not fully built yet
+- most non-finance / non-marketing modules are still placeholders
 - no save/sync between users or devices
 - no real approvals or workflow execution
 - no live reporting engine or integrations yet
 
 ## Recommended next sprint
 
-**Sprint 5B — Module Expansion & Executive Depth**
+**Sprint 5C — Executive Depth Beyond Finance + Marketing**
 
 Recommended focus:
 
 - deepen the CEO Dashboard narrative and executive cross-links
-- begin the first real non-finance module (likely CMO or Operations)
+- begin the next real non-finance module beyond CMO (likely Operations or Sales)
 - strengthen Approvals, Reports, and AI Assistant internal pages
 - improve shell-level module transitions and richer executive states
 - refine presentation quality for stakeholder demos
@@ -105,3 +107,5 @@ Recommended focus:
 Describe it as:
 
 > “A premium executive operating system prototype for EP Golf Studios — now structured around a CEO shell, with the CFO module already built and the wider business architecture in place for future expansion.”
+
+You can now more accurately say it includes **both CFO and CMO executive workspaces**, with the rest of the business architecture prepared for future module builds.

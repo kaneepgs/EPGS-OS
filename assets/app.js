@@ -22,7 +22,7 @@ import {
 } from './ui/components.js';
 import { renderCharts, destroyCharts } from './ui/charts.js';
 
-const STORAGE_KEY = 'ep-intelligence.workspace.v0.5a';
+const STORAGE_KEY = 'ep-intelligence.workspace.v0.5b';
 const VALID_ROUTES = new Set(Object.keys(ROUTE_META));
 
 const appShell = document.getElementById('app-shell');
@@ -54,6 +54,7 @@ const state = {
   sidebarOpen: false,
   activeMetric: 'revenue',
   journalQuery: '',
+  contentQuery: '',
   favourites: ['/ceo', '/cfo', '/reports/board-meeting'],
   recent: ['/ceo', '/cfo', '/approvals']
 };
@@ -74,6 +75,7 @@ function topLevelKey(route = state.route) {
 function currentSubnav() {
   const key = topLevelKey();
   if (key === '/cfo') return SUBNAV.cfo;
+  if (key === '/cmo') return SUBNAV.cmo;
   if (key === '/reports') return SUBNAV.reports;
   if (key === '/ai-assistant') return SUBNAV.aiAssistant;
   return [];
@@ -242,6 +244,10 @@ function chartSpec(key, canvasId, label = '') {
   return { id: canvasId, label, ...MOCK_DATA.cfo.charts[key] };
 }
 
+function entryChartSpec(entry, canvasId, label = '') {
+  return { id: canvasId, label: label || entry.label || 'Value', ...entry };
+}
+
 function renderRoutePillbar(items) {
   return `<div class="page-pillbar">${items
     .map(([route, label]) => `<button type="button" class="chip-button" data-route="${route}">${state.route === route ? icon('check-circle') : icon('arrowRight')}${escapeHtml(label)}</button>`)
@@ -305,6 +311,14 @@ function attachPageEvents() {
   if (search) {
     search.addEventListener('input', (event) => {
       state.journalQuery = event.target.value;
+      render();
+    });
+  }
+
+  const contentSearch = document.getElementById('content-library-search');
+  if (contentSearch) {
+    contentSearch.addEventListener('input', (event) => {
+      state.contentQuery = event.target.value;
       render();
     });
   }
@@ -991,6 +1005,645 @@ function cfoRiskRegisterView() {
   };
 }
 
+function marketingApprovals(limit = 6) {
+  return (MOCK_DATA.approvals.groups['Marketing approvals'] || []).slice(0, limit);
+}
+
+function pairStats(entries, body = 'Executive placeholder metric.') {
+  const icons = ['pulse', 'sparkles', 'grid', 'trending-up'];
+  return entries.map(([label, value], index) => statCard({ iconName: icons[index % icons.length], label, value, body })).join('');
+}
+
+function cmoToneFromRating(rating) {
+  if (rating === 'A') return 'good';
+  if (rating === 'C') return 'warn';
+  return 'info';
+}
+
+function cmoPlatformCommentary(platform) {
+  const name = platform.label;
+  const growth = platform.stats.find(([label]) => label === 'Audience Growth')?.[1] || 'Growth placeholder';
+  const engagement = platform.stats.find(([label]) => label === 'Engagement Rate')?.[1] || 'Engagement placeholder';
+  const cadence = platform.stats.find(([label]) => label === 'Posting Frequency')?.[1] || 'Cadence placeholder';
+  return {
+    title: `${name} Executive Commentary`,
+    data: {
+      summary: `${name} is currently positioned as a ${platform.health.toLowerCase()}, with its best performance coming from proof-led, educational content formats.`,
+      evidence: `${name} is showing ${growth} audience growth with ${engagement} engagement and a current cadence of ${cadence}. Top content remains concentrated around premium fitting proof and educational trust-building.`,
+      confidence: 'Medium–High',
+      impact: `${name} matters because it either compounds authority and demand efficiently or absorbs time without enough return.`,
+      risks: `If ${name} publishing becomes inconsistent or drifts away from the formats that already perform well, growth quality could soften quickly.`,
+      alternatives: 'Increase publishing cadence, focus more tightly on top-performing content formats, or maintain a selective cadence while resources stay concentrated elsewhere.',
+      action: `Preserve the highest-performing themes on ${name}, keep cadence deliberate, and use this page to decide whether the next effort should scale or narrow.`,
+      missing: `All ${name} data remains realistic mock/demo data only in this sprint.`,
+      followUp: [`What content performs best on ${name}?`, `Should ${name} get more effort next week?`, `What is the next approval-worthy action on ${name}?`]
+    }
+  };
+}
+
+function cmoDashboardView() {
+  const data = MOCK_DATA.cmo.dashboard;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'The executive marketing command centre', body: 'The CMO Workspace now sits inside the wider EP Intelligence shell as the first complete non-finance executive module.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+        </section>
+
+        <section class="hero-grid">
+          <div class="hero-block">
+            <section class="summary-banner">
+              <div class="eyebrow">CMO Workspace</div>
+              <div class="hero-title">Marketing now has its own executive operating surface.</div>
+              <p class="hero-summary">${escapeHtml(data.summary)}</p>
+            </section>
+            <section class="snapshot-grid">
+              ${statCard({ iconName: 'pulse', label: 'Followers Across Platforms', value: data.metrics.followers, body: 'Combined social audience across the current demo estate.' })}
+              ${statCard({ iconName: 'sparkles', label: 'Total Monthly Views', value: data.metrics.views, body: 'Video, social, and channel visibility combined.' })}
+              ${statCard({ iconName: 'trending-up', label: 'Total Engagement', value: data.metrics.engagement, body: 'A composite signal across likes, comments, shares, and clicks.' })}
+              ${statCard({ iconName: 'grid', label: 'Website Visitors', value: data.metrics.visitors, body: 'Traffic quality matters as much as raw volume.' })}
+              ${statCard({ iconName: 'target', label: 'Email Sign-ups', value: data.metrics.signups, body: 'List growth is becoming a stronger owned-channel signal.' })}
+              ${statCard({ iconName: 'target', label: 'Leads Generated', value: data.metrics.leads, body: 'A placeholder demand-generation signal across channels.' })}
+              ${statCard({ iconName: 'target', label: 'Booking Enquiries', value: data.metrics.enquiries, body: 'The most commercially meaningful conversion signal in the current demo view.' })}
+            </section>
+          </div>
+          <div class="hero-side">
+            <section class="score-panel">
+              <div class="score-tile">
+                <div class="label">Marketing Health Score</div>
+                <strong class="score-value">${data.healthScore}</strong>
+                <div class="score-note">${escapeHtml(data.trend)}</div>
+              </div>
+              <div class="snapshot-panel">
+                <div class="label">Channel spread</div>
+                <h3>Best: ${escapeHtml(data.bestPlatform)}</h3>
+                <p>Worst performing platform right now is ${escapeHtml(data.worstPlatform)}. The executive job is to keep focus on the channels creating the clearest commercial momentum.</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Marketing Overview', title: 'What the CMO should understand at a glance', body: 'This page exists to separate channel health, business relevance, and next-step priorities clearly.' })}
+          <div class="grid-3">
+            ${insightCard({ eyebrow: 'Overall performance summary', title: 'Marketing momentum is positive', body: data.summary, tone: 'info' })}
+            ${insightCard({ eyebrow: 'Best performing platform', title: data.bestPlatform, body: 'The strongest current platform should influence where content energy and approvals go next.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Weakest platform', title: data.worstPlatform, body: 'The weakest platform should either improve through clearer intent or be deliberately deprioritised.', tone: 'warn' })}
+          </div>
+        </section>
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Platform Comparison', title: 'Marketing platform ranking', canvasId: 'chart-cmo-platform-comparison', meta: 'A cross-platform performance ranking for executive prioritisation.' })}
+          ${chartCard({ eyebrow: 'Views', title: 'Total monthly visibility trend', canvasId: 'chart-cmo-total-views', meta: 'How overall views are moving over time in the mock environment.' })}
+          ${chartCard({ eyebrow: 'Website', title: 'Website traffic trend', canvasId: 'chart-cmo-website-traffic', meta: 'A quick executive lens on marketing-driven website attention.' })}
+          ${chartCard({ eyebrow: 'Conversions', title: 'Website conversion signals', canvasId: 'chart-cmo-website-conversions', meta: 'Bookings, enquiries, and sign-ups in one view.' })}
+        </div>
+
+        ${commentaryCard({ title: data.aiSummary.title, data: data.aiSummary })}
+        ${pageQuestions('/cmo')}
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Opportunities', title: 'Where the leverage is', body: 'Marketing opportunities should help leadership decide where to focus effort next.' })}
+            <div class="section-stack">${data.opportunities.map((item) => insightCard({ eyebrow: 'Opportunity', title: item, body: 'This should be treated as a priority candidate for the next content or channel cycle.', tone: 'good' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Risks', title: 'What could reduce return', body: 'A strong CMO view needs to surface where momentum could weaken or effort could get wasted.' })}
+            <div class="section-stack">${data.risks.map((item) => insightCard({ eyebrow: 'Risk', title: item, body: 'If ignored, this could weaken either growth quality, conversion quality, or content efficiency.', tone: 'risk' })).join('')}</div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Pending Marketing Approvals', title: 'Nothing publishes automatically', body: 'Every meaningful marketing action stays approval-first in this prototype.' })}
+            <div class="section-stack">
+              ${marketingApprovals(6).map((entry) => approvalCard(entry)).join('')}
+              <button type="button" class="quick-action-button" data-route="/approvals">Open central Approvals ${icon('arrowRight')}</button>
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Weekly Marketing Briefing', title: 'This week’s executive readout', body: 'The weekly briefing is designed to package marketing movement into a calm, leadership-ready narrative.' })}
+            <div class="snapshot-panel">
+              <h3>Executive weekly briefing</h3>
+              <p>${escapeHtml(data.weeklyBriefing)}</p>
+              <div class="page-pillbar">
+                <button type="button" class="chip-button" data-route="/cmo/reports">${icon('presentation')}Open Marketing Reports</button>
+                <button type="button" class="chip-button" data-route="/reports/weekly-briefings">${icon('arrowRight')}Open Shared Weekly Briefings</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: [
+      entryChartSpec(MOCK_DATA.cmo.charts.platformComparison, 'chart-cmo-platform-comparison', 'Platform ranking'),
+      entryChartSpec(MOCK_DATA.cmo.charts.totalViews, 'chart-cmo-total-views', 'Total views'),
+      entryChartSpec(MOCK_DATA.cmo.charts.websiteTraffic, 'chart-cmo-website-traffic', 'Website traffic'),
+      entryChartSpec(MOCK_DATA.cmo.charts.websiteConversions, 'chart-cmo-website-conversions', 'Website conversions')
+    ]
+  };
+}
+
+function cmoSocialOverviewView() {
+  const data = MOCK_DATA.cmo.socialOverview;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Cross-platform social performance', body: 'This page gives the executive team one ranked view of social growth, reach, engagement, and channel quality.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="grid-4">${pairStats([
+            ['Combined Followers', data.combined.followers],
+            ['Combined Views', data.combined.views],
+            ['Combined Reach', data.combined.reach],
+            ['Combined Engagement', data.combined.engagement],
+            ['Followers Gained', data.combined.gained],
+            ['Monthly Growth %', data.combined.growth]
+          ], 'Cross-platform marketing metric.')}</div>
+        </section>
+
+        ${pageQuestions('/cmo/social-media-overview')}
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Platform Rankings', title: 'Which channels are strongest', canvasId: 'chart-social-platform-comparison', meta: 'Higher scores indicate stronger overall platform performance.' })}
+          ${chartCard({ eyebrow: 'Follower Growth', title: 'Combined audience growth', canvasId: 'chart-social-follower-growth', meta: 'Cross-platform follower growth over time.' })}
+          ${chartCard({ eyebrow: 'Views', title: 'Combined visibility trend', canvasId: 'chart-social-total-views', meta: 'A trendline for total monthly views across the social estate.' })}
+          ${chartCard({ eyebrow: 'Engagement Mix', title: 'How engagement is distributed', canvasId: 'chart-social-engagement-mix', meta: 'Likes, comments, shares, and clicks across the combined estate.' })}
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Platform rankings', title: 'Ranked by overall performance', body: 'These rankings should drive where the next content and approval decisions go first.' })}
+          <div class="tile-grid">
+            ${data.rankings.map((item, index) => insightCard({ eyebrow: `#${index + 1} · ${item.platform}`, title: `${item.score} / 100`, body: `${item.note} Growth: ${item.growth}.`, tone: index < 2 ? 'good' : index === data.rankings.length - 1 ? 'warn' : 'info' })).join('')}
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Top content', title: 'What is working best', body: 'High-performing content should shape the next round of marketing effort.' })}
+            ${insightCard({ eyebrow: data.topContent.platform, title: data.topContent.title, body: data.topContent.metric, tone: 'good' })}
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Lowest content', title: 'What is underperforming', body: 'Low-return formats should be improved, narrowed, or deprioritised.' })}
+            ${insightCard({ eyebrow: data.lowestContent.platform, title: data.lowestContent.title, body: data.lowestContent.metric, tone: 'warn' })}
+          </section>
+        </div>
+      </div>
+    `,
+    charts: [
+      entryChartSpec(MOCK_DATA.cmo.charts.platformComparison, 'chart-social-platform-comparison', 'Platform ranking'),
+      entryChartSpec(MOCK_DATA.cmo.charts.followerGrowth, 'chart-social-follower-growth', 'Follower growth'),
+      entryChartSpec(MOCK_DATA.cmo.charts.totalViews, 'chart-social-total-views', 'Total views'),
+      entryChartSpec(MOCK_DATA.cmo.charts.engagementMix, 'chart-social-engagement-mix', 'Engagement mix')
+    ]
+  };
+}
+
+function cmoPlatformView(key, route) {
+  const data = MOCK_DATA.cmo.platforms[key];
+  const commentary = cmoPlatformCommentary(data);
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: `${data.label} performance`, body: data.health })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="grid-4">${pairStats(data.stats, 'Platform-level marketing metric.')}</div>
+        </section>
+
+        ${pageQuestions(route)}
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: `${data.label} Audience`, title: 'Audience growth over time', canvasId: `chart-${key}-followers`, meta: 'Followers or subscribers over time.' })}
+          ${chartCard({ eyebrow: `${data.label} Views`, title: 'Visibility trend', canvasId: `chart-${key}-views`, meta: 'Views or reach trend over time.' })}
+          ${chartCard({ eyebrow: `${data.label} Engagement`, title: 'Engagement trend', canvasId: `chart-${key}-engagement`, meta: 'A monthly engagement trend for executive comparison.' })}
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Top performing posts', title: `What is working on ${data.label}`, body: 'Use these as signals for what to double down on next.' })}
+            <div class="section-stack">${data.topContent.map((item) => insightCard({ eyebrow: data.label, title: item, body: 'Strong-performing placeholder content reference.', tone: 'good' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Recent posts', title: `Recent activity on ${data.label}`, body: 'Recent output helps leadership assess cadence and consistency.' })}
+            <div class="section-stack">${data.recentPosts.map((item) => insightCard({ eyebrow: 'Recent post', title: item, body: 'Recent publishing placeholder reference.', tone: 'info' })).join('')}</div>
+          </section>
+        </div>
+
+        ${commentaryCard({ title: commentary.title, data: commentary.data })}
+      </div>
+    `,
+    charts: [
+      entryChartSpec(data.charts.followers, `chart-${key}-followers`, `${data.label} audience`),
+      entryChartSpec(data.charts.views, `chart-${key}-views`, `${data.label} views`),
+      entryChartSpec(data.charts.engagement, `chart-${key}-engagement`, `${data.label} engagement`)
+    ]
+  };
+}
+
+function cmoWebsiteAnalyticsView() {
+  const data = MOCK_DATA.cmo.websiteAnalytics;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Website analytics', body: 'A Google Analytics-style executive dashboard focused on traffic quality, engagement, and conversion relevance.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="grid-4">${pairStats(data.metrics, 'Website analytics placeholder metric.')}</div>
+        </section>
+
+        ${pageQuestions('/cmo/website-analytics')}
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Website Traffic', title: 'Traffic trend', canvasId: 'chart-website-traffic', meta: 'How website attention has moved over time.' })}
+          ${chartCard({ eyebrow: 'Website Conversions', title: 'Bookings, enquiries, and sign-ups', canvasId: 'chart-website-conversions', meta: 'The clearest current conversion outputs.' })}
+          ${chartCard({ eyebrow: 'Visitor Mix', title: 'Users vs new vs returning visitors', canvasId: 'chart-website-visitors-mix', meta: 'A quick view of visitor composition in the current demo scenario.' })}
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive readout', title: 'What this traffic means', body: 'Website traffic only matters if it leads to better-quality business outcomes.' })}
+          <div class="grid-3">
+            ${insightCard({ eyebrow: 'Summary', title: 'Traffic quality is improving', body: data.summary, tone: 'info' })}
+            ${insightCard({ eyebrow: 'Commercial relevance', title: 'Bookings and enquiries matter most', body: 'This page keeps attention on the conversion signals most likely to matter commercially for EP Golf Studios.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Next step', title: 'Optimise conversion before chasing more traffic', body: 'The clearest next action is to improve booking and enquiry pathways around already-healthy attention.', tone: 'warn' })}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: [
+      entryChartSpec(MOCK_DATA.cmo.charts.websiteTraffic, 'chart-website-traffic', 'Website traffic'),
+      entryChartSpec(MOCK_DATA.cmo.charts.websiteConversions, 'chart-website-conversions', 'Website conversions'),
+      { id: 'chart-website-visitors-mix', type: 'bar', labels: ['Users', 'New Users', 'Returning'], values: [18.9, 12.4, 6.5], label: 'Visitor mix', suffix: 'k' }
+    ]
+  };
+}
+
+function cmoEmailMarketingView() {
+  const data = MOCK_DATA.cmo.emailMarketing;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Email marketing', body: 'This executive email view frames list growth, campaign quality, and conversion usefulness rather than email volume alone.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="grid-4">${pairStats(data.metrics, 'Email marketing placeholder metric.')}</div>
+        </section>
+
+        ${pageQuestions('/cmo/email-marketing')}
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Subscribers', title: 'Subscriber growth over time', canvasId: 'chart-email-growth', meta: 'How the owned audience is compounding.' })}
+          ${chartCard({ eyebrow: 'Email Performance', title: 'Open, click, and unsubscribe rates', canvasId: 'chart-email-performance', meta: 'A quick executive view of campaign quality.' })}
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Best performing campaign', title: data.bestCampaign, body: 'This is the current benchmark for the kind of email content that appears to resonate best.' })}
+            ${insightCard({ eyebrow: 'Why it matters', title: 'Use the best campaign as a model', body: 'High-performing email content should influence what gets repurposed, expanded, or reused in future sends.', tone: 'good' })}
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Lowest performing campaign', title: data.worstCampaign, body: 'This gives leadership a clear signal about what may need reframing or deprioritisation.' })}
+            ${insightCard({ eyebrow: 'Risk', title: 'Email can look stable while underperforming strategically', body: data.summary, tone: 'warn' })}
+          </section>
+        </div>
+      </div>
+    `,
+    charts: [entryChartSpec(MOCK_DATA.cmo.charts.emailGrowth, 'chart-email-growth', 'Subscriber growth'), entryChartSpec(MOCK_DATA.cmo.charts.emailPerformance, 'chart-email-performance', 'Email performance')]
+  };
+}
+
+function cmoCampaignPerformanceView() {
+  const data = MOCK_DATA.cmo.campaignPerformance;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Campaign performance', body: 'Campaigns should be evaluated on commercial usefulness, engagement quality, and whether they deserve more effort next.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'sparkles', label: 'Active Campaigns', value: String(data.activeCampaigns), body: 'Currently live mock campaigns.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Completed Campaigns', value: String(data.completedCampaigns), body: 'Placeholder completed campaign count.' })}
+            ${statCard({ iconName: 'trending-up', label: 'Campaign ROI', value: data.roi, body: 'Average return across the current mock campaign set.' })}
+            ${statCard({ iconName: 'target', label: 'Leads Generated', value: data.leads, body: 'Combined campaign-driven lead signal.' })}
+            ${statCard({ iconName: 'coins', label: 'Revenue Attribution', value: data.revenueAttribution, body: 'Placeholder attributed revenue view.' })}
+            ${statCard({ iconName: 'grid', label: 'Conversion Rate', value: data.conversionRate, body: 'Combined campaign conversion performance.' })}
+            ${statCard({ iconName: 'pulse', label: 'Engagement', value: data.engagement, body: 'Combined engagement output from live and completed campaigns.' })}
+          </div>
+        </section>
+
+        ${pageQuestions('/cmo/campaign-performance')}
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Campaign ROI', title: 'Return by campaign', canvasId: 'chart-campaign-roi', meta: 'Which campaigns are generating the strongest return.' })}
+          ${chartCard({ eyebrow: 'Lead generation', title: 'Leads by campaign', canvasId: 'chart-campaign-leads', meta: 'A side-by-side view of campaign lead generation.' })}
+          ${chartCard({ eyebrow: 'Conversion rate', title: 'Conversion by campaign', canvasId: 'chart-campaign-conversion', meta: 'A quick comparison of conversion quality by campaign.' })}
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Campaign register', title: 'Current mock campaign set', body: 'Each campaign is framed as a strategic asset, not just a line in a report.' })}
+          <div class="section-stack">
+            ${data.campaigns
+              .map(
+                (campaign) => registerRow({
+                  kicker: `${pill(campaign.stage, campaign.stage === 'Active' ? 'good' : 'neutral')}${pill(campaign.roi, 'info')}`,
+                  title: campaign.title,
+                  body: `Leads ${campaign.leads} · Revenue ${campaign.revenue} · Conversion ${campaign.conversion} · Engagement ${campaign.engagement}.`,
+                  extra: `
+                    <div class="grid-4">
+                      ${statCard({ iconName: 'trending-up', label: 'ROI', value: campaign.roi, body: 'Placeholder return multiple.' })}
+                      ${statCard({ iconName: 'target', label: 'Leads', value: campaign.leads, body: 'Campaign lead generation signal.' })}
+                      ${statCard({ iconName: 'coins', label: 'Revenue', value: campaign.revenue, body: 'Placeholder attributed revenue.' })}
+                      ${statCard({ iconName: 'pulse', label: 'Engagement', value: campaign.engagement, body: `Conversion ${campaign.conversion}` })}
+                    </div>
+                  `
+                })
+              )
+              .join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: [
+      entryChartSpec(MOCK_DATA.cmo.charts.campaignROI, 'chart-campaign-roi', 'Campaign ROI'),
+      { id: 'chart-campaign-leads', type: 'bar', labels: data.campaigns.map((item) => item.title), values: data.campaigns.map((item) => Number.parseFloat(item.leads)), label: 'Leads', suffix: '' },
+      { id: 'chart-campaign-conversion', type: 'bar', labels: data.campaigns.map((item) => item.title), values: data.campaigns.map((item) => Number.parseFloat(item.conversion)), label: 'Conversion rate', suffix: '%' }
+    ]
+  };
+}
+
+function cmoContentLibraryView() {
+  const query = state.contentQuery.trim().toLowerCase();
+  const items = MOCK_DATA.cmo.contentLibrary.items.filter((item) => {
+    if (!query) return true;
+    return [item.title, item.type, item.platform, item.rating, item.publishDate].join(' ').toLowerCase().includes(query);
+  });
+
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Content library', body: 'A searchable content inventory for videos, posts, blog articles, shorts, and email campaigns.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          ${searchRow({ id: 'content-library-search', value: state.contentQuery, placeholder: 'Search content by title, type, platform, or rating…', label: 'Search content library' })}
+        </section>
+
+        ${pageQuestions('/cmo/content-library')}
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Library results', title: `${items.length} content item${items.length === 1 ? '' : 's'}`, body: 'This page is intentionally searchable so future live content feeds can slot into the same structure cleanly.' })}
+          <div class="tile-grid">
+            ${items
+              .map((item) => insightCard({
+                eyebrow: `${item.type} · ${item.platform}`,
+                title: item.title,
+                body: `Published ${item.publishDate}. ${item.views} views and ${item.engagement} engagement. Performance rating ${item.rating}.`,
+                tone: cmoToneFromRating(item.rating)
+              }))
+              .join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function cmoCompetitorAnalysisView() {
+  const data = MOCK_DATA.cmo.competitorAnalysis;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Competitor analysis', body: 'A placeholder executive comparison surface for future competitive intelligence.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+        </section>
+
+        ${pageQuestions('/cmo/competitor-analysis')}
+
+        <div class="chart-grid">
+          ${chartCard({ eyebrow: 'Estimated Growth', title: 'Competitor growth comparison', canvasId: 'chart-competitor-growth', meta: 'Estimated growth across the tracked competitor set.' })}
+          ${chartCard({ eyebrow: 'Content Frequency', title: 'Publishing intensity comparison', canvasId: 'chart-competitor-frequency', meta: 'A simple proxy for market content pressure.' })}
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Tracked competitors', title: 'Current placeholder competitor set', body: 'This is mock-only and designed to prepare the architecture for future live data replacement.' })}
+          <div class="section-stack">
+            ${data.competitors
+              .map(
+                (item) => registerRow({
+                  kicker: `${pill(`#${item.rank}`, 'info')}${pill(item.engagement, item.engagement === 'Strong' ? 'good' : 'neutral')}`,
+                  title: item.name,
+                  body: `Estimated growth ${item.growth} · Content frequency ${item.frequency} · Opportunity: ${item.opportunity}`,
+                  extra: `
+                    <div class="grid-2">
+                      ${insightCard({ eyebrow: 'Opportunity', title: 'Where EP can win', body: item.opportunity, tone: 'good' })}
+                      ${insightCard({ eyebrow: 'Threat', title: 'What to watch', body: item.threat, tone: 'risk' })}
+                    </div>
+                  `
+                })
+              )
+              .join('')}
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Opportunities', title: 'Strategic openings', body: 'Use competitor analysis to sharpen positioning rather than chase volume blindly.' })}
+            <div class="section-stack">${data.opportunities.map((item) => insightCard({ eyebrow: 'Opportunity', title: item, body: 'Positioning or content opportunity placeholder.', tone: 'good' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Threats', title: 'Where the market could outpace EP', body: 'Competitive pressure should be visible before it becomes strategically expensive.' })}
+            <div class="section-stack">${data.threats.map((item) => insightCard({ eyebrow: 'Threat', title: item, body: 'Strategic watchpoint placeholder.', tone: 'risk' })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: [
+      { id: 'chart-competitor-growth', type: 'bar', labels: data.competitors.map((item) => item.name), values: data.competitors.map((item) => Number.parseFloat(item.growth)), label: 'Estimated growth', suffix: '%' },
+      { id: 'chart-competitor-frequency', type: 'bar', labels: data.competitors.map((item) => item.name), values: data.competitors.map((item) => (item.frequency === 'High' ? 3 : item.frequency === 'Medium' ? 2 : 1)), label: 'Content frequency', suffix: '' }
+    ]
+  };
+}
+
+function cmoMarketingCalendarView() {
+  const data = MOCK_DATA.cmo.marketingCalendar;
+  const typeCounts = data.events.reduce((accumulator, item) => {
+    accumulator[item.type] = (accumulator[item.type] || 0) + 1;
+    return accumulator;
+  }, {});
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Marketing calendar', body: 'A planning surface for campaigns, content, launches, and events.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'calendar', label: 'Upcoming Items', value: String(data.events.length), body: 'Current upcoming placeholder calendar entries.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Videos', value: String(typeCounts.Video || 0), body: 'Video items currently staged.' })}
+            ${statCard({ iconName: 'book-open', label: 'Email Campaigns', value: String(typeCounts['Email Campaign'] || 0), body: 'Email items currently staged.' })}
+            ${statCard({ iconName: 'grid', label: 'Social Posts', value: String(typeCounts['Social Posts'] || 0), body: 'Social publishing placeholder count.' })}
+          </div>
+        </section>
+
+        ${pageQuestions('/cmo/marketing-calendar')}
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Calendar view', title: 'Upcoming marketing work', body: 'This is intentionally designed as a planning surface rather than an execution tool.' })}
+          <div class="section-stack">
+            ${data.events.map((item) => registerRow({
+              kicker: `${pill(item.date, 'info')}${pill(item.type, 'neutral')}${pill(item.status, item.status.includes('approval') ? 'warn' : item.status === 'Scheduled' || item.status === 'Ready for approval' ? 'good' : 'info')}`,
+              title: item.title,
+              body: `${item.type} owned by ${item.owner}. Current status: ${item.status}.`,
+              extra: `${insightCard({ eyebrow: 'Planning note', title: 'Calendar placeholder', body: 'This entry is here to show how future content, launch, and campaign scheduling will surface in the CMO workspace.', tone: 'neutral' })}`
+            })).join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function cmoAiAdvisorView() {
+  const data = MOCK_DATA.cmo.aiMarketingAdvisor;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'AI Marketing Advisor', body: 'A dedicated marketing strategy workspace for recommendations, risks, opportunities, and staged actions.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+        </section>
+
+        ${commentaryCard({ title: data.executiveSummary.title, data: data.executiveSummary })}
+        ${pageQuestions('/cmo/ai-marketing-advisor')}
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Weekly Marketing Briefing', title: 'Current AI readout', body: 'This is the kind of weekly briefing the future AI layer should generate across channels.' })}
+            <div class="snapshot-panel"><h3>Weekly briefing</h3><p>${escapeHtml(data.weeklyBriefing)}</p></div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Suggested Actions', title: 'Approval-first next steps', body: 'No actions execute automatically. Recommendations are staged for executive review only.' })}
+            <div class="section-stack">${data.suggestedActions.map((item) => insightCard({ eyebrow: 'Suggested action', title: item, body: 'Stage for review before anything operational happens.', tone: 'warn' })).join('')}</div>
+          </section>
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Recommended Campaigns', title: 'High-potential campaign ideas', body: 'Each recommendation includes confidence, impact, evidence, risks, and alternatives.' })}
+          <div class="section-stack">
+            ${data.recommendedCampaigns.map((item) => registerRow({
+              kicker: `${pill(item.confidence, item.confidence === 'High' ? 'good' : 'warn')}${pill(item.impact, item.impact === 'High' ? 'good' : 'info')}`,
+              title: item.title,
+              body: item.evidence,
+              extra: `
+                <div class="grid-3">
+                  ${insightCard({ eyebrow: 'Supporting evidence', title: 'Why it is recommended', body: item.evidence, tone: 'info' })}
+                  ${insightCard({ eyebrow: 'Risks', title: 'What could go wrong', body: item.risks, tone: 'risk' })}
+                  ${insightCard({ eyebrow: 'Alternative options', title: 'Other routes', body: item.alternatives, tone: 'neutral' })}
+                </div>
+              `
+            })).join('')}
+          </div>
+        </section>
+
+        <div class="settings-grid">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Content Ideas', title: 'What marketing could create next' })}
+            <div class="section-stack">${data.contentIdeas.map((item) => insightCard({ eyebrow: 'Content idea', title: item, body: 'Future content candidate staged by the advisor.', tone: 'good' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'SEO Suggestions', title: 'Search visibility ideas' })}
+            <div class="section-stack">${data.seoSuggestions.map((item) => insightCard({ eyebrow: 'SEO', title: item, body: 'Placeholder organic search recommendation.', tone: 'info' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'AEO Suggestions', title: 'Answer engine opportunities' })}
+            <div class="section-stack">${data.aeoSuggestions.map((item) => insightCard({ eyebrow: 'AEO', title: item, body: 'Placeholder answer-engine optimisation recommendation.', tone: 'info' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Video Ideas', title: 'Next high-potential video formats' })}
+            <div class="section-stack">${data.videoIdeas.map((item) => insightCard({ eyebrow: 'Video', title: item, body: 'Future video concept placeholder.', tone: 'good' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Opportunities', title: 'Where the AI layer sees leverage' })}
+            <div class="section-stack">${data.opportunities.map((item) => insightCard({ eyebrow: 'Opportunity', title: item, body: 'Advisor-identified leverage point.', tone: 'good' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Risks', title: 'What the AI layer is worried about' })}
+            <div class="section-stack">${data.risks.map((item) => insightCard({ eyebrow: 'Risk', title: item, body: 'Advisor-identified risk to performance quality.', tone: 'risk' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Missing Information', title: 'What would improve confidence' })}
+            <div class="section-stack">${data.missingInformation.map((item) => insightCard({ eyebrow: 'Missing information', title: item, body: 'This gap limits confidence until future integrations exist.', tone: 'warn' })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function cmoReportsView() {
+  const data = MOCK_DATA.cmo.reports;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Marketing reports', body: 'A dedicated reporting surface for channel summaries, weekly briefings, and campaign-level executive packs.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="snapshot-panel">
+            <h3>Marketing reporting should package a narrative, not just numbers.</h3>
+            <p>${escapeHtml(data.summary)}</p>
+          </div>
+        </section>
+
+        ${pageQuestions('/cmo/reports')}
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Reporting sections', title: 'What the marketing report pack contains', body: 'This keeps the marketing narrative structured and easy to present.' })}
+          <div class="tile-grid">${data.sections.map((item) => insightCard({ eyebrow: 'Report section', title: item, body: 'This section is ready to evolve into a reusable reporting component.', tone: 'neutral' })).join('')}</div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Shared report routes', title: 'Cross-functional reporting links', body: 'The CMO workspace plugs into the wider shared reporting layer when needed.' })}
+            <div class="section-stack">
+              ${insightCard({ eyebrow: 'Shared reports', title: 'Weekly Briefings', body: 'Open the shared Sunday briefing view when leadership wants the cross-functional version.', tone: 'info' })}
+              <button type="button" class="quick-action-button" data-route="/reports/weekly-briefings">Open Weekly Briefings ${icon('arrowRight')}</button>
+              <button type="button" class="quick-action-button" data-route="/reports/cmo-reports">Open Shared CMO Reports ${icon('arrowRight')}</button>
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Approval-first reporting', title: 'Reports should lead to reviewable actions', body: 'The point of a report is to clarify what needs human judgment next.' })}
+            <div class="section-stack">${marketingApprovals(3).map((entry) => approvalCard(entry)).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function cmoSettingsView() {
+  const data = MOCK_DATA.cmo.settings;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Marketing settings', body: 'This placeholder settings area makes the future marketing operating model explicit before anything goes live.' })}
+          ${renderRoutePillbar(SUBNAV.cmo)}
+          <div class="settings-grid">${data.placeholders.map((item) => integrationTile(item)).join('')}</div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Future marketing integrations', title: 'What this module is architected to connect later', body: 'Nothing here is connected in this sprint. These are future integration targets only.' })}
+          <div class="tile-grid">${data.integrations.map((item) => integrationTile(item)).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
 function placeholderModuleView(route) {
   const data = MOCK_DATA.placeholders[route];
   return {
@@ -1197,7 +1850,7 @@ function boardMeetingView() {
           <div class="board-shell-grid">
             ${insightCard({ eyebrow: 'CEO Executive Summary', title: 'Whole-business leadership view', body: MOCK_DATA.ceo.summary, tone: 'neutral' })}
             ${insightCard({ eyebrow: 'CFO Executive Report', title: 'Current financial position', body: MOCK_DATA.cfo.weeklyBriefing.summary, tone: 'info' })}
-            ${insightCard({ eyebrow: 'CMO Executive Report', title: 'Placeholder', body: 'Future marketing intelligence will explain demand quality, campaign return, and brand momentum.', tone: 'neutral' })}
+            ${insightCard({ eyebrow: 'CMO Executive Report', title: 'Marketing momentum is positive', body: MOCK_DATA.cmo.dashboard.weeklyBriefing, tone: 'good' })}
             ${insightCard({ eyebrow: 'COO Executive Report', title: 'Placeholder', body: 'Future operations intelligence will explain capacity, delivery friction, and execution risk.', tone: 'neutral' })}
           </div>
           <div class="chart-grid board-mode-grid">
@@ -1353,7 +2006,22 @@ const routeRenderers = {
   '/cfo/financial-health': cfoFinancialHealthView,
   '/cfo/opportunity-register': cfoOpportunityRegisterView,
   '/cfo/risk-register': cfoRiskRegisterView,
-  '/cmo': () => placeholderModuleView('/cmo'),
+  '/cmo': cmoDashboardView,
+  '/cmo/social-media-overview': cmoSocialOverviewView,
+  '/cmo/youtube': () => cmoPlatformView('youtube', '/cmo/youtube'),
+  '/cmo/instagram': () => cmoPlatformView('instagram', '/cmo/instagram'),
+  '/cmo/facebook': () => cmoPlatformView('facebook', '/cmo/facebook'),
+  '/cmo/linkedin': () => cmoPlatformView('linkedin', '/cmo/linkedin'),
+  '/cmo/x': () => cmoPlatformView('x', '/cmo/x'),
+  '/cmo/website-analytics': cmoWebsiteAnalyticsView,
+  '/cmo/email-marketing': cmoEmailMarketingView,
+  '/cmo/campaign-performance': cmoCampaignPerformanceView,
+  '/cmo/content-library': cmoContentLibraryView,
+  '/cmo/competitor-analysis': cmoCompetitorAnalysisView,
+  '/cmo/marketing-calendar': cmoMarketingCalendarView,
+  '/cmo/ai-marketing-advisor': cmoAiAdvisorView,
+  '/cmo/reports': cmoReportsView,
+  '/cmo/settings': cmoSettingsView,
   '/coo': () => placeholderModuleView('/coo'),
   '/sales': () => placeholderModuleView('/sales'),
   '/customer-success': () => placeholderModuleView('/customer-success'),
