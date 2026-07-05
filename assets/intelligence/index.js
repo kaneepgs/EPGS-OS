@@ -16,8 +16,17 @@ export function createExecutiveIntelligenceEngine(config) {
   const insightEngine = createInsightEngine();
   const narrativeEngine = createNarrativeEngine();
 
-  function createTimelineEvents({ finance, marketing }, { correlations, recommendations }) {
+  function createTimelineEvents({ finance, marketing, communications }, { correlations, recommendations }) {
     const events = [];
+    if (communications?.providerSummary?.state === 'live-gmail') {
+      events.push({
+        id: 'timeline-gmail-live-sync',
+        time: 'Now',
+        type: 'Gmail live data',
+        title: 'Executive Inbox snapshot is live',
+        body: communications.providerSummary?.body || 'Live Gmail inbox data is now available.'
+      });
+    }
     if (marketing.websiteAnalytics?.dataSource?.state === 'live-ga4') {
       events.push({
         id: 'timeline-ga4-live-sync',
@@ -51,6 +60,15 @@ export function createExecutiveIntelligenceEngine(config) {
     if (marketing.campaignPerformance?.campaigns?.[0]) {
       events.push({ id: 'timeline-campaign-success', time: 'This week', type: 'Campaign success', title: marketing.campaignPerformance.campaigns[0].title, body: `ROI ${marketing.campaignPerformance.campaigns[0].roi} and revenue ${marketing.campaignPerformance.campaigns[0].revenue}.` });
     }
+    (communications?.timelineEvents || []).slice(0, 4).forEach((item, index) => {
+      events.push({
+        id: item.id || `timeline-gmail-${index + 1}`,
+        time: item.time || item.receivedTime || 'Now',
+        type: item.category || 'Executive Inbox',
+        title: item.title,
+        body: item.body
+      });
+    });
     return events;
   }
 
@@ -73,7 +91,7 @@ export function createExecutiveIntelligenceEngine(config) {
     };
   }
 
-  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [] }) {
+  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [], communications = {} }) {
     const prompts = [
       {
         question: 'What happened across the business this week?',
@@ -104,6 +122,12 @@ export function createExecutiveIntelligenceEngine(config) {
         answer: memoryContext[0]?.summary || 'Executive memory is available, but no major historical context item is currently ranked above the live signals.',
         confidence: 'High',
         rationale: 'Drawn from the persistent executive memory layer rather than only current-period metrics.'
+      },
+      {
+        question: 'What does the Executive Inbox need from me first?',
+        answer: communications?.summary?.dailySummary || 'Executive Inbox summary is not currently available.',
+        confidence: communications?.providerSummary?.state === 'live-gmail' ? 'High' : 'Medium',
+        rationale: 'Built from Gmail-derived inbox metrics, deterministic classification, and communications triage rules.'
       }
     ];
 
@@ -114,7 +138,8 @@ export function createExecutiveIntelligenceEngine(config) {
         'Which recommendation should we approve today?',
         'Where is the biggest conversion leak right now?',
         'How fragile is our cash position if collections slip?',
-        'Which department needs intervention first?'
+        'Which department needs intervention first?',
+        'Which inbox conversations should be cleared today?'
       ]
     };
   }
@@ -126,9 +151,10 @@ export function createExecutiveIntelligenceEngine(config) {
       const marketing = services.marketing.getWorkspace();
       const approvals = services.approval.getWorkspace();
       const reports = services.report.getWorkspace();
+      const communications = services.communications?.getWorkspace?.() || {};
       const timeline = services.timeline.getBusinessTimeline();
-      const memory = services.memory?.getContext?.({ finance, marketing }) || { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] };
-      const context = { executive, finance, marketing, approvals, reports, timeline, memory };
+      const memory = services.memory?.getContext?.({ finance, marketing, communications }) || { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] };
+      const context = { executive, finance, marketing, communications, approvals, reports, timeline, memory };
 
       const health = healthEngine.evaluate(context);
       const correlations = correlationEngine.evaluate(context, { health });
@@ -137,7 +163,7 @@ export function createExecutiveIntelligenceEngine(config) {
       const insights = insightEngine.evaluate(context, { correlations, recommendations, health });
       const narratives = narrativeEngine.evaluate(context, { insights, recommendations, health });
       const timelineEvents = createTimelineEvents(context, { correlations, recommendations });
-      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.deterministic });
+      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.deterministic, communications });
 
       const ceoCommentary = toCommentary('AI Executive Briefing', insights.executive[0], recommendations[0], {
         risks: insights.executive.slice(1, 3).map((item) => item.executiveSummary).join(' '),
@@ -173,7 +199,8 @@ export function createExecutiveIntelligenceEngine(config) {
           health,
           narratives,
           prompts: askWorkspace.prompts,
-          memoryContext: memory.deterministic
+          memoryContext: memory.deterministic,
+          communications
         },
         cfo: {
           commentary: {

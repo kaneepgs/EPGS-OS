@@ -3,17 +3,20 @@ import { INTEGRATION_REGISTRY } from '../config/integration-registry.js';
 import { MockProvider } from './mock-provider.js';
 import { AnalyticsProvider } from './analytics-provider.js';
 import { YouTubeProvider } from './youtube-provider.js';
+import { GmailProvider } from './gmail-provider.js';
 import { createFutureProviders } from './future-providers.js';
 
-export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snapshot = null, youtubeSnapshot = null } = {}) {
+export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snapshot = null, youtubeSnapshot = null, gmailSnapshot = null } = {}) {
   const mockProvider = new MockProvider({ source, mode });
   const analyticsProvider = new AnalyticsProvider({ source, mode, ga4Snapshot });
   const youtubeProvider = new YouTubeProvider({ provider: analyticsProvider, source, mode, youtubeSnapshot });
+  const gmailProvider = new GmailProvider({ provider: mockProvider, source, mode, gmailSnapshot });
   const futureProviders = createFutureProviders();
   const catalog = {
     mock: mockProvider,
     analytics: analyticsProvider,
     youtube: youtubeProvider,
+    gmail: gmailProvider,
     finance: futureProviders.finance,
     marketing: futureProviders.marketing,
     crm: futureProviders.crm,
@@ -25,7 +28,8 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
     executive: mockProvider,
     finance: mockProvider,
     marketing: youtubeProvider,
-    approval: mockProvider,
+    communications: gmailProvider,
+    approval: gmailProvider,
     report: mockProvider,
     timeline: mockProvider,
     ai: mockProvider,
@@ -43,7 +47,8 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
         notes: APP_CONFIG.notes,
         liveData: {
           ga4: analyticsProvider.describeGoogleAnalyticsIntegration(),
-          youtube: youtubeProvider.describeYouTubeIntegration()
+          youtube: youtubeProvider.describeYouTubeIntegration(),
+          gmail: gmailProvider.describeGmailIntegration()
         }
       };
     },
@@ -74,6 +79,10 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
           return analyticsProvider.describeGoogleAnalyticsIntegration();
         }
 
+        if (entry.id === 'gmail') {
+          return gmailProvider.describeGmailIntegration();
+        }
+
         return {
           ...entry,
           mode,
@@ -84,7 +93,8 @@ export function createProviderRegistry({ source, mode = APP_CONFIG.mode, ga4Snap
     getLiveDataSummary() {
       return {
         ga4: analyticsProvider.describeGoogleAnalyticsIntegration(),
-        youtube: youtubeProvider.describeYouTubeIntegration()
+        youtube: youtubeProvider.describeYouTubeIntegration(),
+        gmail: gmailProvider.describeGmailIntegration()
       };
     }
   });

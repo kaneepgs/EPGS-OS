@@ -589,8 +589,83 @@ export const RAW_MOCK_DATA = {
     },
     settings: {
       placeholders: ['Platform weighting', 'Default reporting views', 'Approval preferences', 'Weekly briefing cadence', 'Content scoring logic', 'Future API connections'],
-      integrations: ['YouTube', 'Instagram', 'Facebook', 'LinkedIn', 'X', 'Google Analytics', 'Mailchimp']
+      integrations: ['YouTube', 'Instagram', 'Facebook', 'LinkedIn', 'X', 'Google Analytics', 'Mailchimp', 'Gmail']
     }
+  },
+  communications: {
+    providerSummary: {
+      label: 'Demo fallback active',
+      body: 'Executive Inbox is currently using structured demo Gmail data until a local OAuth-backed snapshot is available.',
+      tone: 'warn',
+      state: 'demo-fallback',
+      account: 'hello@epgolfstudios.co.uk',
+      syncedAt: null,
+      health: 'Awaiting configuration',
+      mode: 'demo',
+      syncInterval: '15 minutes'
+    },
+    summary: {
+      headline: 'Five customer enquiries require replies.',
+      body: 'Five customer enquiries require replies. Two supplier issues require action. Three fitting requests arrived in the current inbox window.',
+      dailySummary: 'Five customer enquiries require replies. Two supplier invoices are awaiting approval. Three fitting requests arrived overnight.',
+      boardSummary: 'Five customer enquiries require replies, two supplier invoices are awaiting approval, and three fitting requests arrived overnight.'
+    },
+    metrics: {
+      unreadCritical: 4,
+      waitingCustomerReplies: 5,
+      supplierIssues: 2,
+      financeEmails: 3,
+      bookingRequests: 3,
+      needsReply: 8,
+      recentlyCompleted: 3
+    },
+    widgets: [
+      { iconName: 'alert-triangle', label: 'Unread Critical Emails', value: '4', body: 'High-priority unread conversations that deserve attention first.', meta: 'Demo Gmail' },
+      { iconName: 'reply', label: 'Waiting Customer Replies', value: '5', body: 'Customer threads where delay now risks trust or conversion.', meta: 'Customer' },
+      { iconName: 'building', label: 'Supplier Issues', value: '2', body: 'Supplier threads affecting timing, delivery, or margin.', meta: 'Supplier' },
+      { iconName: 'coins', label: 'Finance Emails', value: '3', body: 'Invoices, approvals, and payment-sensitive conversations.', meta: 'Finance' },
+      { iconName: 'target', label: 'Booking Requests', value: '3', body: 'New fitting requests in the visible inbox window.', meta: 'Booking' },
+      { iconName: 'check-circle', label: "Today's Executive Inbox Summary", value: '8 live', body: 'Five customer replies, two supplier issues, and three fitting requests are currently visible.', meta: 'hello@epgolfstudios.co.uk' }
+    ],
+    inboxItems: [
+      { id: 'gmail-demo-1', threadId: 'thread-demo-1', sender: 'James Archer', senderEmail: 'james.archer@example.com', subject: 'Driver fitting availability this week', receivedAt: '2026-07-05T07:12:00.000Z', receivedTime: '10h ago', ageLabel: '10h ago', category: 'Booking', priority: 'High', status: 'Needs Reply', aiSummary: 'James Archer is asking for a premium driver fitting slot this week. The enquiry is commercially relevant and should be answered quickly to protect conversion.', customer: 'James Archer', supplier: '', action: 'Reply', waitingHours: 10, unread: true, labels: ['INBOX', 'UNREAD'], route: '/executive-inbox' },
+      { id: 'gmail-demo-2', threadId: 'thread-demo-2', sender: 'Amelia Fraser', senderEmail: 'amelia.fraser@example.com', subject: 'Follow-up on wedge fitting recommendation', receivedAt: '2026-07-04T12:05:00.000Z', receivedTime: '1d ago', ageLabel: '1d ago', category: 'Customer', priority: 'High', status: 'Needs Reply', aiSummary: 'Amelia Fraser is waiting on a recommendation before deciding whether to book. The thread is now old enough to risk trust if it sits longer.', customer: 'Amelia Fraser', supplier: '', action: 'Reply', waitingHours: 30, unread: true, labels: ['INBOX', 'UNREAD', 'IMPORTANT'], route: '/executive-inbox' },
+      { id: 'gmail-demo-3', threadId: 'thread-demo-3', sender: 'Foresight Sports Trade', senderEmail: 'accounts@foresightsports.example', subject: 'Invoice 77841 now due for approval', receivedAt: '2026-07-05T06:20:00.000Z', receivedTime: '11h ago', ageLabel: '11h ago', category: 'Finance', priority: 'High', status: 'Review', aiSummary: 'A supplier invoice is waiting for approval and touches both payment timing and supplier continuity.', customer: '', supplier: 'Foresight Sports Trade', action: 'Approve', waitingHours: 11, unread: true, labels: ['INBOX', 'UNREAD'], route: '/executive-inbox' },
+      { id: 'gmail-demo-4', threadId: 'thread-demo-4', sender: 'TrackMan Services', senderEmail: 'support@trackman.example', subject: 'Contract renewal and service window', receivedAt: '2026-07-04T08:30:00.000Z', receivedTime: '1d ago', ageLabel: '1d ago', category: 'Supplier', priority: 'High', status: 'Follow-up due', aiSummary: 'TrackMan is pushing on renewal timing and service continuity. This could affect operating confidence if it drifts.', customer: '', supplier: 'TrackMan Services', action: 'Review', waitingHours: 33, unread: false, labels: ['INBOX'], route: '/executive-inbox' },
+      { id: 'gmail-demo-5', threadId: 'thread-demo-5', sender: 'Charlotte Dean', senderEmail: 'charlotte.dean@example.com', subject: 'Can I book a gapping session on Friday?', receivedAt: '2026-07-05T03:44:00.000Z', receivedTime: '14h ago', ageLabel: '14h ago', category: 'Booking', priority: 'High', status: 'Needs Reply', aiSummary: 'Charlotte Dean is trying to book a gapping session for Friday. The request is high-intent and should move quickly.', customer: 'Charlotte Dean', supplier: '', action: 'Reply', waitingHours: 14, unread: true, labels: ['INBOX', 'UNREAD'], route: '/executive-inbox' },
+      { id: 'gmail-demo-6', threadId: 'thread-demo-6', sender: 'Oliver Singh', senderEmail: 'oliver.singh@example.com', subject: 'Question about premium fitting package', receivedAt: '2026-07-04T17:05:00.000Z', receivedTime: '1d ago', ageLabel: '1d ago', category: 'Customer', priority: 'Medium', status: 'Needs Reply', aiSummary: 'Oliver Singh needs clarity on the premium fitting package before deciding. This is a useful sales-quality conversation, not just inbox noise.', customer: 'Oliver Singh', supplier: '', action: 'Reply', waitingHours: 25, unread: false, labels: ['INBOX'], route: '/executive-inbox' },
+      { id: 'gmail-demo-7', threadId: 'thread-demo-7', sender: 'Titleist Trade', senderEmail: 'trade@titleist.example', subject: 'Quote update for August stock allocation', receivedAt: '2026-07-05T05:15:00.000Z', receivedTime: '12h ago', ageLabel: '12h ago', category: 'Supplier', priority: 'Medium', status: 'Review', aiSummary: 'Titleist has updated a quote tied to upcoming stock allocation. This affects margin planning more than day-to-day admin.', customer: '', supplier: 'Titleist Trade', action: 'Review', waitingHours: 12, unread: true, labels: ['INBOX', 'UNREAD'], route: '/executive-inbox' },
+      { id: 'gmail-demo-8', threadId: 'thread-demo-8', sender: 'EP Ops', senderEmail: 'ops@epgolfstudios.co.uk', subject: 'Weekend bay coverage and staffing check', receivedAt: '2026-07-05T08:05:00.000Z', receivedTime: '9h ago', ageLabel: '9h ago', category: 'Internal', priority: 'Medium', status: 'Review', aiSummary: 'Operations is checking weekend staffing coverage in case fitting demand stays strong. The thread matters because service quality could slip if ignored.', customer: '', supplier: '', action: 'Assess', waitingHours: 9, unread: false, labels: ['INBOX'], route: '/executive-inbox' },
+      { id: 'gmail-demo-9', threadId: 'thread-demo-9', sender: 'LeadForm Partner', senderEmail: 'partner@example.com', subject: 'July campaign performance discussion', receivedAt: '2026-07-05T09:18:00.000Z', receivedTime: '8h ago', ageLabel: '8h ago', category: 'Marketing', priority: 'Medium', status: 'Review', aiSummary: 'A marketing partner is trying to review July performance and next steps. This may affect campaign focus, but it is not more urgent than customer replies or supplier approvals.', customer: '', supplier: '', action: 'Assess', waitingHours: 8, unread: false, labels: ['INBOX'], route: '/executive-inbox' },
+      { id: 'gmail-demo-10', threadId: 'thread-demo-10', sender: 'Noah Bennett', senderEmail: 'noah.bennett@example.com', subject: 'Do you have any iron fitting slots after work?', receivedAt: '2026-07-05T01:42:00.000Z', receivedTime: '16h ago', ageLabel: '16h ago', category: 'Booking', priority: 'High', status: 'Needs Reply', aiSummary: 'Noah Bennett is asking for an after-work iron fitting slot. This is a direct booking opportunity and should stay near the top of the queue.', customer: 'Noah Bennett', supplier: '', action: 'Reply', waitingHours: 16, unread: true, labels: ['INBOX', 'UNREAD'], route: '/executive-inbox' },
+      { id: 'gmail-demo-11', threadId: 'thread-demo-11', sender: 'Finance Desk', senderEmail: 'finance@epgolfstudios.co.uk', subject: 'Deposit reconciliation requires sign-off', receivedAt: '2026-07-04T15:26:00.000Z', receivedTime: '1d ago', ageLabel: '1d ago', category: 'Finance', priority: 'Medium', status: 'Follow-up due', aiSummary: 'Finance needs sign-off on a deposit reconciliation item. It is not a crisis, but it should not slip much further.', customer: '', supplier: '', action: 'Approve', waitingHours: 27, unread: false, labels: ['INBOX'], route: '/executive-inbox' },
+      { id: 'gmail-demo-12', threadId: 'thread-demo-12', sender: 'Golf Monthly', senderEmail: 'news@golfmonthly.example', subject: 'This week in equipment launches', receivedAt: '2026-07-05T04:11:00.000Z', receivedTime: '13h ago', ageLabel: '13h ago', category: 'Newsletter', priority: 'Low', status: 'Review', aiSummary: 'A newsletter is visible in the inbox, but it does not deserve executive attention ahead of customer or finance conversations.', customer: '', supplier: '', action: 'Archive', waitingHours: 13, unread: false, labels: ['INBOX'], route: '/executive-inbox' }
+    ],
+    recentlyCompleted: [
+      { id: 'gmail-demo-sent-1', threadId: 'thread-demo-sent-1', sender: 'Kane', senderEmail: 'hello@epgolfstudios.co.uk', subject: 'Reply sent — premium fitting enquiry', receivedAt: '2026-07-05T09:02:00.000Z', receivedTime: '8h ago', ageLabel: '8h ago', category: 'Customer', priority: 'Medium', status: 'Completed', aiSummary: 'A premium fitting enquiry was answered and can now move out of the active queue unless the customer replies again.', customer: 'Ben Howard', supplier: '', action: 'Archive', waitingHours: 0, unread: false, labels: ['SENT'], route: '/executive-inbox' },
+      { id: 'gmail-demo-sent-2', threadId: 'thread-demo-sent-2', sender: 'Kane', senderEmail: 'hello@epgolfstudios.co.uk', subject: 'Forwarded supplier quote for review', receivedAt: '2026-07-05T07:40:00.000Z', receivedTime: '10h ago', ageLabel: '10h ago', category: 'Supplier', priority: 'Medium', status: 'Completed', aiSummary: 'A supplier quote was forwarded for review, reducing the risk of it getting buried.', customer: '', supplier: 'Foresight Sports Trade', action: 'Label', waitingHours: 0, unread: false, labels: ['SENT'], route: '/executive-inbox' },
+      { id: 'gmail-demo-sent-3', threadId: 'thread-demo-sent-3', sender: 'Kane', senderEmail: 'hello@epgolfstudios.co.uk', subject: 'Task created for finance follow-up', receivedAt: '2026-07-04T18:12:00.000Z', receivedTime: '23h ago', ageLabel: '23h ago', category: 'Finance', priority: 'Low', status: 'Completed', aiSummary: 'A finance follow-up task was created so the thread no longer needs immediate manual review.', customer: '', supplier: '', action: 'Create Task', waitingHours: 0, unread: false, labels: ['SENT'], route: '/executive-inbox' }
+    ],
+    approvalCards: [
+      { title: 'Reply — Driver fitting availability this week', why: 'High-intent booking request from James Archer is still waiting for a response.', impact: 'Booking demand capture', risk: 'High', confidence: 'High' },
+      { title: 'Archive — This week in equipment launches', why: 'A newsletter is visible in the inbox but does not deserve executive attention ahead of customer, supplier, or finance conversations.', impact: 'Inbox hygiene', risk: 'Low', confidence: 'High' },
+      { title: 'Label — Invoice 77841 now due for approval', why: 'Supplier invoice timing now affects both cash timing and supplier continuity, so it should be clearly labelled for the next finance review block.', impact: 'Finance / Supplier timing', risk: 'High', confidence: 'High' },
+      { title: 'Forward — Quote update for August stock allocation', why: 'The latest quote needs owner visibility before purchasing decisions move forward.', impact: 'Margin planning', risk: 'Medium', confidence: 'Medium' },
+      { title: 'Create Task — Deposit reconciliation requires sign-off', why: 'Finance follow-up should be tracked explicitly rather than left in the inbox.', impact: 'Finance control', risk: 'Low', confidence: 'Medium' },
+      { title: 'Schedule Follow-up — Follow-up on wedge fitting recommendation', why: 'A valuable customer thread has now waited long enough to justify explicit follow-up timing.', impact: 'Customer trust / conversion', risk: 'Medium', confidence: 'High' }
+    ],
+    timelineEvents: [
+      { id: 'gmail-event-1', date: '2026-07-05', time: '10h ago', title: 'Customer enquiry received', body: 'James Archer asked for driver fitting availability this week.', category: 'Booking email', department: 'Sales / Customer', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Needs Reply', route: '/executive-inbox' },
+      { id: 'gmail-event-2', date: '2026-07-05', time: '11h ago', title: 'Invoice approval entered the executive queue', body: 'Foresight Sports Trade invoice 77841 now requires approval.', category: 'Finance email', department: 'Finance', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Review', route: '/executive-inbox' },
+      { id: 'gmail-event-3', date: '2026-07-04', time: '1d ago', title: 'Major supplier quote needs action', body: 'TrackMan Services raised a renewal and service window discussion.', category: 'Supplier email', department: 'Operations / Finance', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Follow-up due', route: '/executive-inbox' },
+      { id: 'gmail-event-4', date: '2026-07-05', time: '16h ago', title: 'High-value booking request arrived overnight', body: 'Noah Bennett asked for an after-work iron fitting slot.', category: 'Booking email', department: 'Sales / Customer', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Needs Reply', route: '/executive-inbox' },
+      { id: 'gmail-event-5', date: '2026-07-04', time: '1d ago', title: 'Executive decision needed in finance follow-up', body: 'Deposit reconciliation requires sign-off before close.', category: 'Finance email', department: 'Finance', impact: 'Medium', relatedEntities: ['goal-booking-conversion'], status: 'Follow-up due', route: '/executive-inbox' }
+    ],
+    memoryCandidates: [
+      { id: 'gmail-memory-1', date: '2026-07-05', time: '10h ago', title: 'Driver fitting availability this week', body: 'A high-intent booking enquiry arrived and needs fast follow-up to protect conversion.', category: 'Booking conversation', department: 'Sales / Customer', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Needs Reply', route: '/executive-inbox' },
+      { id: 'gmail-memory-2', date: '2026-07-05', time: '11h ago', title: 'Invoice 77841 now due for approval', body: 'A supplier invoice entered the executive queue and now affects both finance timing and supplier continuity.', category: 'Finance conversation', department: 'Finance', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Review', route: '/executive-inbox' },
+      { id: 'gmail-memory-3', date: '2026-07-04', time: '1d ago', title: 'Contract renewal and service window', body: 'TrackMan raised a supplier conversation with operating consequences if it drifts.', category: 'Supplier conversation', department: 'Operations / Finance', impact: 'High', relatedEntities: ['goal-booking-conversion'], status: 'Follow-up due', route: '/executive-inbox' }
+    ]
   },
   approvals: {
     groups: {
@@ -682,7 +757,7 @@ export const RAW_MOCK_DATA = {
     '/projects': { module: 'Projects', description: 'This module will eventually track strategic initiatives, ownership, deadlines, dependencies, and executive project risk.', metrics: ['Active projects', 'On-track rate', 'Blocked work', 'Upcoming deadlines'], insights: ['Which projects matter most now?', 'Where are dependencies creating risk?', 'What needs executive unblock?'], actions: ['Approve project priorities', 'Review timelines', 'Escalate blocked initiatives'], status: 'Mock placeholder only' }
   },
   settings: {
-    integrations: ['QuickBooks', 'Starling', 'Bookings Dashboard', 'CRM', 'Inventory', 'HR', 'Payroll', 'Google Analytics', 'Calendar'],
+    integrations: ['QuickBooks', 'Starling', 'Bookings Dashboard', 'Gmail', 'Inventory', 'HR', 'Payroll', 'Google Analytics', 'Calendar'],
     placeholders: ['Navigation preferences', 'Health score weighting', 'Weekly briefing preferences', 'Command palette defaults', 'Executive personas', 'Historical memory controls']
   },
   shortcuts: [

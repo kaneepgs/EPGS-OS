@@ -2,7 +2,7 @@ import { formatCurrency, parseRangeMidpoint } from './engine-utils.js';
 
 export function createRecommendationEngine({ priorityEngine }) {
   return Object.freeze({
-    evaluate({ finance, marketing, approvals }, { correlations }) {
+    evaluate({ finance, marketing, communications, approvals }, { correlations }) {
       const lookup = Object.fromEntries(correlations.map((item) => [item.id, item]));
       const base = [
         {
@@ -76,6 +76,42 @@ export function createRecommendationEngine({ priorityEngine }) {
           estimatedValue: `${Object.values(approvals.groups || {}).reduce((sum, entries) => sum + entries.length, 0)} approvals clarified`,
           suggestedOwner: 'CEO / COO',
           priorityFactors: { financialImpact: 62, customerImpact: 58, strategicImportance: 79, timeSensitivity: 72, confidence: lookup['approval-project-bottleneck']?.confidence?.score || 70 }
+        },
+        {
+          id: 'gmail-customer-reply-sprint',
+          recommendation: 'Clear the oldest customer and booking replies from the Executive Inbox today',
+          why: lookup['gmail-customer-reply-backlog']?.executiveSummary || lookup['gmail-booking-request-flow']?.executiveSummary || 'The inbox is now holding direct commercial demand.',
+          expectedBenefit: 'Improves trust, shortens response time, and converts existing visible demand faster.',
+          risk: 'Low',
+          confidence: lookup['gmail-customer-reply-backlog']?.confidence?.label || 'High',
+          confidenceScore: lookup['gmail-customer-reply-backlog']?.confidence?.score || 82,
+          estimatedValue: `${communications?.metrics?.waitingCustomerReplies || 0} customer replies and ${communications?.metrics?.bookingRequests || 0} booking requests moved forward`,
+          suggestedOwner: 'CEO / Sales / Customer Success',
+          priorityFactors: { financialImpact: 83, customerImpact: 92, strategicImportance: 80, timeSensitivity: 91, confidence: lookup['gmail-customer-reply-backlog']?.confidence?.score || 82 }
+        },
+        {
+          id: 'gmail-supplier-response-plan',
+          recommendation: 'Stage supplier email follow-through into a named approval and response plan',
+          why: lookup['gmail-supplier-issue-delay']?.executiveSummary || 'Supplier conversations are now visible enough to deserve explicit ownership.',
+          expectedBenefit: 'Protects margin, supplier continuity, and operating confidence before email drift becomes a hidden cost.',
+          risk: 'Medium',
+          confidence: lookup['gmail-supplier-issue-delay']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['gmail-supplier-issue-delay']?.confidence?.score || 78,
+          estimatedValue: `${communications?.metrics?.supplierIssues || 0} supplier issues clarified`,
+          suggestedOwner: 'CFO / COO',
+          priorityFactors: { financialImpact: 85, customerImpact: 45, strategicImportance: 79, timeSensitivity: 80, confidence: lookup['gmail-supplier-issue-delay']?.confidence?.score || 78 }
+        },
+        {
+          id: 'gmail-finance-triage',
+          recommendation: 'Batch the finance-sensitive inbox threads into the next approval review block',
+          why: lookup['gmail-finance-approval-outstanding']?.executiveSummary || 'Finance-sensitive email is shaping approval timing.',
+          expectedBenefit: 'Improves finance visibility and keeps invoice or reconciliation threads from becoming hidden blockers.',
+          risk: 'Low–Medium',
+          confidence: lookup['gmail-finance-approval-outstanding']?.confidence?.label || 'Medium',
+          confidenceScore: lookup['gmail-finance-approval-outstanding']?.confidence?.score || 76,
+          estimatedValue: `${communications?.metrics?.financeEmails || 0} finance emails triaged`,
+          suggestedOwner: 'CFO',
+          priorityFactors: { financialImpact: 79, customerImpact: 38, strategicImportance: 76, timeSensitivity: 82, confidence: lookup['gmail-finance-approval-outstanding']?.confidence?.score || 76 }
         }
       ];
 

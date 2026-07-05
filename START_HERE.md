@@ -31,9 +31,11 @@ Release metadata is now centralised in `assets/config/release-config.js`, so the
 - a deterministic **Executive Intelligence Engine** that turns structured business data into scored health views, correlations, recommendations, narratives, and executive Q&A outputs before any external AI is introduced
 - the first **Google Analytics 4 live-provider path** for CMO Website Analytics, using a local sync script and generated snapshot file
 - a live-capable **YouTube provider path** for channel totals, recent uploads, visibility, and content-library items
+- a live-capable **Gmail provider path** for Executive Inbox triage, communications intelligence, and approval-first inbox actions
 - a reusable **Marketing Intelligence Report** that packages GA4 + YouTube into one executive report
 - a proper **Marketing Health Score** with score, trend, confidence, and source status
 - provider-independent **Executive Memory** that now stores marketing milestones as part of the business timeline
+- a dedicated **Executive Inbox** with deterministic business email classification and CEO-ready summaries
 - placeholder module landing pages for:
   - COO
   - Sales
@@ -56,6 +58,8 @@ Release metadata is now centralised in `assets/config/release-config.js`, so the
 - no live financial or operational data
 
 The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics** and **YouTube** when credentials are added and snapshots are synced.
+
+Sprint 13 extends that same pattern to **Gmail / Executive Inbox**, so business email can be surfaced as executive intelligence without turning the product into an email client.
 
 ## How to open it locally
 
@@ -91,9 +95,11 @@ Start with these in order:
 6. **AI Assistant** — shows the conversational executive AI direction
 7. **CMO → Website Analytics** — shows the live GA4 path and conversion visibility clearly
 8. **CMO → YouTube** — shows the live YouTube path, recent uploads, and authority-channel momentum
-9. **Reports → Marketing Intelligence Report** — shows the packaged v1.1 marketing narrative across GA4, YouTube, risks, and actions
-10. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
-11. **CEO Dashboard marketing intelligence / cross-department intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
+9. **Executive Inbox** — shows deterministic inbox triage, approval-first communications actions, and CEO-ready email summaries
+10. **Approvals** — shows Gmail-derived reply, archive, label, forward, task, and follow-up actions staged without automation
+11. **Reports → Marketing Intelligence Report / Board Meeting Mode** — shows packaged reporting plus communications-aware executive narrative
+12. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
+13. **CEO Dashboard marketing intelligence / cross-department intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
 
 ## Key pages to show
 
@@ -102,6 +108,7 @@ Start with these in order:
 - **CFO Revenue / Cash Flow / Supplier Spend** — strongest decision-support examples
 - **CMO Marketing Dashboard** — executive marketing command centre
 - **CMO Social Media Overview / YouTube / Website Analytics / AI Marketing Advisor** — strongest marketing examples
+- **Executive Inbox** — business email converted into executive triage rather than raw inbox volume
 - **Reports → Marketing Intelligence Report** — packaged v1.1 marketing output
 - **Approvals** — centralised business-wide approval centre
 - **Reports** — shared reporting structure
@@ -117,7 +124,7 @@ This is intentionally still a prototype.
 - most non-finance / non-marketing modules are still placeholders
 - no save/sync between users or devices
 - no real approvals or workflow execution
-- only Website Analytics and YouTube are live-capable today, both through manual local snapshot sync
+- only Website Analytics, YouTube, and Executive Inbox are live-capable today, all through manual local snapshot sync
 - no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
 
 ## Current roadmap position
@@ -143,8 +150,8 @@ Current **Next** priorities:
 
 Describe it as:
 
-> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance and Marketing, plus a first usable Marketing Intelligence release.”
+> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance, Marketing, and executive communications.”
 
-You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube** provider paths, with the rest of the business architecture prepared for future module builds.
+You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a dedicated **Executive Inbox**, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube + Gmail** provider paths, with the rest of the business architecture prepared for future module builds.
 
 After each completed release, update `CHANGELOG.md` for the formal release summary, then advance `Roadmap.md`, then move detailed sprint notes into `changelog/CHANGELOG.md`.

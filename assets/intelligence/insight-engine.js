@@ -30,8 +30,8 @@ export function createInsightEngine() {
       );
 
       const cfoInsights = [
-        insightFromCorrelation(correlations.find((item) => item.id === 'cash-supplier-pressure') || correlations[0], [recommendationLookup['collections-discipline']?.recommendation, recommendationLookup['supplier-term-review']?.recommendation].filter(Boolean)),
-        insightFromCorrelation(correlations.find((item) => item.id === 'profit-expense-pressure') || correlations[1] || correlations[0], [recommendationLookup['supplier-term-review']?.recommendation].filter(Boolean)),
+        insightFromCorrelation(correlations.find((item) => item.id === 'cash-supplier-pressure') || correlations.find((item) => item.id === 'gmail-finance-approval-outstanding') || correlations[0], [recommendationLookup['collections-discipline']?.recommendation, recommendationLookup['supplier-term-review']?.recommendation, recommendationLookup['gmail-finance-triage']?.recommendation].filter(Boolean)),
+        insightFromCorrelation(correlations.find((item) => item.id === 'profit-expense-pressure') || correlations.find((item) => item.id === 'gmail-supplier-issue-delay') || correlations[1] || correlations[0], [recommendationLookup['supplier-term-review']?.recommendation, recommendationLookup['gmail-supplier-response-plan']?.recommendation].filter(Boolean)),
         normalizeExecutiveInsight({
           title: 'Finance health remains solid but selective',
           executiveSummary: `CFO health scores ${health.cfo.score}/100 because revenue resilience and cash runway remain supportive, even though collections speed and cost discipline still need active management.`,

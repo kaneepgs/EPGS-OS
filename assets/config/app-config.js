@@ -21,12 +21,12 @@ export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
   shellName: RELEASE_CONFIG.productName,
-  architectureVersion: 'v0.6',
+  architectureVersion: 'v0.7',
   providerStrategy: 'provider-service-intelligence-contract',
   releaseVersion: RELEASE_CONFIG.version,
   releaseLabel: RELEASE_CONFIG.releaseLabel,
   releaseCodename: RELEASE_CONFIG.codename,
-  notes: 'Sprint 11 packages GA4 and YouTube into a clearer Marketing Intelligence layer with hybrid live/demo source status, a proper marketing health score, executive reporting, provider-independent memory milestones, and formal release management while the wider product stays Demo Mode.'
+  notes: 'Sprint 13 adds a Gmail-backed Executive Inbox path through the existing provider/service/intelligence architecture, preserving demo-first behaviour while allowing selective GA4, YouTube, and Gmail snapshot overlays when local generated data is available.'
 });
 
 export function currentModeConfig() {

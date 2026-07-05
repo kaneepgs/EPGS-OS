@@ -174,6 +174,18 @@ Packaged the first usable executive marketing release on top of the existing pro
 - wrote new **marketing milestones into Executive Memory** without duplicating seeded events, including website demand milestones, YouTube subscriber milestones, campaign notes, and high-performing content context
 - kept the wider product **frontend-only** and **Demo Mode** by default, with selective live overlays only where GA4 and YouTube snapshots exist
 
+### Sprint 13 — Gmail Provider v1.0
+
+Added the first operational communications provider without breaking the wider architecture:
+
+- introduced a dedicated `GmailProvider` bound through the existing provider registry for the new `communications` and `approval` domain flow
+- added `scripts/sync-gmail-snapshot.mjs` plus `npm run gmail:sync` to fetch Gmail metadata and selected message content through OAuth, then write a generated local snapshot that never ships to the browser
+- added a new **Executive Inbox** route with deterministic sections for Priority, Needs Reply, Customer Enquiries, Booking Requests, Supplier Communications, Finance, Marketing, Internal, and Recently Completed
+- added CEO-facing inbox widgets for unread critical emails, waiting customer replies, supplier issues, finance emails, booking requests, and a daily executive inbox summary
+- extended deterministic intelligence, recommendations, reports, Board Meeting Mode, AI Assistant prompts, timeline events, search coverage, and provider-independent Executive Memory with Gmail-derived communications signals
+- kept all inbox actions **approval-first** by staging Reply, Archive, Label, Forward, Create Task, and Schedule Follow-up cards without executing anything automatically
+- preserved safe demo fallback when Gmail credentials are missing, rejected, or the generated snapshot is unavailable
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -181,7 +193,7 @@ This prototype intentionally remains:
 - **HTML + CSS + Vanilla JavaScript only**
 - **frontend-only in the browser**
 - **no browser-side secrets or direct GA4 calls from the UI**
-- **mostly demo-mode**, with Website Analytics and YouTube eligible for optional local snapshot hydration
+- **mostly demo-mode**, with Website Analytics, YouTube, and Executive Inbox eligible for optional local snapshot hydration
 - **without backend services, databases, authentication, or automation inside the product itself**
 
 ## Project Structure
@@ -201,11 +213,11 @@ This prototype intentionally remains:
 - `assets/config/shell-config.js` — route, navigation, and page-question metadata
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
 - `assets/data/mock-data.js` — raw structured demo datasets
-- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4 and YouTube snapshots
+- `assets/data/live-data-loader.js` — safe loader for the optional generated GA4, YouTube, and Gmail snapshots
 - `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, marketing-health/reporting state, and runtime workspace data
 - `assets/memory/` — provider-independent executive memory stores, seed data, knowledge graph generation, and memory service
-- `assets/providers/` — active mock provider, live-capable analytics and YouTube providers, future provider placeholders, and provider registry
-- `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, integration status, and intelligence assembly
+- `assets/providers/` — active mock provider, live-capable analytics, YouTube, and Gmail providers, future provider placeholders, and provider registry
+- `assets/services/` — business logic layer for executive, finance, marketing, communications, approvals, reports, timeline, integration status, and intelligence assembly
 - `assets/intelligence/` — deterministic executive reasoning engines for insights, correlations, recommendations, priority, health, narratives, and confidence
 - `assets/ui/components.js` — reusable UI render helpers
 - `assets/ui/charts.js` — Chart.js render/destroy helpers
@@ -214,9 +226,11 @@ This prototype intentionally remains:
 - `assets/site.webmanifest` — install metadata
 - `scripts/sync-ga4-snapshot.mjs` — local GA4 snapshot sync script for Sprint 8
 - `scripts/sync-youtube-snapshot.mjs` — local YouTube snapshot sync script for Sprint 10
+- `scripts/sync-gmail-snapshot.mjs` — local Gmail snapshot sync script for Sprint 13
 - `docs/` — architecture and constitutional documents
 - `docs/executive-memory.md` — Executive Memory and Knowledge Graph architecture guide
 - `docs/youtube-provider.md` — YouTube provider setup, lifecycle, fallback, and troubleshooting guide
+- `docs/gmail-provider.md` — Gmail provider setup, OAuth scope, lifecycle, fallback, and troubleshooting guide
 - `specifications/` — executive role specifications
 - `prompts/` — future OpenClaw executive build prompts
 - `skills/` — draft executive skills

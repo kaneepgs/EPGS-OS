@@ -35,6 +35,10 @@ export class MockProvider {
     return deepClone(this.source.cmo);
   }
 
+  getCommunicationsWorkspace() {
+    return deepClone(this.source.communications);
+  }
+
   getApprovalWorkspace() {
     return deepClone(this.source.approvals);
   }

@@ -237,8 +237,23 @@ This pattern now exists for:
 
 - `scripts/sync-ga4-snapshot.mjs` → `AnalyticsProvider`
 - `scripts/sync-youtube-snapshot.mjs` → `YouTubeProvider`
+- `scripts/sync-gmail-snapshot.mjs` → `GmailProvider`
 
-Sprint 11 proves that new executive value can be added by composing on top of those snapshots and providers, rather than by adding new APIs or bypassing the architecture.
+Sprint 11 proves that new executive value can be added by composing on top of those snapshots and providers, rather than by adding new APIs or bypassing the architecture. Sprint 13 extends the same pattern into communications so Executive Inbox can remain approval-first and browser-safe.
+
+## Gmail Provider Lifecycle
+
+`GmailProvider` is the first provider in EP Intelligence that overlays a new executive communications domain while also feeding the approval domain.
+
+Its lifecycle is:
+
+1. `scripts/sync-gmail-snapshot.mjs` exchanges the stored refresh token for a short-lived Gmail access token using the read-only Gmail scope
+2. the script fetches inbox metadata plus selected message content, classifies messages using deterministic business rules, and writes a generated local snapshot
+3. `assets/data/live-data-loader.js` loads that snapshot at runtime and falls back safely if it is missing, invalid, or stale
+4. `GmailProvider` shapes Executive Inbox, provider health, and Gmail integration status data from that snapshot
+5. `CommunicationsService` normalizes inbox sections, CEO widgets, search entries, summary metrics, and approval cards
+6. the intelligence layer, timeline, memory, and reporting surfaces consume those communications outputs without talking to Gmail directly
+7. all reply, archive, label, forward, task, and follow-up actions remain approval cards only; nothing executes automatically
 
 ## YouTube Provider Lifecycle
 

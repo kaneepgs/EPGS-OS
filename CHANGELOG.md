@@ -40,15 +40,22 @@ Included milestones:
 - Permanent Definition of Done standard
 - Permanent product vision document
 
+### Post-v1.1 platform extensions
+
+- Gmail Provider v1.0
+- Executive Inbox
+- Approval-first executive communications
+- Gmail-derived timeline, memory, and search coverage
+
 ## v1.2 — Business Operations
 
 Planned:
 
-- Gmail Provider
 - Google Calendar Provider
-- Executive Inbox
+- Unified Business Operations release packaging
 - Operational Intelligence
 - Approval Centre Improvements
+- Cross-provider operational workflows
 
 ## v1.3 — Financial Intelligence
 

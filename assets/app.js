@@ -78,6 +78,7 @@ function topLevelKey(route = state.route) {
 
 function currentSubnav() {
   const key = topLevelKey();
+  if (key === '/executive-inbox') return SUBNAV.executiveInbox;
   if (key === '/cfo') return SUBNAV.cfo;
   if (key === '/cmo') return SUBNAV.cmo;
   if (key === '/reports') return SUBNAV.reports;
@@ -202,7 +203,8 @@ function globalSearchEntries(query = '') {
     meta: meta.module
   }));
   const memoryEntries = WORKSPACE_DATA.memory.searchIndex || [];
-  const combined = [...routeEntries, ...memoryEntries];
+  const communicationsEntries = WORKSPACE_DATA.communications.searchIndex || [];
+  const combined = [...routeEntries, ...communicationsEntries, ...memoryEntries];
   if (!needle) return combined.slice(0, 12);
   return combined.filter((item) => [item.title, item.body, item.meta, item.type, item.route].join(' ').toLowerCase().includes(needle)).slice(0, 12);
 }
@@ -380,6 +382,20 @@ function boardSlides() {
         </div>
         <div class="grid-2">
           ${intelligence.insights.cmo.slice(0, 2).map((item) => insightCard({ eyebrow: item.priority, title: item.title, body: item.executiveSummary, tone: toneFromPriority(item.priority) })).join('')}
+        </div>
+      `
+    },
+    {
+      key: 'communications',
+      eyebrow: 'Executive Inbox',
+      title: 'The inbox is now an executive operating surface',
+      body: WORKSPACE_DATA.communications.summary.boardSummary,
+      html: `
+        <div class="grid-3">
+          ${WORKSPACE_DATA.communications.widgets.slice(0, 6).map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+        </div>
+        <div class="grid-2">
+          ${WORKSPACE_DATA.communications.sections.slice(0, 2).map((section) => insightCard({ eyebrow: section.title, title: section.items[0]?.subject || 'No urgent items', body: section.items[0]?.aiSummary || section.body, tone: section.items[0]?.priority === 'High' ? 'warn' : 'info' })).join('')}
         </div>
       `
     },
@@ -670,6 +686,7 @@ function ceoDashboardView() {
   const website = data.websiteIntelligence;
   const youtube = data.youtubeIntelligence;
   const marketing = data.marketingIntelligence;
+  const communications = data.executiveInbox;
   return {
     html: `
       <div class="page-grid">
@@ -738,6 +755,20 @@ function ceoDashboardView() {
           <div class="grid-2">
             ${insightCard({ eyebrow: 'Executive readout', title: youtube.isLive ? 'Live channel visibility is now active' : 'Demo fallback remains active', body: youtube.summary, tone: youtube.source.tone || 'info' })}
             ${insightCard({ eyebrow: 'Fallback behaviour', title: youtube.isLive ? 'Live YouTube is isolated to one provider path' : 'YouTube metrics are safely falling back', body: youtube.isLive ? 'If the generated YouTube snapshot disappears, the CMO and CEO views automatically revert to demo YouTube data without breaking the rest of the workspace.' : 'A missing YouTube snapshot does not break the dashboard. It simply returns YouTube to the structured demo baseline.', tone: youtube.isLive ? 'good' : 'warn' })}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Inbox', title: communications.summary.headline, body: communications.providerSummary.body })}
+          <div class="grid-3">
+            ${communications.widgets.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+          </div>
+          <div class="grid-2">
+            ${insightCard({ eyebrow: 'Inbox summary', title: communications.summary.headline, body: communications.summary.dailySummary, tone: communications.providerSummary.tone || 'info' })}
+            ${insightCard({ eyebrow: 'Provider health', title: communications.providerSummary.health || communications.providerSummary.label, body: `${communications.providerSummary.account || 'Inbox account'}${communications.providerSummary.syncedAt ? ` · synced ${communications.providerSummary.syncedAt}` : ''}`, tone: communications.providerSummary.tone || 'info' })}
+          </div>
+          <div class="tile-grid">
+            ${communications.sections.slice(0, 4).map((section) => insightCard({ eyebrow: section.title, title: section.items[0]?.subject || 'No active items', body: section.items[0]?.aiSummary || section.body, tone: section.items[0]?.priority === 'High' ? 'warn' : 'neutral' })).join('')}
           </div>
         </section>
 
@@ -969,6 +1000,68 @@ function ceoDashboardView() {
       entryChartSpec(data.charts.departmentScores, 'chart-ceo-department-scores', 'Department scores'),
       entryChartSpec(data.charts.approvalLoad, 'chart-ceo-approval-load', 'Approval load by department')
     ]
+  };
+}
+
+
+function executiveInboxView() {
+  const data = WORKSPACE_DATA.communications;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="hero-grid">
+          <div class="hero-block">
+            <section class="summary-banner">
+              <div class="eyebrow">Executive Inbox</div>
+              <div class="hero-title">${escapeHtml(data.summary.headline)}</div>
+              <p class="hero-summary">${escapeHtml(data.summary.body)}</p>
+            </section>
+            <section class="snapshot-grid">
+              ${data.widgets.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+            </section>
+          </div>
+          <div class="hero-side">
+            <section class="score-panel">
+              <div class="score-tile">
+                <div class="label">Inbox provider state</div>
+                <strong class="score-value">${escapeHtml(data.providerSummary.label)}</strong>
+                <div class="score-note">${escapeHtml(data.providerSummary.health || data.providerSummary.state)}</div>
+              </div>
+              <div class="snapshot-panel">
+                <div class="label">Current account</div>
+                <h3>${escapeHtml(data.providerSummary.account || 'Demo inbox')}</h3>
+                <p>${escapeHtml(data.providerSummary.body)}</p>
+              </div>
+            </section>
+          </div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Approval-first communications', title: 'Nothing executes automatically', body: 'Executive Inbox stages reply, archive, label, forward, task, and follow-up actions as approval cards only.' })}
+          ${renderRoutePillbar(SUBNAV.executiveInbox)}
+          <div class="page-pillbar">
+            <button type="button" class="chip-button" data-route="/approvals">${icon('check-circle')}Open Approval Centre</button>
+            <button type="button" class="chip-button" data-route="/settings/integrations">${icon('settings')}Open Integration Status</button>
+          </div>
+        </section>
+        ${pageQuestions('/executive-inbox')}
+        <div class="settings-grid">
+          ${data.sections.map((section) => `
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Inbox section', title: section.title, body: section.body })}
+              <div class="section-stack">
+                ${section.items.length ? section.items.map((item) => registerRow({
+                  kicker: `${pill(item.category, 'info')}${pill(item.priority, toneFromPriority(item.priority))}${pill(item.status, item.status.toLowerCase().includes('completed') ? 'good' : item.priority === 'High' ? 'warn' : 'neutral')}`,
+                  title: `${item.subject}`,
+                  body: `${item.sender} · ${item.aiSummary}`,
+                  meta: `${item.receivedTime}${item.customer ? ` · ${item.customer}` : ''}${item.supplier ? ` · ${item.supplier}` : ''}`
+                })).join('') : insightCard({ eyebrow: section.title, title: 'No items currently visible', body: 'This section is clear in the current inbox state.', tone: 'good' })}
+              </div>
+            </section>
+          `).join('')}
+        </div>
+      </div>
+    `,
+    charts: []
   };
 }
 
@@ -2190,6 +2283,7 @@ function placeholderModuleView(route) {
 
 function approvalsView() {
   const groups = Object.entries(WORKSPACE_DATA.approvals.groups);
+  const communications = WORKSPACE_DATA.communications;
   return {
     html: `
       <div class="page-grid">
@@ -2198,6 +2292,9 @@ function approvalsView() {
           <div class="snapshot-panel">
             <h3>No approvals execute automatically</h3>
             <p>Everything in this prototype remains staged for review only. This section exists to demonstrate approval-first governance beyond the CFO module.</p>
+          </div>
+          <div class="grid-3">
+            ${communications.widgets.slice(0, 3).map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
           </div>
         </section>
         ${pageQuestions('/approvals')}
@@ -2222,6 +2319,7 @@ function approvalsView() {
 function reportsOverviewView() {
   const memory = WORKSPACE_DATA.reports.memory;
   const memoryRoutes = [
+    { title: 'Executive Inbox', body: 'Communications intelligence, approval-first inbox triage, and executive email summaries.', route: '/executive-inbox' },
     { title: 'Executive Timeline', body: 'Permanent business chronology of launches, milestones, and structural changes.', route: '/reports/executive-timeline' },
     { title: 'Decision Journal', body: 'Structured executive decision memory with reasons, outcomes, and linked KPIs.', route: '/reports/decision-journal' },
     { title: 'Strategic Goals', body: 'Persistent goals linked to metrics, decisions, and owners.', route: '/reports/strategic-goals' },
@@ -2298,6 +2396,7 @@ function weeklyBriefingsView() {
             ${insightCard({ eyebrow: 'Wins', title: 'What went well', body: data.wins.join(' '), tone: 'good' })}
             ${insightCard({ eyebrow: 'Risks', title: 'What needs watching', body: data.risks.join(' '), tone: 'risk' })}
             ${insightCard({ eyebrow: 'Recommendations', title: 'What to do', body: data.recommendations.join(' '), tone: 'warn' })}
+            ${insightCard({ eyebrow: 'Executive Inbox', title: 'Communications summary', body: WORKSPACE_DATA.communications.summary.dailySummary, tone: WORKSPACE_DATA.communications.providerSummary.tone || 'info' })}
             ${insightCard({ eyebrow: 'Questions Worth Asking', title: 'The right board questions', body: data.questions.join(' '), tone: 'neutral' })}
           </div>
         </section>
@@ -2337,7 +2436,7 @@ function executiveTimelineView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Executive Timeline', title: 'Permanent business timeline', body: 'This timeline now persists independently of any provider and holds milestones, launches, purchases, decisions, and structural changes.' })}
+          ${sectionHeader({ eyebrow: 'Executive Timeline', title: 'Permanent business timeline', body: 'This timeline now persists independently of any provider and holds milestones, launches, purchases, decisions, structural changes, and executive inbox events.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
         </section>
         ${pageQuestions('/reports/executive-timeline')}
@@ -2695,6 +2794,10 @@ function aiAssistantAskView() {
           <div class="chip-list">${data.suggestedFollowUps.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
         </section>
         <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Inbox', title: 'What communications need from the CEO', body: WORKSPACE_DATA.communications.summary.dailySummary })}
+          <div class="section-stack">${WORKSPACE_DATA.communications.sections.slice(0, 2).flatMap((section) => section.items.slice(0, 2)).map((item) => registerRow({ kicker: `${pill(item.category, 'info')}${pill(item.priority, toneFromPriority(item.priority))}`, title: item.subject, body: item.aiSummary })).join('')}</div>
+        </section>
+        <section class="panel">
           ${sectionHeader({ eyebrow: 'Business memory', title: 'What the business memory says', body: 'These are the durable context prompts now available to the executive reasoning layer.' })}
           <div class="section-stack">${WORKSPACE_DATA.aiAssistant.memory.context.deterministic.map((item) => registerRow({ kicker: pill(item.department || 'Executive Memory', 'info'), title: item.title, body: item.summary })).join('')}</div>
         </section>
@@ -2807,8 +2910,8 @@ function settingsView() {
           <section class="panel">
             ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring view', body: 'See the placeholder status for every future integration target.' })}
             <div class="snapshot-panel">
-              <h3>All integrations remain in Demo Mode</h3>
-              <p>The architecture is now ready for provider-by-provider activation later without rewriting the executive UI.</p>
+              <h3>${escapeHtml(APP_RUNTIME.config.liveData.gmail.available ? 'Gmail is now live-capable' : 'Gmail is ready for activation')}</h3>
+              <p>The architecture is now ready for provider-by-provider activation without rewriting the executive UI, and Gmail now follows the same generated-snapshot pattern as GA4 and YouTube.</p>
               <button type="button" class="quick-action-button" data-route="/settings/integrations">Open Integration Status ${icon('arrowRight')}</button>
             </div>
           </section>
@@ -2855,6 +2958,7 @@ function settingsView() {
 function settingsIntegrationStatusView() {
   const ga4 = APP_RUNTIME.config.liveData.ga4;
   const youtube = APP_RUNTIME.config.liveData.youtube;
+  const gmail = APP_RUNTIME.config.liveData.gmail;
   const groups = Object.entries(
     WORKSPACE_DATA.settings.integrationStatus.reduce((acc, entry) => {
       acc[entry.group] = acc[entry.group] || [];
@@ -2866,13 +2970,14 @@ function settingsIntegrationStatusView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics and YouTube can now hydrate from generated local snapshots when configured.' })}
+          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics, YouTube, and Executive Inbox can now hydrate from generated local snapshots when configured.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'check-circle', label: 'GA4 state', value: ga4.status, body: ga4.detail })}
             ${statCard({ iconName: 'sparkles', label: 'YouTube state', value: youtube.status, body: youtube.detail })}
+            ${statCard({ iconName: 'book-open', label: 'Gmail state', value: gmail.status, body: gmail.detail })}
             ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Every future integration still has a status surface.' })}
-            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider and YouTubeProvider now support selective live overlays for marketing with safe fallback to demo data.' })}
+            ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider, YouTubeProvider, and GmailProvider now support selective live overlays with safe fallback to demo data.' })}
           </div>
         </section>
 
@@ -2881,7 +2986,7 @@ function settingsIntegrationStatusView() {
             .map(
               ([group, entries]) => `
                 <section class="panel">
-                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics and YouTube may now be live on their specific provider paths; every other entry remains in Demo Mode.' })}
+                  ${sectionHeader({ eyebrow: 'Integration group', title: group, body: 'Google Analytics, YouTube, and Gmail may now be live on their specific provider paths; every other entry remains in Demo Mode.' })}
                   <div class="section-stack">
                     ${entries
                       .map((entry) =>
@@ -2912,26 +3017,27 @@ function settingsConfigurationView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics and YouTube are hydrated from locally generated snapshots, while Executive Memory persists separately.' })}
+          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics, YouTube, and Gmail are hydrated from locally generated snapshots, while Executive Memory persists separately.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'settings', label: 'Active mode', value: config.activeMode.label, body: config.activeMode.description })}
-            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider and YouTubeProvider now selectively override the marketing domain.' })}
+            ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider, YouTubeProvider, and GmailProvider now selectively override their domains.' })}
             ${statCard({ iconName: 'shield', label: 'GA4 state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.notes || APP_RUNTIME.config.liveData.ga4.detail })}
             ${statCard({ iconName: 'sparkles', label: 'YouTube state', value: APP_RUNTIME.config.liveData.youtube.status, body: APP_RUNTIME.config.liveData.youtube.notes || APP_RUNTIME.config.liveData.youtube.detail })}
+            ${statCard({ iconName: 'book-open', label: 'Gmail state', value: APP_RUNTIME.config.liveData.gmail.status, body: APP_RUNTIME.config.liveData.gmail.notes || APP_RUNTIME.config.liveData.gmail.detail })}
           </div>
         </section>
 
         <div class="grid-2">
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but selective GA4 and YouTube overlays can still enrich the marketing workspace while Future Live Mode remains reserved.' })}
+            ${sectionHeader({ eyebrow: 'Available modes', title: 'Current and future runtime states', body: 'Only Demo Mode is active today, but selective GA4, YouTube, and Gmail overlays can still enrich the executive workspace while Future Live Mode remains reserved.' })}
             <div class="section-stack">
               ${config.availableModes
                 .map((mode) =>
                   insightCard({
                     eyebrow: mode.available ? 'Available now' : 'Reserved for later',
                     title: mode.label,
-                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available || APP_RUNTIME.config.liveData.youtube.available ? `Current overlays: ${[APP_RUNTIME.config.liveData.ga4.available ? 'GA4 Website Analytics' : null, APP_RUNTIME.config.liveData.youtube.available ? 'YouTube channel data' : null].filter(Boolean).join(' + ')}.` : 'No live snapshot is currently active.'}` : mode.description,
+                    body: mode.key === 'demo' ? `${mode.description} ${APP_RUNTIME.config.liveData.ga4.available || APP_RUNTIME.config.liveData.youtube.available || APP_RUNTIME.config.liveData.gmail.available ? `Current overlays: ${[APP_RUNTIME.config.liveData.ga4.available ? 'GA4 Website Analytics' : null, APP_RUNTIME.config.liveData.youtube.available ? 'YouTube channel data' : null, APP_RUNTIME.config.liveData.gmail.available ? 'Gmail Executive Inbox' : null].filter(Boolean).join(' + ')}.` : 'No live snapshot is currently active.'}` : mode.description,
                     tone: mode.available ? 'good' : 'warn'
                   })
                 )
@@ -2939,7 +3045,7 @@ function settingsConfigurationView() {
             </div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while Sprint 10 lets marketing bind to YouTubeProvider on top of AnalyticsProvider without forcing any dashboard rewrites.' })}
+            ${sectionHeader({ eyebrow: 'Domain bindings', title: 'Which provider each service domain uses', body: 'MockProvider remains the default baseline, while Sprint 13 now lets communications bind to GmailProvider and marketing bind to YouTubeProvider on top of AnalyticsProvider without forcing dashboard rewrites.' })}
             <div class="section-stack">
               ${config.domainBindings
                 .map((binding) =>
@@ -3068,6 +3174,7 @@ function settingsAboutView() {
 
 const routeRenderers = {
   '/ceo': ceoDashboardView,
+  '/executive-inbox': executiveInboxView,
   '/cfo': cfoHomeView,
   '/cfo/revenue': cfoRevenueView,
   '/cfo/profit': cfoProfitView,

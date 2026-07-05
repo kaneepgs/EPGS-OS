@@ -20,11 +20,11 @@ export const INTEGRATION_REGISTRY = Object.freeze([
   {
     id: 'gmail',
     label: 'Gmail',
-    provider: 'CRMProvider',
-    service: 'ReportService',
+    provider: 'GmailProvider',
+    service: 'CommunicationsService',
     group: 'Communications',
-    status: 'Demo Mode',
-    notes: 'Reserved for inbox triage, approval follow-ups, and executive message packaging.'
+    status: 'Live-capable',
+    notes: 'Executive Inbox, approval-first communications triage, and deterministic Gmail intelligence can now hydrate from a generated local Gmail snapshot while safely falling back to demo data.'
   },
   {
     id: 'google-calendar',

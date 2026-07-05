@@ -1,12 +1,13 @@
 import { APP_CONFIG, currentModeConfig } from '../config/app-config.js';
 import { buildReleaseWorkspace } from '../config/release-config.js';
 import { RAW_MOCK_DATA } from './mock-data.js';
-import { loadGeneratedGa4Snapshot, loadGeneratedYouTubeSnapshot } from './live-data-loader.js';
+import { loadGeneratedGa4Snapshot, loadGeneratedYouTubeSnapshot, loadGeneratedGmailSnapshot } from './live-data-loader.js';
 import { createProviderRegistry } from '../providers/provider-registry.js';
 import { createTimelineService } from '../services/timeline-service.js';
 import { createApprovalService } from '../services/approval-service.js';
 import { createFinanceService } from '../services/finance-service.js';
 import { createMarketingService } from '../services/marketing-service.js';
+import { createCommunicationsService } from '../services/communications-service.js';
 import { createReportService } from '../services/report-service.js';
 import { createExecutiveService } from '../services/executive-service.js';
 import { createIntegrationService } from '../services/integration-service.js';
@@ -15,12 +16,14 @@ import { createMemoryService } from '../memory/memory-service.js';
 
 const GA4_SNAPSHOT = await loadGeneratedGa4Snapshot();
 const YOUTUBE_SNAPSHOT = await loadGeneratedYouTubeSnapshot();
-const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT, youtubeSnapshot: YOUTUBE_SNAPSHOT });
+const GMAIL_SNAPSHOT = await loadGeneratedGmailSnapshot();
+const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT, youtubeSnapshot: YOUTUBE_SNAPSHOT, gmailSnapshot: GMAIL_SNAPSHOT });
 const LIVE_DATA_SUMMARY = providerRegistry.getLiveDataSummary();
 const timelineService = createTimelineService(providerRegistry);
 const approvalService = createApprovalService(providerRegistry);
 const financeService = createFinanceService(providerRegistry);
 const marketingService = createMarketingService(providerRegistry);
+const communicationsService = createCommunicationsService(providerRegistry);
 const reportService = createReportService(providerRegistry);
 const executiveService = createExecutiveService(providerRegistry, { timelineService });
 const memoryService = createMemoryService();
@@ -28,6 +31,7 @@ const intelligenceService = createIntelligenceService({
   executive: executiveService,
   finance: financeService,
   marketing: marketingService,
+  communications: communicationsService,
   approval: approvalService,
   report: reportService,
   timeline: timelineService,
@@ -37,6 +41,7 @@ const integrationService = createIntegrationService(providerRegistry, {
   executiveService,
   financeService,
   marketingService,
+  communicationsService,
   approvalService,
   reportService,
   timelineService,
@@ -50,6 +55,7 @@ export const SERVICES = Object.freeze({
   executive: executiveService,
   finance: financeService,
   marketing: marketingService,
+  communications: communicationsService,
   approval: approvalService,
   report: reportService,
   timeline: timelineService,
@@ -62,6 +68,7 @@ const CEO_DATA = executiveService.getCeoDashboard();
 const CFO_DATA = financeService.getWorkspace();
 const CMO_DATA = marketingService.getWorkspace();
 const REPORT_DATA = reportService.getWorkspace();
+const COMMUNICATIONS_DATA = communicationsService.getWorkspace();
 const AI_DATA = executiveService.getAiWorkspace();
 
 function flattenApprovalGroups(groups = {}) {
@@ -415,6 +422,7 @@ const MEMORY_DATA = memoryService.getWorkspace({
   executive: CEO_DATA,
   finance: CFO_DATA,
   marketing: CMO_DATA,
+  communications: COMMUNICATIONS_DATA,
   approvals: flattenApprovalGroups(approvalService.getWorkspace().groups),
   recommendations: INTELLIGENCE.recommendations,
   risks: CEO_DATA.executiveRisks,
@@ -446,6 +454,7 @@ export const WORKSPACE_DATA = Object.freeze({
       sourceStatus: MARKETING_SOURCE_STATUS
     },
     memory: MEMORY_DATA.dashboard,
+    executiveInbox: COMMUNICATIONS_DATA,
     businessHealthScore: {
       ...CEO_DATA.businessHealthScore,
       overall: INTELLIGENCE.health.overall.score,
@@ -470,6 +479,7 @@ export const WORKSPACE_DATA = Object.freeze({
     weeklyBriefing: INTELLIGENCE.cfo.weeklyBriefing,
     intelligence: INTELLIGENCE.cfo
   },
+  communications: COMMUNICATIONS_DATA,
   cmo: {
     ...CMO_DATA,
     dashboard: {
@@ -509,12 +519,14 @@ export const WORKSPACE_DATA = Object.freeze({
     ...REPORT_DATA,
     intelligence: INTELLIGENCE.reports,
     memory: MEMORY_DATA.reports,
+    communications: COMMUNICATIONS_DATA,
     marketingIntelligence: MARKETING_INTELLIGENCE_REPORT
   },
   aiAssistant: {
     ...AI_DATA,
     askWorkspace: INTELLIGENCE.aiAssistant,
     intelligence: INTELLIGENCE.aiAssistant,
+    communications: COMMUNICATIONS_DATA,
     memory: MEMORY_DATA
   },
   memory: MEMORY_DATA,
@@ -545,7 +557,8 @@ export const APP_RUNTIME = Object.freeze({
     insightCount: INTELLIGENCE.insights.executive.length,
     recommendationCount: INTELLIGENCE.recommendations.length,
     marketingHealthScore: MARKETING_HEALTH.score,
-    marketingSourceStatus: MARKETING_HEALTH.sourceStatus
+    marketingSourceStatus: MARKETING_HEALTH.sourceStatus,
+    inboxVisibleItems: COMMUNICATIONS_DATA.counts.visible
   },
   memory: {
     initialized: MEMORY_DATA.initialized,
@@ -554,5 +567,11 @@ export const APP_RUNTIME = Object.freeze({
     goalCount: MEMORY_DATA.goals.length,
     graphNodes: MEMORY_DATA.graph.summary.nodeCount,
     graphEdges: MEMORY_DATA.graph.summary.edgeCount
+  },
+  communications: {
+    visibleItems: COMMUNICATIONS_DATA.counts.visible,
+    completedItems: COMMUNICATIONS_DATA.counts.completed,
+    account: COMMUNICATIONS_DATA.providerSummary.account,
+    health: COMMUNICATIONS_DATA.providerSummary.health
   }
 });

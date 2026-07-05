@@ -126,6 +126,49 @@ function marketingMilestones(runtime = {}) {
   return events;
 }
 
+
+function communicationsMilestones(runtime = {}) {
+  const communications = runtime.communications || {};
+  const providerState = communications.providerSummary?.state;
+  const items = communications.inboxItems || [];
+  const memoryCandidates = communications.memoryCandidates || [];
+  const events = [];
+
+  if (providerState === 'live-gmail') {
+    events.push(normalizeMemoryEvent({
+      id: 'mem-communications-live-gmail',
+      date: String(communications.providerSummary?.syncedAt || new Date().toISOString()).slice(0, 10),
+      time: 'Live sync',
+      title: 'Executive Inbox is now live through Gmail',
+      body: communications.providerSummary?.body || 'Live Gmail snapshot active.',
+      category: 'Communications milestone',
+      department: 'Executive Inbox',
+      impact: 'High',
+      relatedEntities: ['goal-booking-conversion'],
+      status: 'Active',
+      route: '/executive-inbox'
+    }));
+  }
+
+  if ((communications.metrics?.waitingCustomerReplies || 0) >= 3) {
+    events.push(normalizeMemoryEvent({
+      id: 'mem-communications-customer-reply-backlog',
+      date: String(items[0]?.receivedAt || new Date().toISOString()).slice(0, 10),
+      time: items[0]?.receivedTime || 'Current inbox',
+      title: 'Customer reply backlog is now strategically visible',
+      body: `${communications.metrics.waitingCustomerReplies} customer conversations currently need replies, making inbox responsiveness an executive issue rather than background admin.`,
+      category: 'Customer conversation',
+      department: 'Executive Inbox / Customer',
+      impact: 'High',
+      relatedEntities: ['goal-booking-conversion'],
+      status: 'Active',
+      route: '/executive-inbox'
+    }));
+  }
+
+  return [...events, ...memoryCandidates.map((item) => normalizeMemoryEvent(item))];
+}
+
 export function createMemoryService() {
   const memoryStore = new MemoryStore();
   const eventStore = new EventStore(memoryStore);
@@ -141,7 +184,7 @@ export function createMemoryService() {
       return memoryStore.getRetention();
     },
     getTimeline(runtime = {}) {
-      return sortTimeline(dedupeById([...eventStore.all(), ...marketingMilestones(runtime)]));
+      return sortTimeline(dedupeById([...eventStore.all(), ...marketingMilestones(runtime), ...communicationsMilestones(runtime)]));
     },
     getDecisions() {
       return decisionStore.all();
@@ -178,7 +221,8 @@ export function createMemoryService() {
         ...this.getDecisions().map((item) => ({ id: `search-${item.id}`, type: 'Decision', title: item.title, body: item.summary, route: item.route || '/reports/decision-journal', meta: `${item.date} · ${item.status}` })),
         ...this.getGoals().map((item) => ({ id: `search-${item.id}`, type: 'Goal', title: item.title, body: item.summary, route: item.route || '/reports/strategic-goals', meta: `${item.progress}% · ${item.status}` })),
         ...context.deterministic.map((item) => ({ id: `search-${item.id}`, type: 'Historical Context', title: item.title, body: item.summary, route: item.route || '/ai-assistant/memory-context', meta: item.department || 'Executive Memory' })),
-        ...(runtime.recommendations || []).map((item) => ({ id: `search-${item.id}`, type: 'Recommendation', title: item.recommendation, body: item.why, route: '/ceo', meta: `${item.priority} · ${item.suggestedOwner}` }))
+        ...(runtime.recommendations || []).map((item) => ({ id: `search-${item.id}`, type: 'Recommendation', title: item.recommendation, body: item.why, route: '/ceo', meta: `${item.priority} · ${item.suggestedOwner}` })),
+        ...((runtime.communications?.searchIndex || []).map((item) => ({ ...item, id: item.id || `search-communications-${Math.random().toString(36).slice(2, 8)}` })))
       ];
       return entries;
     },
@@ -220,7 +264,8 @@ export function createMemoryService() {
           { label: 'Memory events', value: String(timeline.length), body: 'Permanent executive timeline coverage.' },
           { label: 'Decisions tracked', value: String(decisionSummary.total), body: `${decisionSummary.active} still active in memory.` },
           { label: 'Goals tracked', value: String(goalSummary.total), body: `${goalSummary.averageProgress}% average progress.` },
-          { label: 'Recurring issues', value: String(context.recurringIssues.length), body: 'Cross-period themes now persist beyond the current dashboard state.' }
+          { label: 'Recurring issues', value: String(context.recurringIssues.length), body: 'Cross-period themes now persist beyond the current dashboard state.' },
+          { label: 'Inbox priorities', value: String(runtime.communications?.metrics?.needsReply || 0), body: 'Executive Inbox items currently requiring direct attention.' }
         ],
         retention: this.getRetention(),
         graphNote: `Knowledge graph currently maps ${this.getKnowledgeGraph(runtime).summary.nodeCount} nodes and ${this.getKnowledgeGraph(runtime).summary.edgeCount} relationships.`

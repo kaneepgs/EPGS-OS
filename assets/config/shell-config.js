@@ -1,5 +1,6 @@
 export const TOP_LEVEL_NAV = [
   ['/ceo', 'CEO Dashboard', 'home'],
+  ['/executive-inbox', 'Executive Inbox', 'mail'],
   ['/cfo', 'CFO', 'coins'],
   ['/cmo', 'CMO', 'sparkles'],
   ['/coo', 'COO', 'building'],
@@ -15,6 +16,9 @@ export const TOP_LEVEL_NAV = [
 ];
 
 export const SUBNAV = {
+  executiveInbox: [
+    ['/executive-inbox', 'Overview']
+  ],
   cfo: [
     ['/cfo', 'Workspace'],
     ['/cfo/revenue', 'Revenue'],
@@ -87,6 +91,7 @@ export const MODE_OPTIONS = [
 
 export const ROUTE_META = {
   '/ceo': { title: 'CEO Dashboard', subtitle: 'The executive home view for the whole business.', module: 'CEO Dashboard', sidebarKey: '/ceo', parentLabel: 'CEO Dashboard' },
+  '/executive-inbox': { title: 'Executive Inbox', subtitle: 'Deterministic executive communications intelligence built from Gmail-style inbox triage.', module: 'Executive Inbox', sidebarKey: '/executive-inbox', parentLabel: 'Executive Inbox' },
 
   '/cfo': { title: 'CFO Workspace', subtitle: 'A complete finance module inside the wider EP Intelligence shell.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
   '/cfo/revenue': { title: 'Revenue', subtitle: 'Demand quality, collections, mix, and forecast confidence.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
@@ -162,6 +167,12 @@ export const QUESTION_SETS = {
     why: ['Cross-functional signals are moving together', 'Finance, marketing, customer trust, approvals, and execution are all influencing each other rather than acting as isolated dashboards.'],
     matters: ['Yes — because clarity beats volume', 'The CEO should see the business through an AI Chief of Staff lens, not through a wall of disconnected metrics.'],
     next: ['Prioritise the most valuable decisions first', 'Use the dashboard to decide what to approve, what to challenge, and what deserves deeper review in another module.']
+  },
+  '/executive-inbox': {
+    what: ['The inbox now shows only the conversations that deserve executive attention', 'Executive Inbox turns Gmail-style message volume into a ranked operating view for customer replies, supplier issues, finance threads, and booking demand.'],
+    why: ['Deterministic triage rules are surfacing the right conversations', 'Category, priority, age, and reply-state rules now separate strategic inbox work from background email noise.'],
+    matters: ['Yes, because communications shape commercial outcomes', 'Slow replies can reduce trust, delay bookings, and hide supplier or finance issues that should be visible earlier.'],
+    next: ['Clear the highest-value conversations first', 'Use the inbox to stage replies, approvals, follow-ups, and tasks without executing anything automatically.']
   },
   '/cfo': {
     what: ['Revenue is healthy, profit is slightly tighter', 'The business is growing, but the quality of that growth matters more than volume alone.'],

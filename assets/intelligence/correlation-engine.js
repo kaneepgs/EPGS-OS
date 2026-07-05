@@ -10,7 +10,7 @@ function metricLookup(metrics = []) {
 
 export function createCorrelationEngine({ confidenceEngine }) {
   return Object.freeze({
-    evaluate({ executive, finance, marketing, approvals }, { health }) {
+    evaluate({ executive, finance, marketing, communications, approvals }, { health }) {
       const revenueTrend = parsePercent(finance.metrics?.find((item) => item.key === 'revenue')?.trend);
       const profitTrend = parsePercent(finance.metrics?.find((item) => item.key === 'profit')?.trend);
       const currentCash = parseCurrency(finance.metrics?.find((item) => item.key === 'cash')?.value);
@@ -22,6 +22,15 @@ export function createCorrelationEngine({ confidenceEngine }) {
       const expenseDrift = parsePercent(finance.kpis?.groups?.[4]?.[1]?.[1]?.[1]);
       const supplierYoy = parsePercent(finance.suppliers?.[0]?.yoy);
       const approvalCount = Object.values(approvals.groups || {}).reduce((sum, entries) => sum + entries.length, 0);
+      const communicationsMetrics = communications?.metrics || {};
+      const inboxSummary = communications?.summary || {};
+      const inboxItems = communications?.inboxItems || [];
+      const unreadCriticalEmails = Number(communicationsMetrics.unreadCritical || 0);
+      const waitingCustomerReplies = Number(communicationsMetrics.waitingCustomerReplies || 0);
+      const supplierIssues = Number(communicationsMetrics.supplierIssues || 0);
+      const financeEmails = Number(communicationsMetrics.financeEmails || 0);
+      const bookingRequests = Number(communicationsMetrics.bookingRequests || 0);
+      const needsReply = Number(communicationsMetrics.needsReply || 0);
       const projectScore = executive.departmentHealth?.find((item) => item.department === 'Projects')?.score || 77;
       const websiteMetrics = metricLookup(marketing.websiteAnalytics?.metrics || []);
       const websiteDataSource = marketing.websiteAnalytics?.dataSource || {};
@@ -199,6 +208,88 @@ export function createCorrelationEngine({ confidenceEngine }) {
           financialImpact: 'Repurposing the strongest proof-led content should improve conversion quality faster than creating more low-signal content across weaker channels.',
           responsibleDepartment: 'CMO',
           prioritySignal: { financialImpact: 81, customerImpact: 79, strategicImportance: 84, timeSensitivity: 75, confidence: confidence.score },
+          confidence,
+          tone: 'good'
+        });
+      }
+
+
+      if (waitingCustomerReplies > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.89, crossFunctional: 1, consistency: 0.85 });
+        correlations.push({
+          id: 'gmail-customer-reply-backlog',
+          title: 'Customer reply backlog is now affecting executive responsiveness',
+          executiveSummary: `${waitingCustomerReplies} customer conversation${waitingCustomerReplies === 1 ? '' : 's'} currently need replies. The CEO now has enough inbox evidence to treat response speed as a commercial issue rather than a background admin task.`,
+          supportingEvidence: [
+            inboxSummary.dailySummary || 'Executive Inbox summary available.',
+            `${waitingCustomerReplies} customer replies are waiting.`,
+            `${bookingRequests} booking request${bookingRequests === 1 ? '' : 's'} are currently visible.`,
+            `${unreadCriticalEmails} unread critical email${unreadCriticalEmails === 1 ? '' : 's'} remain in the queue.`
+          ],
+          businessImpact: 'Customer conversations → Booking conversion → Executive trust',
+          financialImpact: 'Faster inbox response should improve conversion capture from already-visible demand without needing more marketing spend.',
+          responsibleDepartment: 'CEO / Customer Success / Sales',
+          prioritySignal: { financialImpact: 82, customerImpact: 90, strategicImportance: 81, timeSensitivity: 88, confidence: confidence.score },
+          confidence,
+          tone: 'warn'
+        });
+      }
+
+      if (supplierIssues > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 3, metricCoverage: 0.84, crossFunctional: 0.9, consistency: 0.82 });
+        correlations.push({
+          id: 'gmail-supplier-issue-delay',
+          title: 'Supplier conversations now deserve executive follow-through',
+          executiveSummary: `${supplierIssues} supplier issue${supplierIssues === 1 ? '' : 's'} are sitting in the Executive Inbox, suggesting that margin, timing, or service continuity may now be shaped by email follow-through rather than only by dashboard metrics.`,
+          supportingEvidence: [
+            `${supplierIssues} supplier issue${supplierIssues === 1 ? '' : 's'} visible in the inbox.`,
+            `Largest supplier spend is ${finance.suppliers?.[0]?.spendMonth || 'visible in finance workspace'}.`,
+            `Profit trend remains ${finance.metrics?.find((item) => item.key === 'profit')?.trend || 'under review'}.`
+          ],
+          businessImpact: 'Supplier communication → Margin quality → Operating continuity',
+          financialImpact: 'Slow supplier follow-through can leak into renewal timing, invoice approvals, or margin pressure faster than the dashboard alone reveals.',
+          responsibleDepartment: 'CFO / COO',
+          prioritySignal: { financialImpact: 86, customerImpact: 52, strategicImportance: 80, timeSensitivity: 79, confidence: confidence.score },
+          confidence,
+          tone: 'warn'
+        });
+      }
+
+      if (financeEmails > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 3, metricCoverage: 0.83, crossFunctional: 0.75, consistency: 0.84 });
+        correlations.push({
+          id: 'gmail-finance-approval-outstanding',
+          title: 'Finance-sensitive email is now shaping approval timing',
+          executiveSummary: `${financeEmails} finance-related email${financeEmails === 1 ? '' : 's'} are visible in the Executive Inbox. Approval quality now depends partly on how quickly finance threads are triaged, not just on the static approval queue.`,
+          supportingEvidence: [
+            `${financeEmails} finance threads in the inbox.`,
+            `${approvalCount} total approval items across the workspace.`,
+            `Cash forecast is ${finance.forecasts?.cash || 'under review'}.`
+          ],
+          businessImpact: 'Finance communication → Approval timing → Cash confidence',
+          financialImpact: 'Inbox-led finance delays can reduce visibility and slow decision speed around cash, invoices, or reconciliations.',
+          responsibleDepartment: 'CFO',
+          prioritySignal: { financialImpact: 84, customerImpact: 42, strategicImportance: 79, timeSensitivity: 82, confidence: confidence.score },
+          confidence,
+          tone: 'warn'
+        });
+      }
+
+      if (bookingRequests > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.87, crossFunctional: 1, consistency: 0.86 });
+        correlations.push({
+          id: 'gmail-booking-request-flow',
+          title: 'The inbox is holding direct booking demand',
+          executiveSummary: `${bookingRequests} booking request${bookingRequests === 1 ? '' : 's'} are currently visible in Gmail, which means part of the next revenue gain may come from faster inbox conversion rather than from acquiring more top-of-funnel attention.`,
+          supportingEvidence: [
+            `${bookingRequests} booking requests are currently visible.`,
+            `${needsReply} total conversations need a reply or follow-up.`,
+            `Website bookings currently show ${websiteMetrics['Fitting Bookings'] || marketing.dashboard?.metrics?.enquiries || '—'} visible conversion actions.`
+          ],
+          businessImpact: 'Inbox demand → Booking conversion → Revenue quality',
+          financialImpact: 'Responding faster to existing booking demand should improve near-term revenue capture without adding new acquisition cost.',
+          responsibleDepartment: 'CEO / Sales',
+          prioritySignal: { financialImpact: 80, customerImpact: 88, strategicImportance: 83, timeSensitivity: 90, confidence: confidence.score },
           confidence,
           tone: 'good'
         });

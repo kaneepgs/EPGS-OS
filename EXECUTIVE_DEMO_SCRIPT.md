@@ -77,13 +77,32 @@ Then add:
 
 > “Website Analytics can now read from a locally generated GA4 snapshot, and YouTube can now read from a locally generated channel snapshot. Sprint 11 packages those into a proper Marketing Intelligence release while keeping the rest of the product in safe Demo Mode.”
 
-## 6) Open Approvals
+## 6) Open Executive Inbox
 
 Say:
 
-> “Approvals are now centralised across the business, not just finance. The long-term design remains approval-first, with no automated actions executing on their own.”
+> “Executive Inbox is not trying to be an email client. It turns business email into a ranked operating view so the CEO can immediately see what needs attention, what is waiting on a reply, and which conversations have strategic weight.”
 
-## 7) Open Reports
+Show:
+
+- Priority
+- Needs Reply
+- Customer Enquiries
+- Booking Requests
+- Supplier Communications
+- Finance
+
+Then add:
+
+> “The Gmail path follows the same generated-snapshot pattern as the other live-capable providers, so credentials stay local, the browser sees only a safe snapshot, and all reply / archive / label / forward / follow-up actions stay approval-first.”
+
+## 7) Open Approvals
+
+Say:
+
+> “Approvals are now centralised across the business, not just finance. Gmail now feeds reply, archive, label, forward, task, and follow-up cards into the same approval-first system, with no automated actions executing on their own.”
+
+## 8) Open Reports
 
 Show:
 
@@ -94,15 +113,15 @@ Show:
 
 Say:
 
-> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report is the first example of a proper packaged functional report, and Board Meeting Mode remains the presentation-style executive briefing.”
+> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report is the first example of a proper packaged functional report, and Board Meeting Mode now also has communications-aware executive context rather than ignoring the inbox.”
 
-## 8) Open AI Assistant
+## 9) Open AI Assistant
 
 Say:
 
-> “The AI Assistant section is now the conversational workspace for executive questions. It shows how EP Intelligence can answer leadership questions directly, not just display cards.”
+> “The AI Assistant section is now the conversational workspace for executive questions. It shows how EP Intelligence can answer leadership questions directly, including what the Executive Inbox needs from the CEO first, not just display cards.”
 
-## 9) Show one placeholder module
+## 10) Show one placeholder module
 
 Recommended:
 
@@ -112,15 +131,15 @@ Say:
 
 > “This shows how future modules will slot into the same shell using the same executive design language.”
 
-## 10) Close with the positioning
+## 11) Close with the positioning
 
-> “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, the GA4 + YouTube-backed Marketing Intelligence release, and the platform direction for the rest of the business.”
+> “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance, Marketing, and executive communications, the working CFO and CMO modules, the Executive Inbox, and the platform direction for the rest of the business.”
 
-## 11) Close with roadmap context
+## 12) Close with roadmap context
 
 Say:
 
-> “The current release is v1.1 — Marketing Intelligence. The active roadmap now lives in Roadmap.md, where the next major initiative is Gmail, Executive Inbox, and approval-first executive communications.”
+> “The current formal release is still v1.1 — Marketing Intelligence. The product has now also grown a Gmail-backed Executive Inbox path, while the active roadmap in Roadmap.md keeps the wider Business Operations layer in focus.”
 
 Then add:
 

@@ -89,3 +89,8 @@
 - Added provider-independent Executive Memory milestones for live website demand, YouTube subscriber growth thresholds, high-performing video context, campaign-performance notes, and conversion watchpoints without duplicating existing seeded events.
 - Updated runtime assembly so marketing intelligence, report packaging, source status, and memory milestone writing all happen on top of the existing provider/service/intelligence architecture rather than through new providers or backend code.
 - Updated `README.md`, `START_HERE.md`, `EXECUTIVE_DEMO_SCRIPT.md`, and `docs/integration-framework.md` for the new v1.1 release positioning.
+- Added Sprint 13 and introduced `GmailProvider` plus `scripts/sync-gmail-snapshot.mjs` so Executive Inbox can hydrate from a generated local Gmail snapshot while preserving demo fallback and keeping credentials out of the browser.
+- Added a new Executive Inbox route with deterministic sections for Priority, Needs Reply, Customer Enquiries, Booking Requests, Supplier Communications, Finance, Marketing, Internal, and Recently Completed.
+- Added CEO-facing inbox widgets, Gmail-aware recommendations, approvals, executive summaries, Board Meeting context, AI Assistant prompts, timeline events, and provider-independent memory milestones.
+- Extended integration status, provider architecture documentation, and search coverage so Gmail now appears as a first-class communications provider rather than a placeholder future integration.
+- Documented Gmail provider setup, OAuth scope, security model, lifecycle, and troubleshooting guidance.

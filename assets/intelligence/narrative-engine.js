@@ -6,17 +6,18 @@ export function createNarrativeEngine() {
   return Object.freeze({
     evaluate(context, { insights, recommendations, health }) {
       const memorySummary = context?.memory?.deterministic?.[0]?.summary || '';
+      const inboxSummary = context?.communications?.summary?.dailySummary || '';
       const topRecommendations = recommendations.slice(0, 3);
       const dailyBriefing = {
         headline: insights.topInsight.title,
-        summary: `${insights.topInsight.executiveSummary}${memorySummary ? ` Historical context: ${memorySummary}` : ''} Next, leadership should focus on ${topRecommendations.map((item) => item.recommendation.toLowerCase()).join('; ')}.`,
+        summary: `${insights.topInsight.executiveSummary}${memorySummary ? ` Historical context: ${memorySummary}` : ''}${inboxSummary ? ` Inbox summary: ${inboxSummary}` : ''} Next, leadership should focus on ${topRecommendations.map((item) => item.recommendation.toLowerCase()).join('; ')}.`,
         actions: topRecommendations.map((item) => item.recommendation),
         confidence: insights.topInsight.confidence,
         boardOpening: `${insights.topInsight.executiveSummary} Overall business health is ${health.overall.score}/100 (${health.overall.label.toLowerCase()}).`
       };
 
       const weeklyBriefing = {
-        summary: `${insights.executive[0]?.executiveSummary || ''} ${insights.executive[1]?.executiveSummary || ''} ${memorySummary}`.trim(),
+        summary: `${insights.executive[0]?.executiveSummary || ''} ${insights.executive[1]?.executiveSummary || ''} ${memorySummary} ${inboxSummary}`.trim(),
         wins: insights.executive.filter((item) => item.priority !== 'Low').slice(0, 2).map((item) => item.title),
         risks: insights.executive.filter((item) => item.businessImpact.toLowerCase().includes('cash') || item.businessImpact.toLowerCase().includes('profit') || item.priority === 'High').slice(0, 3).map((item) => item.title),
         recommendations: topRecommendations.map((item) => item.recommendation),
@@ -35,6 +36,7 @@ export function createNarrativeEngine() {
           insights.executive[0]?.executiveSummary,
           insights.executive[1]?.executiveSummary,
           memorySummary,
+          inboxSummary,
           `Top recommendations: ${topRecommendations.map((item) => item.recommendation).join('; ')}.`
         ].filter(Boolean)
       };
