@@ -1,5 +1,9 @@
 # Executive Demo Script
 
+**Current release:** EP Intelligence v1.1 — Marketing Intelligence  
+**Current roadmap:** `Roadmap.md`  
+**Completed sprint history:** `changelog/CHANGELOG.md`
+
 ## 1) Open with the purpose
 
 > “This is a prototype of EP Intelligence — a future Executive Operating System for EP Golf Studios. It is designed to help leadership see the business more clearly, make better decisions, and work from one calmer executive shell.”
@@ -108,6 +112,16 @@ Say:
 ## 10) Close with the positioning
 
 > “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, the GA4 + YouTube-backed Marketing Intelligence release, and the platform direction for the rest of the business.”
+
+## 11) Close with roadmap context
+
+Say:
+
+> “The current release is v1.1 — Marketing Intelligence. The active roadmap now lives in Roadmap.md, where the next major initiative is Gmail, Executive Inbox, and approval-first executive communications.”
+
+Then add:
+
+> “That means the platform now has a clear separation between what has shipped, what is being built now, what is next, and what is deliberately deferred.”
 
 ## Short closing line
 

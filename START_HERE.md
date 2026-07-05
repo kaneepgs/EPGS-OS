@@ -10,6 +10,12 @@ Today it is still primarily a **demo product**, but it now has two controlled li
 
 Sprint 11 packages those into **EP Intelligence v1.1 — Marketing Intelligence**.
 
+## Release and roadmap references
+
+- **Current release:** EP Intelligence v1.1 — Marketing Intelligence
+- **Current roadmap:** `Roadmap.md`
+- **Completed sprint history:** `changelog/CHANGELOG.md`
+
 ## What it includes
 
 - a true **CEO Intelligence Dashboard** as the application home page
@@ -109,16 +115,24 @@ This is intentionally still a prototype.
 - only Website Analytics and YouTube are live-capable today, both through manual local snapshot sync
 - no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
 
-## Recommended next sprint
+## Current roadmap position
 
-**Sprint 12 — deepen marketing usefulness before adding breadth**
+The product roadmap is now managed in `Roadmap.md`.
 
-Recommended focus:
+Current **Now** focus:
 
-- validate the final GA4 conversion event names with Kane so booking/enquiry/sign-up mapping becomes production-credible
-- improve YouTube history coverage so subscriber movement and growth rates become stronger than first-sync placeholders
-- decide whether Instagram or Facebook should become the next selective live provider
-- keep the UI and intelligence engine stable while deepening report quality, source clarity, and memory usefulness
+- Sprint 13 — Gmail Provider v1.0
+- Executive Inbox
+- Gmail Intelligence
+- Executive Communications
+- Approval-first email workflows
+
+Current **Next** priorities:
+
+1. Google Calendar Provider
+2. QuickBooks/Xero Provider
+3. Mailchimp Provider
+4. Booking Intelligence
 
 ## Suggested positioning when presenting it
 
@@ -127,3 +141,5 @@ Describe it as:
 > “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance and Marketing, plus a first usable Marketing Intelligence release.”
 
 You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube** provider paths, with the rest of the business architecture prepared for future module builds.
+
+After each completed release, update `Roadmap.md` first, then move finished work into `changelog/CHANGELOG.md`.

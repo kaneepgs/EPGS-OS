@@ -6,6 +6,15 @@ It has now moved beyond a CFO-first prototype into a true **Executive Operating 
 
 Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intelligence** release, so the business can now read live website demand and live YouTube authority together through a clearer executive marketing layer, a proper Marketing Health Score, a packaged Marketing Intelligence Report, and provider-independent memory milestones — while still falling back safely to demo data.
 
+## Release & Roadmap
+
+- **Current release:** EP Intelligence v1.1 — Marketing Intelligence
+- **Active roadmap:** `Roadmap.md`
+- **Completed sprint history:** `changelog/CHANGELOG.md`
+- **Project principles:** `PROJECT_PRINCIPLES.md`
+
+Use `Roadmap.md` for active planning, `changelog/CHANGELOG.md` for completed sprint history, and the project principles as the filter for what should or should not be built next.
+
 ## Current Sprint State
 
 ### Sprint 1 — Foundation
@@ -173,6 +182,7 @@ This prototype intentionally remains:
 ## Project Structure
 
 - `START_HERE.md` — non-technical demo handoff guide
+- `Roadmap.md` — active product roadmap and current planning source of truth
 - `DEPLOYMENT_NOTE.md` — simple deployment notes for Replit and Hostinger static hosting
 - `EXECUTIVE_DEMO_SCRIPT.md` — short demo script for live walkthroughs
 - `index.html` — main app shell and metadata
@@ -397,6 +407,15 @@ Sprint 10 validation includes:
 5. Executive collaboration over siloed advice
 6. Decision support over accounting-software aesthetics
 7. One shared shell for all future executive modules
+
+## Product Planning Workflow
+
+From this point forward:
+
+1. update `Roadmap.md` when priorities change or a release completes
+2. move completed work into `changelog/CHANGELOG.md`
+3. keep the demo script aligned to the latest release positioning
+4. evaluate new feature requests against `PROJECT_PRINCIPLES.md` before accepting them into the roadmap
 
 ## Near-Term Outcome
 
