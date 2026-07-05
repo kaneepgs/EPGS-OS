@@ -4,6 +4,12 @@ export const DATA_CONTRACTS = Object.freeze({
   executiveInsight: ['id', 'title', 'executiveSummary', 'supportingEvidence', 'confidenceScore', 'confidence', 'businessImpact', 'financialImpact', 'suggestedActions', 'responsibleDepartment', 'priority', 'timestamp'],
   executiveRecommendation: ['id', 'recommendation', 'why', 'expectedBenefit', 'risk', 'confidence', 'estimatedValue', 'suggestedOwner', 'priority', 'priorityScore'],
   timelineEvent: ['id', 'time', 'type', 'title', 'body'],
+  memoryEvent: ['id', 'date', 'time', 'title', 'body', 'category', 'department', 'impact', 'relatedEntities'],
+  executiveDecision: ['id', 'date', 'title', 'summary', 'reason', 'expectedOutcome', 'actualOutcome', 'owner', 'department', 'relatedKpis', 'status'],
+  strategicGoal: ['id', 'title', 'summary', 'owner', 'department', 'deadline', 'progress', 'status', 'target', 'currentValue'],
+  historicalContext: ['id', 'title', 'summary', 'department', 'route'],
+  knowledgeNode: ['id', 'label', 'type', 'route', 'meta'],
+  knowledgeEdge: ['id', 'from', 'to', 'relation', 'route'],
   approval: ['id', 'title', 'why', 'impact', 'risk', 'confidence'],
   opportunity: ['id', 'title', 'estimatedValue', 'effort', 'confidence', 'team', 'nextAction'],
   risk: ['id', 'title', 'severity', 'likelihood', 'financialImpact', 'department', 'mitigation'],
@@ -25,6 +31,19 @@ function identifier(value, fallback) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+export function parseCompactNumber(value, fallback = 0) {
+  if (typeof value === 'number') return value;
+  if (value == null) return fallback;
+  const source = String(value).trim().replace(/,/g, '');
+  if (!source) return fallback;
+  const match = source.match(/-?\d+(?:\.\d+)?/);
+  if (!match) return fallback;
+  let number = Number.parseFloat(match[0]);
+  if (/\d(?:\.\d+)?\s*m\b/i.test(source)) number *= 1000000;
+  else if (/\d(?:\.\d+)?\s*k\b/i.test(source)) number *= 1000;
+  return number;
 }
 
 export function normalizeKpi(entry = {}) {
@@ -91,10 +110,97 @@ export function normalizeTimelineEvent(entry = {}) {
   return {
     ...entry,
     id: identifier(entry.id, `${entry.time || 'event'}-${entry.title || 'timeline'}`),
+    date: text(entry.date),
     time: text(entry.time),
     type: text(entry.type),
     title: text(entry.title),
-    body: text(entry.body)
+    body: text(entry.body),
+    category: text(entry.category ?? entry.type),
+    department: text(entry.department),
+    impact: text(entry.impact),
+    relatedEntities: (entry.relatedEntities || []).map((item) => text(item)).filter(Boolean),
+    status: text(entry.status),
+    route: text(entry.route)
+  };
+}
+
+export function normalizeMemoryEvent(entry = {}) {
+  return normalizeTimelineEvent(entry);
+}
+
+export function normalizeExecutiveDecision(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.title || 'decision'),
+    date: text(entry.date),
+    title: text(entry.title),
+    summary: text(entry.summary),
+    reason: text(entry.reason),
+    expectedOutcome: text(entry.expectedOutcome),
+    actualOutcome: text(entry.actualOutcome),
+    owner: text(entry.owner),
+    department: text(entry.department),
+    relatedKpis: (entry.relatedKpis || []).map((item) => text(item)).filter(Boolean),
+    linkedGoalIds: (entry.linkedGoalIds || []).map((item) => text(item)).filter(Boolean),
+    linkedTimelineEventIds: (entry.linkedTimelineEventIds || []).map((item) => text(item)).filter(Boolean),
+    status: text(entry.status),
+    route: text(entry.route)
+  };
+}
+
+export function normalizeStrategicGoal(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.title || 'goal'),
+    title: text(entry.title),
+    summary: text(entry.summary),
+    owner: text(entry.owner),
+    department: text(entry.department),
+    deadline: text(entry.deadline),
+    progress: Number(entry.progress ?? 0),
+    status: text(entry.status),
+    target: text(entry.target),
+    currentValue: text(entry.currentValue),
+    linkedMetrics: (entry.linkedMetrics || []).map((item) => text(item)).filter(Boolean),
+    linkedDecisionIds: (entry.linkedDecisionIds || []).map((item) => text(item)).filter(Boolean),
+    route: text(entry.route)
+  };
+}
+
+export function normalizeHistoricalContext(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.title || 'historical-context'),
+    title: text(entry.title),
+    summary: text(entry.summary),
+    department: text(entry.department),
+    route: text(entry.route),
+    severity: text(entry.severity),
+    referenceValues: (entry.referenceValues || []).map((item) => text(item)).filter(Boolean),
+    linkedDecisionIds: (entry.linkedDecisionIds || []).map((item) => text(item)).filter(Boolean),
+    tone: text(entry.tone, 'info')
+  };
+}
+
+export function normalizeKnowledgeNode(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.label || 'knowledge-node'),
+    label: text(entry.label),
+    type: text(entry.type),
+    route: text(entry.route),
+    meta: text(entry.meta)
+  };
+}
+
+export function normalizeKnowledgeEdge(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, `${entry.from || 'node'}-${entry.relation || 'rel'}-${entry.to || 'node'}`),
+    from: text(entry.from),
+    to: text(entry.to),
+    relation: text(entry.relation),
+    route: text(entry.route)
   };
 }
 

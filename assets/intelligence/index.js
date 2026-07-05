@@ -61,7 +61,7 @@ export function createExecutiveIntelligenceEngine(config) {
     };
   }
 
-  function buildAskWorkspace({ insights, recommendations, narratives }) {
+  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [] }) {
     const prompts = [
       {
         question: 'What happened across the business this week?',
@@ -86,6 +86,12 @@ export function createExecutiveIntelligenceEngine(config) {
         answer: insights.cmo[1]?.executiveSummary || recommendations.find((item) => item.id === 'video-proof-expansion')?.why || 'The engine did not detect a marketing opportunity.',
         confidence: 'High',
         rationale: 'Built from marketing performance, website conversion, and top-channel momentum.'
+      },
+      {
+        question: 'What does the business memory say matters right now?',
+        answer: memoryContext[0]?.summary || 'Executive memory is available, but no major historical context item is currently ranked above the live signals.',
+        confidence: 'High',
+        rationale: 'Drawn from the persistent executive memory layer rather than only current-period metrics.'
       }
     ];
 
@@ -109,7 +115,8 @@ export function createExecutiveIntelligenceEngine(config) {
       const approvals = services.approval.getWorkspace();
       const reports = services.report.getWorkspace();
       const timeline = services.timeline.getBusinessTimeline();
-      const context = { executive, finance, marketing, approvals, reports, timeline };
+      const memory = services.memory?.getContext?.({ finance, marketing }) || { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] };
+      const context = { executive, finance, marketing, approvals, reports, timeline, memory };
 
       const health = healthEngine.evaluate(context);
       const correlations = correlationEngine.evaluate(context, { health });
@@ -118,7 +125,7 @@ export function createExecutiveIntelligenceEngine(config) {
       const insights = insightEngine.evaluate(context, { correlations, recommendations, health });
       const narratives = narrativeEngine.evaluate(context, { insights, recommendations, health });
       const timelineEvents = createTimelineEvents(context, { correlations, recommendations });
-      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives });
+      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.deterministic });
 
       const ceoCommentary = toCommentary('AI Executive Briefing', insights.executive[0], recommendations[0], {
         risks: insights.executive.slice(1, 3).map((item) => item.executiveSummary).join(' '),
@@ -153,7 +160,8 @@ export function createExecutiveIntelligenceEngine(config) {
           recommendations: recommendations.slice(0, 4),
           health,
           narratives,
-          prompts: askWorkspace.prompts
+          prompts: askWorkspace.prompts,
+          memoryContext: memory.deterministic
         },
         cfo: {
           commentary: {

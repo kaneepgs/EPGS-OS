@@ -23,7 +23,7 @@ import {
 } from './ui/components.js';
 import { renderCharts, destroyCharts } from './ui/charts.js';
 
-const STORAGE_KEY = 'ep-intelligence.workspace.v0.8';
+const STORAGE_KEY = 'ep-intelligence.workspace.v0.9';
 const VALID_ROUTES = new Set(Object.keys(ROUTE_META));
 
 const appShell = document.getElementById('app-shell');
@@ -56,6 +56,7 @@ const state = {
   activeMetric: 'revenue',
   journalQuery: '',
   contentQuery: '',
+  memoryQuery: '',
   boardSlide: 0,
   favourites: ['/ceo', '/cfo', '/reports/board-meeting'],
   recent: ['/ceo', '/cfo', '/approvals']
@@ -180,6 +181,31 @@ function routeLabel(route) {
   return metaFor(route).title;
 }
 
+function memoryStatusTone(status = '') {
+  const value = String(status).toLowerCase();
+  if (value.includes('high') || value.includes('severe')) return 'risk';
+  if (value.includes('completed') || value.includes('on track')) return 'good';
+  if (value.includes('active') || value.includes('planned')) return 'info';
+  if (value.includes('risk') || value.includes('review')) return 'warn';
+  return 'neutral';
+}
+
+function globalSearchEntries(query = '') {
+  const needle = query.trim().toLowerCase();
+  const routeEntries = Object.entries(ROUTE_META).map(([route, meta]) => ({
+    id: `route-${route}`,
+    type: 'Route',
+    title: meta.title,
+    body: meta.subtitle,
+    route,
+    meta: meta.module
+  }));
+  const memoryEntries = WORKSPACE_DATA.memory.searchIndex || [];
+  const combined = [...routeEntries, ...memoryEntries];
+  if (!needle) return combined.slice(0, 12);
+  return combined.filter((item) => [item.title, item.body, item.meta, item.type, item.route].join(' ').toLowerCase().includes(needle)).slice(0, 12);
+}
+
 function routeMode() {
   return state.route === '/reports/board-meeting' ? 'board' : 'executive';
 }
@@ -227,11 +253,23 @@ function renderSidebar() {
     .join('');
 
   const subnav = currentSubnav();
-  secondaryNav.innerHTML = subnav.length
-    ? `<div class="label">${escapeHtml(metaFor().parentLabel || metaFor().module)} pages</div>${subnav
-        .map(([route, label]) => navLink({ id: route, label, iconName: 'arrowRight', active: isRouteActive(route), favourite: state.favourites.includes(route) }))
-        .join('')}`
-    : '';
+  const searchResults = state.navQuery.trim() ? globalSearchEntries(state.navQuery) : [];
+  secondaryNav.innerHTML = [
+    subnav.length
+      ? `<div class="label">${escapeHtml(metaFor().parentLabel || metaFor().module)} pages</div>${subnav
+          .map(([route, label]) => navLink({ id: route, label, iconName: 'arrowRight', active: isRouteActive(route), favourite: state.favourites.includes(route) }))
+          .join('')}`
+      : '',
+    searchResults.length
+      ? `<div class="label">Search results</div>${searchResults
+          .map(
+            (item) => `<button type="button" class="sidebar-chip" data-route="${escapeHtml(item.route)}">${icon('search')}${escapeHtml(item.title)}<span>${escapeHtml(item.type)}</span></button>`
+          )
+          .join('')}`
+      : ''
+  ]
+    .filter(Boolean)
+    .join('');
 
   renderSidebarMeta();
 
@@ -454,6 +492,14 @@ function attachPageEvents() {
     });
   }
 
+  const memorySearch = document.getElementById('memory-search');
+  if (memorySearch) {
+    memorySearch.addEventListener('input', (event) => {
+      state.memoryQuery = event.target.value;
+      render();
+    });
+  }
+
   pageContent.querySelectorAll('[data-board-step]').forEach((button) => {
     button.addEventListener('click', () => {
       setBoardSlide(state.boardSlide + Number.parseInt(button.dataset.boardStep, 10));
@@ -468,17 +514,14 @@ function attachPageEvents() {
 }
 
 function renderCommandPalette() {
-  const query = state.commandQuery.trim().toLowerCase();
-  const routes = Object.entries(ROUTE_META)
-    .map(([route, meta]) => ({ route, title: meta.title, module: meta.module }))
-    .filter((item) => [item.route, item.title, item.module].join(' ').toLowerCase().includes(query));
+  const results = globalSearchEntries(state.commandQuery);
 
-  paletteResults.innerHTML = routes
+  paletteResults.innerHTML = results
     .map(
       (item) => `
         <button type="button" class="command-result" data-route="${item.route}">
-          <span class="card-kicker">${icon('arrowRight')}<span>${escapeHtml(item.title)}</span></span>
-          <small>${escapeHtml(item.module)}</small>
+          <span class="card-kicker">${icon(item.type === 'Route' ? 'arrowRight' : 'search')}<span>${escapeHtml(item.title)}</span></span>
+          <small>${escapeHtml(`${item.type} · ${item.meta || item.route}`)}</small>
         </button>
       `
     )
@@ -675,6 +718,46 @@ function ceoDashboardView() {
           </div>
         </section>
 
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Historical Context', title: 'What the business now remembers', body: 'The intelligence layer can now reference durable business memory instead of relying only on current-period movement.' })}
+            <div class="section-stack">
+              ${data.memory.historicalContext.map((item) => insightCard({ eyebrow: item.department || 'Executive memory', title: item.title, body: item.summary, tone: item.tone || 'info' })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Memory Highlights', title: 'Persistent context worth keeping visible', body: 'These are the patterns and lessons leadership should not keep rediscovering.' })}
+            <div class="section-stack">
+              ${data.memory.highlights.map((item) => insightCard({ eyebrow: 'Memory highlight', title: item.title, body: item.body || item.summary, tone: item.tone || 'neutral' }).replace('insight-card', `insight-card ${item.tone || 'neutral'}`)).join('')}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Strategic Goal Progress', title: 'Goals linked to decisions and metrics', body: 'Goals now persist independently of provider data, so the CEO can track direction as well as current health.' })}
+            <div class="section-stack">
+              ${data.memory.strategicGoals.map((goal) => registerRow({
+                kicker: `${pill(`${goal.progress}%`, 'info')}${pill(goal.status, memoryStatusTone(goal.status))}${pill(goal.owner, 'neutral')}`,
+                title: goal.title,
+                body: `${goal.summary} Target: ${goal.target}. Current state: ${goal.currentValue}.`,
+                extra: `<div class="chip-list">${goal.linkedMetrics.map((metric) => `<span class="sidebar-chip">${escapeHtml(metric)}</span>`).join('')}</div><button type="button" class="text-link" data-route="/reports/strategic-goals">${icon('arrowRight')} Open Strategic Goals</button>`
+              })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Recent Decisions', title: 'Structured executive decision memory', body: 'Decisions now carry reasons, expected outcomes, actual outcomes, owners, linked KPIs, and status.' })}
+            <div class="section-stack">
+              ${data.memory.recentDecisions.map((decision) => registerRow({
+                kicker: `${pill(decision.status, memoryStatusTone(decision.status))}${pill(decision.owner, 'info')}`,
+                title: decision.title,
+                body: `${decision.summary} Expected: ${decision.expectedOutcome}`,
+                extra: `<div class="mini-list"><li>${escapeHtml(`Actual outcome: ${decision.actualOutcome}`)}</li><li>${escapeHtml(`Related KPIs: ${decision.relatedKpis.join(', ')}`)}</li></div><button type="button" class="text-link" data-route="/reports/decision-journal">${icon('arrowRight')} Open Decision Journal</button>`
+              })).join('')}
+            </div>
+          </section>
+        </div>
+
         <section class="panel">
           ${sectionHeader({ eyebrow: 'Business Health Engine', title: 'Weighted executive health scoring', body: 'Finance, marketing, and overall leadership health are generated from configurable scoring weights and thresholds.' })}
           <div class="grid-2">
@@ -728,9 +811,16 @@ function ceoDashboardView() {
         </section>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Business Timeline', title: 'Recent business activity', body: 'The engine now adds generated timeline events for milestones, warnings, and significant shifts.' })}
+          ${sectionHeader({ eyebrow: 'Business Timeline', title: 'Recent business activity', body: 'The timeline is now permanent executive memory, combining structured milestones, decisions, launches, and generated intelligence events.' })}
           <div class="section-stack">
             ${data.businessTimeline.map((item) => registerRow({ kicker: `${pill(item.time, 'info')}${pill(item.type, 'neutral')}`, title: item.title, body: item.body })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Business Milestones', title: 'What crossed the line into memory', body: 'These milestone events are the moments leadership is likely to reference again in future reports and decisions.' })}
+          <div class="tile-grid">
+            ${data.memory.milestones.map((item) => insightCard({ eyebrow: `${item.date} · ${item.category}`, title: item.title, body: item.body, tone: item.impact === 'High' ? 'good' : 'info' })).join('')}
           </div>
         </section>
 
@@ -2023,18 +2113,43 @@ function approvalsView() {
 }
 
 function reportsOverviewView() {
+  const memory = WORKSPACE_DATA.reports.memory;
+  const memoryRoutes = [
+    { title: 'Executive Timeline', body: 'Permanent business chronology of launches, milestones, and structural changes.', route: '/reports/executive-timeline' },
+    { title: 'Decision Journal', body: 'Structured executive decision memory with reasons, outcomes, and linked KPIs.', route: '/reports/decision-journal' },
+    { title: 'Strategic Goals', body: 'Persistent goals linked to metrics, decisions, and owners.', route: '/reports/strategic-goals' }
+  ];
   return {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Reports', title: 'Executive reporting layer', body: 'Weekly, monthly, quarterly, and board outputs now sit in one shared reporting section.' })}
+          ${sectionHeader({ eyebrow: 'Reports', title: 'Executive reporting layer', body: 'Weekly, monthly, quarterly, and board outputs now sit in one shared reporting section, now with persistent memory context behind them.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
+          <div class="grid-4">
+            ${memory.summaryCards.map((item) => statCard({ iconName: 'book-open', label: item.label, value: item.value, body: item.body })).join('')}
+          </div>
         </section>
         ${pageQuestions('/reports')}
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Memory-backed reporting', title: 'What reports now remember', body: 'Historical context, previous decisions, strategic goal progress, and milestones can now follow the report output.' })}
+            <div class="section-stack">
+              ${memory.historicalContext.map((item) => registerRow({ kicker: `${pill(item.department || 'Executive Memory', 'info')}`, title: item.title, body: item.summary })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Knowledge graph', title: 'Relationship coverage', body: memory.graphNote })}
+            <div class="tile-grid">
+              ${insightCard({ eyebrow: 'Timeline retention', title: memory.retention.timelineHistory, body: 'Executive timeline history is retained as structured memory.', tone: 'good' })}
+              ${insightCard({ eyebrow: 'Decision retention', title: memory.retention.completedDecisions, body: 'Completed decisions remain available for later learning.', tone: 'info' })}
+              ${insightCard({ eyebrow: 'Goal retention', title: memory.retention.archivedGoals, body: 'Archived goals stay useful as strategic reference points.', tone: 'neutral' })}
+            </div>
+          </section>
+        </div>
         <section class="panel">
           ${sectionHeader({ eyebrow: 'Available report routes', title: 'What to open next', body: 'Use this area to move from module work into packaged executive outputs.' })}
           <div class="tile-grid">
-            ${WORKSPACE_DATA.reports.overview
+            ${[...memoryRoutes, ...WORKSPACE_DATA.reports.overview]
               .map(
                 (item) => `
                   <article class="insight-card neutral">
@@ -2056,17 +2171,18 @@ function reportsOverviewView() {
 
 function weeklyBriefingsView() {
   const data = WORKSPACE_DATA.reports.intelligence.weeklyBriefing;
+  const memory = WORKSPACE_DATA.reports.memory;
   return {
     html: `
       <div class="page-grid">
         <section class="board-shell">
-          ${sectionHeader({ eyebrow: 'Weekly Briefings', title: 'Sunday Executive Briefing', body: 'A board-style briefing generated from structured executive insights.' })}
+          ${sectionHeader({ eyebrow: 'Weekly Briefings', title: 'Sunday Executive Briefing', body: 'A board-style briefing generated from structured executive insights and persistent executive memory.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
           <div class="grid-4">
             ${statCard({ iconName: 'pulse', label: 'Business health score', value: String(WORKSPACE_DATA.intelligence.health.overall.score), body: WORKSPACE_DATA.intelligence.health.overall.label })}
             ${statCard({ iconName: 'trending-up', label: 'Revenue', value: WORKSPACE_DATA.cfo.metrics[0].value, body: WORKSPACE_DATA.cfo.metrics[0].detail })}
             ${statCard({ iconName: 'coins', label: 'Profit', value: WORKSPACE_DATA.cfo.metrics[1].value, body: WORKSPACE_DATA.cfo.metrics[1].detail })}
-            ${statCard({ iconName: 'check-circle', label: 'Recommendations', value: String(WORKSPACE_DATA.intelligence.recommendations.length), body: 'Generated and priority-ranked by the engine.' })}
+            ${memory.summaryCards.map((item) => statCard({ iconName: 'book-open', label: item.label, value: item.value, body: item.body })).join('')}
           </div>
           <div class="grid-2">
             ${insightCard({ eyebrow: 'Executive Summary', title: 'Board opening statement', body: data.summary, tone: 'info' })}
@@ -2075,6 +2191,127 @@ function weeklyBriefingsView() {
             ${insightCard({ eyebrow: 'Risks', title: 'What needs watching', body: data.risks.join(' '), tone: 'risk' })}
             ${insightCard({ eyebrow: 'Recommendations', title: 'What to do', body: data.recommendations.join(' '), tone: 'warn' })}
             ${insightCard({ eyebrow: 'Questions Worth Asking', title: 'The right board questions', body: data.questions.join(' '), tone: 'neutral' })}
+          </div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Historical events', title: 'What this week should be compared against', body: 'Reports can now reference prior milestones instead of behaving like stateless snapshots.' })}
+            <div class="section-stack">${memory.milestones.map((item) => registerRow({ kicker: `${pill(item.date, 'info')}${pill(item.category, 'neutral')}`, title: item.title, body: item.body })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Previous decisions', title: 'What leadership already committed to', body: 'Decision memory now follows the report so executive review can stay grounded.' })}
+            <div class="section-stack">${memory.previousDecisions.map((item) => registerRow({ kicker: `${pill(item.status, memoryStatusTone(item.status))}${pill(item.owner, 'neutral')}`, title: item.title, body: `${item.summary} Expected outcome: ${item.expectedOutcome}` })).join('')}</div>
+          </section>
+        </div>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Goal progress', title: 'Strategic goal movement', body: 'Goal progress now persists across reports and can be reviewed independently of today\'s metrics.' })}
+            <div class="section-stack">${memory.goalProgress.map((goal) => registerRow({ kicker: `${pill(`${goal.progress}%`, 'info')}${pill(goal.status, memoryStatusTone(goal.status))}`, title: goal.title, body: `${goal.currentValue} against target ${goal.target}` })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Knowledge graph', title: 'Memory relationship coverage', body: memory.graphNote })}
+            <div class="tile-grid">
+              ${insightCard({ eyebrow: 'Retention', title: memory.retention.timelineHistory, body: 'Timeline history remains available as a persistent executive chronology.', tone: 'good' })}
+              ${insightCard({ eyebrow: 'Decisions', title: memory.retention.completedDecisions, body: 'Completed decisions stay available for later review and learning.', tone: 'info' })}
+              ${insightCard({ eyebrow: 'Archived goals', title: memory.retention.archivedGoals, body: 'Goal history can continue informing future executive planning.', tone: 'neutral' })}
+            </div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveTimelineView() {
+  const timeline = WORKSPACE_DATA.memory.timeline;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Timeline', title: 'Permanent business timeline', body: 'This timeline now persists independently of any provider and holds milestones, launches, purchases, decisions, and structural changes.' })}
+          ${renderRoutePillbar(SUBNAV.reports)}
+        </section>
+        ${pageQuestions('/reports/executive-timeline')}
+        <section class="panel">
+          <div class="section-stack">
+            ${timeline.map((item) => registerRow({
+              kicker: `${pill(item.date, 'info')}${pill(item.category, 'neutral')}${pill(item.impact || 'Medium', memoryStatusTone(item.impact || 'Medium'))}`,
+              title: item.title,
+              body: `${item.body} Department: ${item.department}. Related entities: ${(item.relatedEntities || []).join(', ') || 'None yet'}`
+            })).join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveDecisionJournalView() {
+  const query = state.journalQuery.trim().toLowerCase();
+  const decisions = WORKSPACE_DATA.memory.decisions.filter((entry) => {
+    if (!query) return true;
+    return [entry.title, entry.summary, entry.reason, entry.expectedOutcome, entry.actualOutcome, entry.owner, entry.department, entry.status, ...(entry.relatedKpis || [])].join(' ').toLowerCase().includes(query);
+  });
+
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Decision Journal', title: 'Structured executive memory', body: 'The executive memory layer now tracks why decisions were made, what they were meant to achieve, and how the outcomes evolved.' })}
+          ${renderRoutePillbar(SUBNAV.reports)}
+          ${searchRow({ id: 'journal-search', value: state.journalQuery, placeholder: 'Search decisions, outcomes, owners, KPIs…', label: 'Search executive decisions' })}
+        </section>
+        ${pageQuestions('/reports/decision-journal')}
+        <section class="panel">
+          <div class="section-stack">
+            ${decisions.map((item) => `
+              <article class="register-row">
+                <div class="register-meta">${pill(item.date, 'info')}${pill(item.status, memoryStatusTone(item.status))}${pill(item.owner, 'neutral')}</div>
+                <h4>${escapeHtml(item.title)}</h4>
+                <div class="grid-3">
+                  ${insightCard({ eyebrow: 'Summary', title: 'What we decided', body: item.summary, tone: 'info' })}
+                  ${insightCard({ eyebrow: 'Reason', title: 'Why it was necessary', body: item.reason, tone: 'neutral' })}
+                  ${insightCard({ eyebrow: 'Expected outcome', title: 'What success looked like', body: item.expectedOutcome, tone: 'good' })}
+                  ${insightCard({ eyebrow: 'Actual outcome', title: item.actualOutcome || 'Pending', body: item.actualOutcome || 'Still unfolding.', tone: 'warn' })}
+                  ${insightCard({ eyebrow: 'Ownership', title: item.owner, body: item.department, tone: 'neutral' })}
+                  ${insightCard({ eyebrow: 'Related KPIs', title: item.relatedKpis.join(', ') || 'None yet', body: `Status: ${item.status}`, tone: 'info' })}
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function strategicGoalsView() {
+  const goals = WORKSPACE_DATA.memory.goals;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Strategic Goals', title: 'Persistent business goals', body: 'Goals now persist as first-class business memory linked to metrics, decisions, deadlines, and executive ownership.' })}
+          ${renderRoutePillbar(SUBNAV.reports)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'target', label: 'Tracked goals', value: String(goals.length), body: 'The memory layer now carries strategic direction, not just observations.' })}
+            ${statCard({ iconName: 'check-circle', label: 'On track', value: String(goals.filter((goal) => /on track/i.test(goal.status)).length), body: 'Goals progressing without immediate intervention.' })}
+            ${statCard({ iconName: 'alert-triangle', label: 'Needs review', value: String(goals.filter((goal) => /risk|review/i.test(goal.status)).length), body: 'Goals that now need leadership attention.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Average progress', value: `${WORKSPACE_DATA.memory.dashboard.summary.averageGoalProgress}%`, body: 'A quick sense of how much strategic work has already moved.' })}
+          </div>
+        </section>
+        ${pageQuestions('/reports/strategic-goals')}
+        <section class="panel">
+          <div class="section-stack">
+            ${goals.map((goal) => registerRow({
+              kicker: `${pill(goal.status, memoryStatusTone(goal.status))}${pill(`${goal.progress}%`, 'info')}${pill(goal.owner, 'neutral')}`,
+              title: goal.title,
+              body: `${goal.summary} Deadline: ${goal.deadline}. Current: ${goal.currentValue}. Target: ${goal.target}`,
+              extra: `<div class="mini-list"><li>${escapeHtml(`Linked metrics: ${goal.linkedMetrics.join(', ')}`)}</li><li>${escapeHtml(`Linked decisions: ${goal.linkedDecisionIds.join(', ') || 'None yet'}`)}</li></div>`
+            })).join('')}
           </div>
         </section>
       </div>
@@ -2269,6 +2506,53 @@ function aiAssistantAskView() {
           ${sectionHeader({ eyebrow: 'Suggested follow-ups', title: 'What the CEO could ask next', body: 'Follow-up prompts keep the conversation moving toward decisions rather than curiosity alone.' })}
           <div class="chip-list">${data.suggestedFollowUps.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
         </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Business memory', title: 'What the business memory says', body: 'These are the durable context prompts now available to the executive reasoning layer.' })}
+          <div class="section-stack">${WORKSPACE_DATA.aiAssistant.memory.context.deterministic.map((item) => registerRow({ kicker: pill(item.department || 'Executive Memory', 'info'), title: item.title, body: item.summary })).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function aiAssistantMemoryContextView() {
+  const memory = WORKSPACE_DATA.aiAssistant.memory;
+  const query = state.memoryQuery.trim().toLowerCase();
+  const results = memory.searchIndex.filter((item) => {
+    if (!query) return true;
+    return [item.title, item.body, item.type, item.meta, item.route].join(' ').toLowerCase().includes(query);
+  });
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'AI Memory / Context', title: 'Searchable executive memory', body: 'The business now has a structured memory layer that can be searched and referenced by deterministic executive reasoning.' })}
+          ${renderRoutePillbar(SUBNAV.aiAssistant)}
+          ${searchRow({ id: 'memory-search', value: state.memoryQuery, placeholder: 'Search timeline, goals, decisions, recommendations, historical events…', label: 'Search executive memory' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'book-open', label: 'Timeline events', value: String(memory.timeline.length), body: 'Permanent business chronology now lives outside any single provider.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Decisions', value: String(memory.decisions.length), body: 'Structured executive decisions are now persisted.' })}
+            ${statCard({ iconName: 'target', label: 'Goals', value: String(memory.goals.length), body: 'Strategic goals now persist across the workspace.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Graph relationships', value: String(memory.graph.summary.edgeCount), body: `${memory.graph.summary.nodeCount} nodes linked through structured relationships.` })}
+          </div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Deterministic context', title: 'What the engine can now reference', body: 'Historical patterns and recurring issues can now shape executive narratives without external AI.' })}
+            <div class="section-stack">${memory.context.deterministic.map((item) => registerRow({ kicker: `${pill(item.department || 'Executive Memory', 'info')}${pill(item.severity || 'Context', memoryStatusTone(item.severity || 'Context'))}`, title: item.title, body: item.summary })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Knowledge graph', title: 'Structured relationship map', body: `The graph currently covers ${memory.graph.summary.nodeCount} nodes and ${memory.graph.summary.edgeCount} edges.` })}
+            <div class="tile-grid">
+              ${memory.graph.summary.types.map((type) => insightCard({ eyebrow: 'Node type', title: type, body: 'This entity type is now represented inside the business memory graph.', tone: 'neutral' })).join('')}
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Memory search', title: query ? `Results for “${state.memoryQuery}”` : 'Index coverage', body: 'Global search now includes routes, timeline entries, goals, decisions, recommendations, and historical context.' })}
+          <div class="section-stack">${results.map((item) => registerRow({ kicker: `${pill(item.type, 'info')}${pill(item.meta || 'Indexed', 'neutral')}`, title: item.title, body: item.body, extra: `<button type="button" class="text-link" data-route="${item.route}">${icon('arrowRight')} Open source route</button>` })).join('')}</div>
+        </section>
       </div>
     `,
     charts: []
@@ -2307,21 +2591,22 @@ function aiAssistantPlaceholderView(route) {
 
 function settingsView() {
   const config = WORKSPACE_DATA.settings.configuration;
+  const memory = WORKSPACE_DATA.settings.memory;
   return {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Settings', title: 'Integration framework overview', body: 'Sprint 6 introduces a provider/service/config architecture while keeping the whole product in Demo Mode.' })}
+          ${sectionHeader({ eyebrow: 'Settings', title: 'Architecture and memory overview', body: 'EP Intelligence now combines the provider/service/config architecture with a provider-independent Executive Memory layer.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'settings', label: 'Active Mode', value: config.activeMode.label, body: config.activeMode.description })}
             ${statCard({ iconName: 'grid', label: 'Provider Strategy', value: APP_RUNTIME.config.providerStrategy, body: 'Provider + service + contract layers are now in place.' })}
             ${statCard({ iconName: 'check-circle', label: 'Domain Bindings', value: String(config.domainBindings.length), body: 'Every service domain currently resolves to Demo Mode mock providers.' })}
-            ${statCard({ iconName: 'sparkles', label: 'Registered Integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Future integration registration points are defined without any live connections.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Memory Relationships', value: String(memory.graph.edgeCount), body: 'Executive memory is now linked through a structured knowledge graph.' })}
           </div>
         </section>
 
-        <div class="grid-3">
+        <div class="grid-2">
           <section class="panel">
             ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring view', body: 'See the placeholder status for every future integration target.' })}
             <div class="snapshot-panel">
@@ -2344,6 +2629,14 @@ function settingsView() {
               <h3>${escapeHtml(APP_RUNTIME.config.architectureVersion)}</h3>
               <p>Future APIs should now be a plug-in exercise rather than a dashboard rewrite.</p>
               <button type="button" class="quick-action-button" data-route="/settings/provider-architecture">Open Provider Architecture ${icon('arrowRight')}</button>
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Executive Memory', title: 'Retention and persistence', body: 'Business knowledge is now retained independently of any live provider state.' })}
+            <div class="snapshot-panel">
+              <h3>${escapeHtml(memory.storeKey)}</h3>
+              <p>${escapeHtml(`Timeline: ${memory.retention.timelineHistory}. Decisions: ${memory.retention.completedDecisions}. Archived goals: ${memory.retention.archivedGoals}.`)}</p>
+              <button type="button" class="quick-action-button" data-route="/ai-assistant/memory-context">Open AI Memory / Context ${icon('arrowRight')}</button>
             </div>
           </section>
         </div>
@@ -2380,7 +2673,7 @@ function settingsIntegrationStatusView() {
             ${statCard({ iconName: 'check-circle', label: 'Current state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.detail })}
             ${statCard({ iconName: 'grid', label: 'Registered integrations', value: String(WORKSPACE_DATA.settings.integrationStatus.length), body: 'Every future integration still has a status surface.' })}
             ${statCard({ iconName: 'settings', label: 'Provider classes', value: String(APP_RUNTIME.providers.length), body: 'AnalyticsProvider is now active for marketing with safe fallback to demo data.' })}
-            ${statCard({ iconName: 'sparkles', label: 'Goal', value: 'Selective live data', body: 'Only Website Analytics is eligible for live GA4 hydration in Sprint 8.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Goal', value: 'Selective live data', body: 'Only Website Analytics is eligible for live GA4 hydration while Executive Memory stays provider-independent.' })}
           </div>
         </section>
 
@@ -2415,17 +2708,18 @@ function settingsIntegrationStatusView() {
 
 function settingsConfigurationView() {
   const config = WORKSPACE_DATA.settings.configuration;
+  const memory = WORKSPACE_DATA.settings.memory;
   return {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode and provider bindings', body: 'The wider app stays in Demo Mode even when Website Analytics is hydrated from a locally generated GA4 snapshot.' })}
+          ${sectionHeader({ eyebrow: 'Demo Mode Configuration', title: 'Runtime mode, provider bindings, and memory behaviour', body: 'The wider app stays in Demo Mode even when Website Analytics is hydrated from a locally generated GA4 snapshot, while Executive Memory persists separately.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'settings', label: 'Active mode', value: config.activeMode.label, body: config.activeMode.description })}
             ${statCard({ iconName: 'grid', label: 'Default provider', value: config.defaultProviderKey, body: 'MockProvider still anchors the default runtime; AnalyticsProvider selectively overrides marketing website analytics.' })}
             ${statCard({ iconName: 'shield', label: 'GA4 state', value: APP_RUNTIME.config.liveData.ga4.status, body: APP_RUNTIME.config.liveData.ga4.notes || APP_RUNTIME.config.liveData.ga4.detail })}
-            ${statCard({ iconName: 'book-open', label: 'Architecture version', value: APP_RUNTIME.config.architectureVersion, body: 'Sprint 8 adds the first live-capable provider path without changing the wider UI architecture.' })}
+            ${statCard({ iconName: 'book-open', label: 'Architecture version', value: APP_RUNTIME.config.architectureVersion, body: 'Sprint 9 adds the Executive Memory layer without changing the wider provider architecture.' })}
           </div>
         </section>
 
@@ -2458,6 +2752,15 @@ function settingsConfigurationView() {
                   })
                 )
                 .join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Memory retention', title: 'How business memory is kept', body: 'Retention stays configurable through structured local settings rather than a database or external service.' })}
+            <div class="section-stack">
+              ${registerRow({ kicker: `${pill('Timeline', 'info')}`, title: memory.retention.timelineHistory, body: 'Timeline history retention window for executive chronology.' })}
+              ${registerRow({ kicker: `${pill('Decisions', 'good')}`, title: memory.retention.completedDecisions, body: 'Completed decisions remain available for later executive review.' })}
+              ${registerRow({ kicker: `${pill('Goals', 'neutral')}`, title: memory.retention.archivedGoals, body: 'Archived goal history remains available as strategic context.' })}
+              ${registerRow({ kicker: `${pill('Categories', 'warn')}`, title: memory.categories.join(', '), body: 'Active structured categories inside the memory layer.' })}
             </div>
           </section>
         </div>
@@ -2494,6 +2797,9 @@ function settingsProviderArchitectureView() {
               ${statCard({ iconName: 'check-circle', label: 'Approval groups', value: String(architecture.health.approvals), body: 'ApprovalService still powers grouped approvals.' })}
               ${statCard({ iconName: 'presentation', label: 'Report routes', value: String(architecture.health.reports), body: 'ReportService powers shared reporting outputs.' })}
               ${statCard({ iconName: 'calendar', label: 'Timeline events', value: String(architecture.health.timeline), body: 'TimelineService provides reusable timeline shaping.' })}
+              ${statCard({ iconName: 'book-open', label: 'Memory events', value: String(architecture.health.memoryEvents), body: 'Persistent executive timeline coverage now comes from MemoryService.' })}
+              ${statCard({ iconName: 'target', label: 'Memory goals', value: String(architecture.health.memoryGoals), body: 'Strategic goals now persist independently of providers.' })}
+              ${statCard({ iconName: 'sparkles', label: 'Memory decisions', value: String(architecture.health.memoryDecisions), body: 'Decision memory is now available to reports and intelligence.' })}
             </div>
           </section>
         </div>
@@ -2559,6 +2865,9 @@ const routeRenderers = {
   '/approvals': approvalsView,
   '/reports': reportsOverviewView,
   '/reports/weekly-briefings': weeklyBriefingsView,
+  '/reports/executive-timeline': executiveTimelineView,
+  '/reports/decision-journal': executiveDecisionJournalView,
+  '/reports/strategic-goals': strategicGoalsView,
   '/reports/monthly-reports': monthlyReportsView,
   '/reports/quarterly-reviews': quarterlyReviewsView,
   '/reports/board-meeting': boardMeetingView,
@@ -2572,7 +2881,7 @@ const routeRenderers = {
   '/ai-assistant/suggested-actions': () => aiAssistantPlaceholderView('/ai-assistant/suggested-actions'),
   '/ai-assistant/assumptions': () => aiAssistantPlaceholderView('/ai-assistant/assumptions'),
   '/ai-assistant/missing-information': () => aiAssistantPlaceholderView('/ai-assistant/missing-information'),
-  '/ai-assistant/memory-context': () => aiAssistantPlaceholderView('/ai-assistant/memory-context'),
+  '/ai-assistant/memory-context': aiAssistantMemoryContextView,
   '/settings': settingsView,
   '/settings/integrations': settingsIntegrationStatusView,
   '/settings/configuration': settingsConfigurationView,

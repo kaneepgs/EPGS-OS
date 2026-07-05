@@ -1,4 +1,4 @@
-export function createIntegrationService(registry, { executiveService, financeService, marketingService, approvalService, reportService, timelineService, intelligenceService } = {}) {
+export function createIntegrationService(registry, { executiveService, financeService, marketingService, approvalService, reportService, timelineService, intelligenceService, memoryService } = {}) {
   return Object.freeze({
     getConfiguration() {
       const modeSummary = registry.getModeSummary();
@@ -32,6 +32,7 @@ export function createIntegrationService(registry, { executiveService, financeSe
           { title: 'ApprovalService', body: 'Owns grouped approval data and approval contract normalization.' },
           { title: 'ReportService', body: 'Owns reporting-route datasets and report contract normalization.' },
           { title: 'TimelineService', body: 'Owns reusable executive timeline shaping for CEO and future modules.' },
+          { title: 'MemoryService', body: 'Owns persistent executive memory, decision history, strategic goals, deterministic historical context, and knowledge graph relationships.' },
           { title: 'IntelligenceService', body: 'Owns deterministic insight generation, health scoring, recommendations, and narratives on top of provider-backed service data.' }
         ],
         providerBindings: registry.describeBindings(),
@@ -49,17 +50,21 @@ export function createIntegrationService(registry, { executiveService, financeSe
           approvals: Object.keys(approvalService?.getWorkspace?.()?.groups || {}).length,
           reports: (reportService?.getWorkspace?.()?.overview || []).length,
           timeline: (timelineService?.getBusinessTimeline?.() || []).length,
-          intelligence: intelligenceService?.getWorkspace?.()?.insights?.executive?.length || 0
+          intelligence: intelligenceService?.getWorkspace?.()?.insights?.executive?.length || 0,
+          memoryEvents: memoryService?.getTimeline?.()?.length || 0,
+          memoryGoals: memoryService?.getGoals?.()?.length || 0,
+          memoryDecisions: memoryService?.getDecisions?.()?.length || 0
         }
       };
     },
-    getSettingsWorkspace(baseSettings = {}) {
+    getSettingsWorkspace(baseSettings = {}, memoryWorkspace = {}) {
       const configuration = this.getConfiguration();
       return {
         ...baseSettings,
         configuration,
         integrationStatus: this.getIntegrationStatus(),
-        architecture: this.getProviderArchitecture()
+        architecture: this.getProviderArchitecture(),
+        memory: memoryWorkspace
       };
     }
   });

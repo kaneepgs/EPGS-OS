@@ -6,12 +6,13 @@ EP Intelligence is intended to become an AI Executive Operating System for EP Go
 
 The system will eventually coordinate executive agents, connected business data, decision memory, approval workflows, and recurring briefings.
 
-Sprint 6 introduced the first real integration framework for that future direction, Sprint 7 added the first deterministic Executive Intelligence Engine on top of it, and Sprint 8 now proves the first live-capable provider path:
+Sprint 6 introduced the first real integration framework for that future direction, Sprint 7 added the first deterministic Executive Intelligence Engine on top of it, Sprint 8 proved the first live-capable provider path, and Sprint 9 now adds a provider-independent Executive Memory & Knowledge Graph layer:
 
 - presentation routes remain stable
 - business logic sits behind reusable services
 - data access sits behind interchangeable providers
 - executive reasoning now sits in dedicated intelligence engines
+- executive memory now sits in dedicated local stores and a reusable memory service
 - the wider application still runs in Demo Mode, with only Website Analytics eligible for a generated GA4 overlay
 
 ## Proposed System Layers
@@ -57,6 +58,7 @@ Current services:
 - `TimelineService`
 - `IntegrationService`
 - `IntelligenceService`
+- `MemoryService`
 
 ### 3. Executive Intelligence Layer
 
@@ -82,15 +84,36 @@ Responsibilities:
 - create reusable narratives for daily, weekly, board, and department briefings
 - provide a reasoning core that future LLM features can enhance rather than replace
 
-### 4. Decision and Memory Layer
+### 4. Executive Memory & Knowledge Graph Layer
 
-This layer will maintain:
+This layer now lives in `assets/memory/`.
 
-- a decision journal
-- an approval history
-- recommendation outcomes
-- periodic business intelligence snapshots
-- quarterly review material
+It maintains:
+
+- a permanent executive timeline
+- a structured decision journal
+- persistent strategic goals
+- recurring issues and historical trends
+- memory highlights and deterministic context
+- a structured knowledge graph linking business entities and relationships
+
+Current modules:
+
+- `MemoryStore`
+- `EventStore`
+- `DecisionStore`
+- `GoalStore`
+- `ContextStore`
+- `KnowledgeGraph`
+- `MemoryService`
+
+Responsibilities:
+
+- keep memory separate from providers so business knowledge survives data-source changes
+- persist business context in structured local storage and seed files only
+- generate deterministic historical context for the intelligence layer
+- expose memory-backed search, dashboard, report, and settings workspaces
+- represent business relationships as structured nodes and edges rather than visual graph UI
 
 ### 5. Approval and Action Layer
 
@@ -114,7 +137,7 @@ The reporting layer will eventually provide:
 - risk and performance alerts
 - historical trend summaries
 
-Sprint 6 moved report access behind `ReportService`, and Sprint 7 now lets report views consume generated narratives and recommendations from the intelligence layer without direct UI-side reasoning.
+Sprint 6 moved report access behind `ReportService`, Sprint 7 let report views consume generated narratives and recommendations from the intelligence layer without direct UI-side reasoning, and Sprint 9 now allows reports to consume memory-backed historical events, decisions, milestones, and goal progress.
 
 ## Architectural Rules for This Sprint
 
@@ -128,6 +151,8 @@ Sprint 6 moved report access behind `ReportService`, and Sprint 7 now lets repor
 8. Provider swaps should happen in the registry before any UI rewrite is considered.
 9. Demo fallback should remain first-class whenever live provider inputs are missing or invalid.
 10. Future LLM integrations should augment deterministic reasoning rather than replace it outright.
+11. Executive memory must remain provider-independent and local-first.
+12. Knowledge graph relationships must remain explainable structured objects, not opaque AI inferences.
 
 ## Current Integration Build Sequence
 

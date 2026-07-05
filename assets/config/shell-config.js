@@ -51,6 +51,9 @@ export const SUBNAV = {
   reports: [
     ['/reports', 'Overview'],
     ['/reports/weekly-briefings', 'Weekly Briefings'],
+    ['/reports/executive-timeline', 'Executive Timeline'],
+    ['/reports/decision-journal', 'Decision Journal'],
+    ['/reports/strategic-goals', 'Strategic Goals'],
     ['/reports/monthly-reports', 'Monthly Reports'],
     ['/reports/quarterly-reviews', 'Quarterly Reviews'],
     ['/reports/board-meeting', 'Board Meeting Mode'],
@@ -129,12 +132,15 @@ export const ROUTE_META = {
   '/ai-assistant/suggested-actions': { title: 'Suggested Actions', subtitle: 'A placeholder for staged AI recommendations awaiting approval.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/assumptions': { title: 'Assumptions', subtitle: 'A placeholder for the assumptions driving AI output.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/missing-information': { title: 'Missing Information', subtitle: 'A placeholder for gaps the AI layer needs surfaced clearly.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/memory-context': { title: 'AI Memory / Context', subtitle: 'A placeholder for how EP Intelligence will hold executive context.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
+  '/ai-assistant/memory-context': { title: 'AI Memory / Context', subtitle: 'Searchable executive memory, historical context, and knowledge graph coverage.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
 
   '/approvals': { title: 'Approvals', subtitle: 'A central, business-wide approval centre spanning functions.', module: 'Approvals', sidebarKey: '/approvals', parentLabel: 'Approvals' },
 
   '/reports': { title: 'Reports', subtitle: 'Weekly, monthly, quarterly, and board-ready reporting outputs.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/weekly-briefings': { title: 'Weekly Briefings', subtitle: 'Board-style Sunday briefing experience.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/executive-timeline': { title: 'Executive Timeline', subtitle: 'Permanent executive timeline of milestones, launches, decisions, and strategic events.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/decision-journal': { title: 'Decision Journal', subtitle: 'Structured executive decision memory with reasons, expected outcomes, and future actual outcomes.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/strategic-goals': { title: 'Strategic Goals', subtitle: 'Persistent business goals linked to metrics, decisions, and progress.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/monthly-reports': { title: 'Monthly Reports', subtitle: 'A placeholder monthly leadership report surface.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/quarterly-reviews': { title: 'Quarterly Reviews', subtitle: 'Prepared board paper for the quarter just gone.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/board-meeting': { title: 'Board Meeting Mode', subtitle: 'A presentation-ready board view with keyboard navigation and executive slides.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
@@ -202,5 +208,29 @@ export const QUESTION_SETS = {
     why: ['Approval-first governance protects quality', 'The operating system is designed to stage decisions before any future automation exists.'],
     matters: ['Yes, because governance quality is strategic', 'A single approval centre gives leadership one calm place to review decisions that matter.'],
     next: ['Prioritise high-impact approvals', 'Review the approvals most likely to affect cash, growth quality, content output, or executive confidence.']
+  },
+  '/reports': {
+    what: ['Executive reporting is now memory-backed', 'Reports package current performance alongside historical context, goal progress, and prior decisions.'],
+    why: ['Leadership needs reporting that remembers', 'A strong report should explain not just what changed, but what the business has already learned and committed to.'],
+    matters: ['Yes, because executive memory improves decision quality', 'Historical context helps leadership separate one-off movement from repeat patterns.'],
+    next: ['Use reports to review decisions, trends, and goals together', 'Open the relevant report route depending on whether the priority is briefing, timeline, goals, or board discussion.']
+  },
+  '/reports/executive-timeline': {
+    what: ['The business now has a permanent executive timeline', 'Major milestones, launches, decisions, and system events are now stored independently of any current provider feed.'],
+    why: ['Leadership needs chronology, not just snapshots', 'Timeline memory makes it easier to see what actually happened, in what order, and with what impact.'],
+    matters: ['Yes, because context changes interpretation', 'A revenue spike means more when it follows the launch of a successful campaign or a structural decision.'],
+    next: ['Use the timeline to ground decisions in history', 'Check what happened before, what it influenced, and what should be remembered next time.']
+  },
+  '/reports/decision-journal': {
+    what: ['Decisions are now structured memory objects', 'Each decision captures the reason, expected outcome, actual outcome, ownership, and linked KPIs.'],
+    why: ['The business should learn from decisions, not just make them', 'Structured decision memory makes review and improvement possible later.'],
+    matters: ['Yes, because repeated decisions should get smarter', 'Leadership should not have to rediscover the same lessons every quarter.'],
+    next: ['Use the journal to review what worked, what did not, and what remains active', 'Link future decisions back to the relevant goals and recurring issues.']
+  },
+  '/reports/strategic-goals': {
+    what: ['Strategic goals are now persistent, linked objects', 'Goals track progress, ownership, deadlines, linked metrics, and supporting decisions.'],
+    why: ['A dashboard needs a destination, not just a status readout', 'Goals turn activity and decisions into a longer-term executive direction.'],
+    matters: ['Yes, because progress without strategic context can be misleading', 'Leadership needs to know whether the most important goals are actually moving.'],
+    next: ['Use goals to decide where to focus leadership time next', 'Review what is on track, what needs intervention, and which decisions unblock the biggest outcomes.']
   }
 };

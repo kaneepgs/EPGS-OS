@@ -10,6 +10,7 @@ import { createReportService } from '../services/report-service.js';
 import { createExecutiveService } from '../services/executive-service.js';
 import { createIntegrationService } from '../services/integration-service.js';
 import { createIntelligenceService } from '../services/intelligence-service.js';
+import { createMemoryService } from '../memory/memory-service.js';
 
 const GA4_SNAPSHOT = await loadGeneratedGa4Snapshot();
 const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT });
@@ -19,13 +20,15 @@ const financeService = createFinanceService(providerRegistry);
 const marketingService = createMarketingService(providerRegistry);
 const reportService = createReportService(providerRegistry);
 const executiveService = createExecutiveService(providerRegistry, { timelineService });
+const memoryService = createMemoryService();
 const intelligenceService = createIntelligenceService({
   executive: executiveService,
   finance: financeService,
   marketing: marketingService,
   approval: approvalService,
   report: reportService,
-  timeline: timelineService
+  timeline: timelineService,
+  memory: memoryService
 });
 const integrationService = createIntegrationService(providerRegistry, {
   executiveService,
@@ -34,7 +37,8 @@ const integrationService = createIntegrationService(providerRegistry, {
   approvalService,
   reportService,
   timelineService,
-  intelligenceService
+  intelligenceService,
+  memoryService
 });
 const INTELLIGENCE = intelligenceService.getWorkspace();
 
@@ -46,7 +50,8 @@ export const SERVICES = Object.freeze({
   report: reportService,
   timeline: timelineService,
   integration: integrationService,
-  intelligence: intelligenceService
+  intelligence: intelligenceService,
+  memory: memoryService
 });
 
 const CEO_DATA = executiveService.getCeoDashboard();
@@ -54,6 +59,10 @@ const CFO_DATA = financeService.getWorkspace();
 const CMO_DATA = marketingService.getWorkspace();
 const REPORT_DATA = reportService.getWorkspace();
 const AI_DATA = executiveService.getAiWorkspace();
+
+function flattenApprovalGroups(groups = {}) {
+  return Object.values(groups).flat();
+}
 
 function metricLookup(metrics = []) {
   return Object.fromEntries(
@@ -131,14 +140,24 @@ function buildCeoWebsiteIntelligence(websiteAnalytics = {}) {
 }
 
 const CEO_WEBSITE_INTELLIGENCE = buildCeoWebsiteIntelligence(CMO_DATA.websiteAnalytics);
+const MEMORY_DATA = memoryService.getWorkspace({
+  executive: CEO_DATA,
+  finance: CFO_DATA,
+  marketing: CMO_DATA,
+  approvals: flattenApprovalGroups(approvalService.getWorkspace().groups),
+  recommendations: INTELLIGENCE.recommendations,
+  risks: CEO_DATA.executiveRisks,
+  opportunities: CEO_DATA.executiveOpportunities
+});
 
 export const WORKSPACE_DATA = Object.freeze({
   brand: executiveService.getBrand(),
   ceo: {
     ...CEO_DATA,
-    businessTimeline: [...INTELLIGENCE.timelineEvents, ...CEO_DATA.businessTimeline],
+    businessTimeline: [...INTELLIGENCE.timelineEvents, ...MEMORY_DATA.timeline, ...CEO_DATA.businessTimeline],
     intelligence: INTELLIGENCE.ceo,
     websiteIntelligence: CEO_WEBSITE_INTELLIGENCE,
+    memory: MEMORY_DATA.dashboard,
     businessHealthScore: {
       ...CEO_DATA.businessHealthScore,
       overall: INTELLIGENCE.health.overall.score,
@@ -182,16 +201,19 @@ export const WORKSPACE_DATA = Object.freeze({
   approvals: approvalService.getWorkspace(),
   reports: {
     ...REPORT_DATA,
-    intelligence: INTELLIGENCE.reports
+    intelligence: INTELLIGENCE.reports,
+    memory: MEMORY_DATA.reports
   },
   aiAssistant: {
     ...AI_DATA,
     askWorkspace: INTELLIGENCE.aiAssistant,
-    intelligence: INTELLIGENCE.aiAssistant
+    intelligence: INTELLIGENCE.aiAssistant,
+    memory: MEMORY_DATA
   },
+  memory: MEMORY_DATA,
   intelligence: INTELLIGENCE,
   placeholders: executiveService.getPlaceholderModules(),
-  settings: integrationService.getSettingsWorkspace(providerRegistry.getDomainProvider('settings').getSettingsWorkspace()),
+  settings: integrationService.getSettingsWorkspace(providerRegistry.getDomainProvider('settings').getSettingsWorkspace(), MEMORY_DATA),
   shortcuts: executiveService.getShortcuts()
 });
 
@@ -211,5 +233,13 @@ export const APP_RUNTIME = Object.freeze({
     generatedAt: INTELLIGENCE.generatedAt,
     insightCount: INTELLIGENCE.insights.executive.length,
     recommendationCount: INTELLIGENCE.recommendations.length
+  },
+  memory: {
+    initialized: MEMORY_DATA.initialized,
+    timelineCount: MEMORY_DATA.timeline.length,
+    decisionCount: MEMORY_DATA.decisions.length,
+    goalCount: MEMORY_DATA.goals.length,
+    graphNodes: MEMORY_DATA.graph.summary.nodeCount,
+    graphEdges: MEMORY_DATA.graph.summary.edgeCount
   }
 });

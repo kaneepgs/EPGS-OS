@@ -68,3 +68,10 @@
 - Added Sprint 8C and surfaced GA4-backed website intelligence into the CEO Dashboard without changing the provider/service/intelligence architecture.
 - Added CEO-level website KPI cards for users, sessions, new users, returning users, bounce rate, and sessions vs prior period, with clear live-vs-fallback status messaging.
 - Fed live GA4 website signals into the CEO Executive Briefing and Cross-Department Intelligence so leadership can see live website momentum in the same shell as finance and approvals.
+- Added Sprint 9 and introduced a provider-independent Executive Memory & Knowledge Graph layer under `assets/memory/`.
+- Added `MemoryStore`, `EventStore`, `DecisionStore`, `GoalStore`, `ContextStore`, `KnowledgeGraph`, and `MemoryService` using structured seed data plus local storage persistence only.
+- Added a permanent executive timeline, structured decision journal, persistent strategic goals, recurring issues, historical trends, memory highlights, retention settings, and deterministic historical context.
+- Wired memory into the runtime, intelligence layer, CEO Dashboard, Reports, AI Memory / Context view, global search, and Settings so the business now remembers events, decisions, milestones, and goal progress.
+- Added a structured knowledge graph linking departments, goals, risks, opportunities, KPIs, approvals, recommendations, timeline events, and decisions.
+- Added new report routes for Executive Timeline, Decision Journal, and Strategic Goals, plus memory-backed report context and search coverage.
+- Documented the new memory architecture in the README and architecture manual and added `docs/executive-memory.md`.

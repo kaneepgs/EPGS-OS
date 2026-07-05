@@ -19,9 +19,9 @@ export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
   shellName: 'EP Intelligence',
-  architectureVersion: 'v0.3',
+  architectureVersion: 'v0.4',
   providerStrategy: 'provider-service-intelligence-contract',
-  notes: 'Sprint 8 keeps the wider product in Demo Mode while allowing Website Analytics to hydrate from a generated GA4 snapshot when credentials and a local sync are available.'
+  notes: 'Sprint 9 adds a provider-independent Executive Memory and Knowledge Graph layer using structured files and local storage, while keeping the wider product in Demo Mode except for the selective GA4 Website Analytics snapshot path.'
 });
 
 export function currentModeConfig() {

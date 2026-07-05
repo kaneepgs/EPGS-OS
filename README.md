@@ -4,7 +4,7 @@ EP Intelligence is a frontend-only AI Executive Operating System prototype for E
 
 It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
 
-Sprint 8 adds the first live-capable provider path: **Website Analytics** can now hydrate from a locally generated **Google Analytics 4 snapshot** while the rest of the product stays safely in Demo Mode.
+Sprint 9 adds a provider-independent **Executive Memory & Knowledge Graph** layer so the business can now retain events, decisions, goals, recurring issues, milestones, and deterministic historical context independently of any live provider.
 
 ## Current Sprint State
 
@@ -120,6 +120,19 @@ Added the first live data path without changing the wider architecture:
 - updated Settings pages so **Integration Status**, **Demo Mode Configuration**, and **Provider Architecture** now explain the hybrid demo/live state clearly
 - preserved safe fallback behaviour when credentials are missing, incomplete, or not yet synced
 
+### Sprint 9 — Executive Memory & Knowledge Graph v0.1
+
+Added the long-term memory of the business without changing the frontend-only architecture:
+
+- introduced a dedicated `assets/memory/` subsystem with **MemoryStore, EventStore, DecisionStore, GoalStore, ContextStore, KnowledgeGraph, and MemoryService**
+- added a permanent executive timeline with structured date, category, department, impact, and related-entity coverage
+- added a structured executive decision journal with reason, expected outcome, actual outcome, owner, department, related KPIs, and status
+- added persistent strategic goals with progress, deadlines, linked metrics, and linked decisions
+- added a structured knowledge graph linking departments, goals, risks, opportunities, KPIs, approvals, recommendations, timeline events, and decisions
+- added deterministic historical context so the intelligence layer can reference prior trends and repeated business patterns
+- upgraded the CEO Dashboard, Reports, AI Memory / Context route, global search, and Settings to consume memory-backed business context
+- added configurable retention settings for timeline history, completed decisions, archived goals, and memory categories
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -145,6 +158,7 @@ This prototype intentionally remains:
 - `assets/data/mock-data.js` — raw structured demo datasets
 - `assets/data/live-data-loader.js` — safe loader for the optional generated GA4 snapshot
 - `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, and runtime workspace data
+- `assets/memory/` — provider-independent executive memory stores, seed data, knowledge graph generation, and memory service
 - `assets/providers/` — active mock provider, live-capable analytics provider, future provider placeholders, and provider registry
 - `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, integration status, and intelligence assembly
 - `assets/intelligence/` — deterministic executive reasoning engines for insights, correlations, recommendations, priority, health, narratives, and confidence
@@ -155,6 +169,7 @@ This prototype intentionally remains:
 - `assets/site.webmanifest` — install metadata
 - `scripts/sync-ga4-snapshot.mjs` — local GA4 snapshot sync script for Sprint 8
 - `docs/` — architecture and constitutional documents
+- `docs/executive-memory.md` — Executive Memory and Knowledge Graph architecture guide
 - `specifications/` — executive role specifications
 - `prompts/` — future OpenClaw executive build prompts
 - `skills/` — draft executive skills
@@ -288,6 +303,27 @@ Sprint 8 validation included:
   - Demo Mode Configuration
   - Provider Architecture
 
+Sprint 9 validation includes:
+
+- `node --check assets/app.js`
+- syntax validation across the new `assets/memory/` subsystem and runtime wiring
+- memory initialisation checks for timeline, decisions, goals, retention, and knowledge graph summary
+- route rendering checks for:
+  - `?route=/ceo`
+  - `?route=/reports/executive-timeline`
+  - `?route=/reports/decision-journal`
+  - `?route=/reports/strategic-goals`
+  - `?route=/ai-assistant/memory-context`
+- validation that reports now consume memory-backed historical events, decisions, goal progress, and milestones
+- validation that global search includes memory entries
+- validation that no JavaScript errors or console warnings appear during the scripted walkthrough
+- captured screenshots for:
+  - CEO Historical Context
+  - Strategic Goals
+  - Decision Journal
+  - Timeline
+  - Memory Search
+
 ## Design Principles
 
 1. Evidence before recommendation
@@ -302,4 +338,4 @@ Sprint 8 validation included:
 
 The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System**, giving EP Golf Studios a credible AI-Chief-of-Staff-style **CEO Dashboard** plus integrated prototype depth across the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
 
-After Sprint 7, the product has both a real integration framework and a deterministic Executive Intelligence Engine beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core instead of replacing it.
+After Sprint 9, the product has a real integration framework, a deterministic Executive Intelligence Engine, and a provider-independent Executive Memory layer beneath the UI, so future live APIs and future LLM assistance can enhance a stable reasoning core with durable business context instead of replacing it.
