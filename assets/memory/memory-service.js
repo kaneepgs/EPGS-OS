@@ -1,4 +1,4 @@
-import { deepClone, normalizeCollection, normalizeHistoricalContext, normalizeMemoryEvent, parseCompactNumber } from '../contracts/data-contracts.js';
+import { deepClone, normalizeCollection, normalizeExecutiveDecision, normalizeHistoricalContext, normalizeMemoryEvent, parseCompactNumber } from '../contracts/data-contracts.js';
 import { MemoryStore } from './memory-store.js';
 import { EventStore } from './event-store.js';
 import { DecisionStore } from './decision-store.js';
@@ -211,6 +211,47 @@ function operationsMilestones(runtime = {}) {
   return [...events, ...memoryCandidates.map((item) => normalizeMemoryEvent(item))];
 }
 
+function actionMilestones(runtime = {}) {
+  const actions = runtime.actions || [];
+  return actions
+    .filter((item) => ['Approved', 'Completed', 'Rejected'].includes(item.status))
+    .map((item) => normalizeMemoryEvent({
+      id: `mem-action-${item.id}`,
+      date: item.dueDate || item.created || new Date().toISOString().slice(0, 10),
+      time: item.status,
+      title: item.title,
+      body: `${item.summary} Recommended outcome: ${item.recommendedOutcome}`,
+      category: `Action ${item.status}`,
+      department: item.department,
+      impact: item.priority === 'High' ? 'High' : 'Medium',
+      relatedEntities: [...(item.relatedDecisions || []), ...(item.relatedTimelineEvents || [])],
+      status: item.status,
+      route: item.detailRoute || '/executive-action-centre/action-detail'
+    }));
+}
+
+function actionDecisions(runtime = {}) {
+  const actions = runtime.actions || [];
+  return actions
+    .filter((item) => ['Approved', 'Rejected', 'Completed'].includes(item.status))
+    .map((item) => normalizeExecutiveDecision({
+      id: `decision-${item.id}`,
+      date: item.dueDate || item.created || new Date().toISOString().slice(0, 10),
+      title: item.title,
+      summary: item.summary,
+      reason: item.supportingEvidence?.[0] || item.businessContext || 'Action staged through the Executive Action Centre.',
+      expectedOutcome: item.recommendedOutcome,
+      actualOutcome: item.status === 'Completed' ? 'Completed through approval-first workflow.' : `${item.status} and retained in executive history.`,
+      owner: item.owner,
+      department: item.department,
+      relatedKpis: item.relatedKpis || [],
+      linkedGoalIds: [],
+      linkedTimelineEventIds: item.relatedTimelineEvents || [],
+      status: item.status,
+      route: item.detailRoute || '/executive-action-centre/action-detail'
+    }));
+}
+
 export function createMemoryService() {
   const memoryStore = new MemoryStore();
   const eventStore = new EventStore(memoryStore);
@@ -226,10 +267,10 @@ export function createMemoryService() {
       return memoryStore.getRetention();
     },
     getTimeline(runtime = {}) {
-      return sortTimeline(dedupeById([...eventStore.all(), ...marketingMilestones(runtime), ...communicationsMilestones(runtime), ...operationsMilestones(runtime)]));
+      return sortTimeline(dedupeById([...eventStore.all(), ...marketingMilestones(runtime), ...communicationsMilestones(runtime), ...operationsMilestones(runtime), ...actionMilestones(runtime)]));
     },
-    getDecisions() {
-      return decisionStore.all();
+    getDecisions(runtime = {}) {
+      return dedupeById([...decisionStore.all(), ...actionDecisions(runtime)]).sort((a, b) => `${b.date} ${b.title}`.localeCompare(`${a.date} ${a.title}`));
     },
     getGoals() {
       return goalStore.all();
@@ -246,21 +287,23 @@ export function createMemoryService() {
     getKnowledgeGraph(runtime = {}) {
       return buildKnowledgeGraph({
         timeline: this.getTimeline(runtime),
-        decisions: this.getDecisions(),
+        decisions: this.getDecisions(runtime),
         goals: this.getGoals(),
         context: this.getContext(runtime).deterministic,
         executive: runtime.executive || {},
         approvals: runtime.approvals || [],
         recommendations: runtime.recommendations || [],
         risks: runtime.risks || [],
-        opportunities: runtime.opportunities || []
+        opportunities: runtime.opportunities || [],
+        actions: runtime.actions || []
       });
     },
     getSearchIndex(runtime = {}) {
       const context = this.getContext(runtime);
       const entries = [
         ...this.getTimeline(runtime).map((item) => ({ id: `search-${item.id}`, type: 'Timeline', title: item.title, body: item.body, route: item.route || '/reports/executive-timeline', meta: `${item.date} · ${item.department}` })),
-        ...this.getDecisions().map((item) => ({ id: `search-${item.id}`, type: 'Decision', title: item.title, body: item.summary, route: item.route || '/reports/decision-journal', meta: `${item.date} · ${item.status}` })),
+        ...this.getDecisions(runtime).map((item) => ({ id: `search-${item.id}`, type: 'Decision', title: item.title, body: item.summary, route: item.route || '/reports/decision-journal', meta: `${item.date} · ${item.status}` })),
+        ...((runtime.actions || []).map((item) => ({ id: `search-action-${item.id}`, type: 'Action', title: item.title, body: item.summary, route: item.detailRoute || '/executive-action-centre/action-detail', meta: `${item.category} · ${item.priority} · ${item.status}` }))),
         ...this.getGoals().map((item) => ({ id: `search-${item.id}`, type: 'Goal', title: item.title, body: item.summary, route: item.route || '/reports/strategic-goals', meta: `${item.progress}% · ${item.status}` })),
         ...context.deterministic.map((item) => ({ id: `search-${item.id}`, type: 'Historical Context', title: item.title, body: item.summary, route: item.route || '/ai-assistant/memory-context', meta: item.department || 'Executive Memory' })),
         ...(runtime.recommendations || []).map((item) => ({ id: `search-${item.id}`, type: 'Recommendation', title: item.recommendation, body: item.why, route: '/ceo', meta: `${item.priority} · ${item.suggestedOwner}` })),
@@ -270,7 +313,7 @@ export function createMemoryService() {
       return entries;
     },
     getDashboardWorkspace(runtime = {}) {
-      const decisions = this.getDecisions();
+      const decisions = this.getDecisions(runtime);
       const goals = this.getGoals();
       const timeline = this.getTimeline(runtime);
       const context = this.getContext(runtime);
@@ -300,7 +343,7 @@ export function createMemoryService() {
       const timeline = this.getTimeline(runtime);
       return {
         historicalContext: context.deterministic.slice(0, 3),
-        previousDecisions: this.getDecisions().slice(0, 3),
+        previousDecisions: this.getDecisions(runtime).slice(0, 3),
         goalProgress: this.getGoals().slice(0, 3),
         milestones: timeline.filter((entry) => /milestone|record|launch|campaign|content/i.test(`${entry.category} ${entry.title}`)).slice(0, 3),
         summaryCards: [
@@ -331,7 +374,7 @@ export function createMemoryService() {
         initialized: this.isInitialized(),
         retention: this.getRetention(),
         timeline: this.getTimeline(runtime),
-        decisions: this.getDecisions(),
+        decisions: this.getDecisions(runtime),
         goals: this.getGoals(),
         context: this.getContext(runtime),
         dashboard: this.getDashboardWorkspace(runtime),

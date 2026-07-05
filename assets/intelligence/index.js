@@ -109,7 +109,7 @@ export function createExecutiveIntelligenceEngine(config) {
     };
   }
 
-  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [], communications = {}, operations = {} }) {
+  function buildAskWorkspace({ insights, recommendations, narratives, memoryContext = [], communications = {}, operations = {}, actions = {} }) {
     const prompts = [
       {
         question: 'What happened across the business this week?',
@@ -152,6 +152,12 @@ export function createExecutiveIntelligenceEngine(config) {
         answer: operations?.summary?.dailySummary || 'Operations Calendar summary is not currently available.',
         confidence: operations?.providerSummary?.state === 'live-calendar' ? 'High' : 'Medium',
         rationale: 'Built from Operations Calendar capacity, bookings, meetings, deadlines, and deterministic scheduling risk rules.'
+      },
+      {
+        question: 'What is awaiting approval right now?',
+        answer: actions?.queues?.waitingForMe?.slice(0, 3).map((item) => `${item.title} (${item.priority})`).join(' · ') || 'No approval-first actions are currently staged.',
+        confidence: 'High',
+        rationale: 'Drawn from the Executive Action Centre queue and approval-first workflow state.'
       }
     ];
 
@@ -179,8 +185,20 @@ export function createExecutiveIntelligenceEngine(config) {
       const communications = services.communications?.getWorkspace?.() || {};
       const operations = services.timeline?.getOperationsWorkspace?.() || {};
       const timeline = services.timeline.getBusinessTimeline();
-      const memory = services.memory?.getContext?.({ finance, marketing, communications, operations }) || { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] };
-      const context = { executive, finance, marketing, communications, operations, approvals, reports, timeline, memory };
+      const actions = services.actions?.getWorkspace?.() || { actions: [], queues: {}, metrics: {} };
+      const memory = services.memory?.getWorkspace?.({
+        executive,
+        finance,
+        marketing,
+        communications,
+        operations,
+        approvals: Object.values(approvals.groups || {}).flat(),
+        recommendations: [],
+        risks: executive.executiveRisks || [],
+        opportunities: executive.executiveOpportunities || [],
+        actions: actions.actions || []
+      }) || { context: { deterministic: [], recurringIssues: [], historicalTrends: [], strategicThemes: [], memoryHighlights: [] }, goals: [], decisions: [] };
+      const context = { executive, finance, marketing, communications, operations, approvals, reports, timeline, memory, actions };
 
       const health = healthEngine.evaluate(context);
       const correlations = correlationEngine.evaluate(context, { health });
@@ -189,7 +207,7 @@ export function createExecutiveIntelligenceEngine(config) {
       const insights = insightEngine.evaluate(context, { correlations, recommendations, health });
       const narratives = narrativeEngine.evaluate(context, { insights, recommendations, health });
       const timelineEvents = createTimelineEvents(context, { correlations, recommendations });
-      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.deterministic, communications, operations });
+      const askWorkspace = buildAskWorkspace({ insights, recommendations, narratives, memoryContext: memory.context?.deterministic || [], communications, operations, actions });
 
       const ceoCommentary = toCommentary('AI Executive Briefing', insights.executive[0], recommendations[0], {
         risks: insights.executive.slice(1, 3).map((item) => item.executiveSummary).join(' '),
@@ -225,7 +243,7 @@ export function createExecutiveIntelligenceEngine(config) {
           health,
           narratives,
           prompts: askWorkspace.prompts,
-          memoryContext: memory.deterministic,
+          memoryContext: memory.context?.deterministic || [],
           communications,
           operations
         },

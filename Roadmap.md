@@ -2,120 +2,94 @@
 
 ## Purpose
 
-The roadmap exists to keep development focused on delivering business value.
-
 `PRODUCT_VISION.md` defines the long-term destination.
 
-`Roadmap.md` defines the current path toward it.
+`Roadmap.md` defines the active path from the current release.
 
-It should prevent feature creep while providing clear visibility into the direction of the platform.
-
-The roadmap should be reviewed and updated after every completed release.
+This document should keep EP Intelligence focused on executive value, platform leverage, and approval-first business usefulness.
 
 ## NOW
 
-The **Now** section contains the current active work.
-
-Only one major initiative should normally appear here.
-
 ### Current
 
-- Sprint 18 — Social Providers v1.0
-- Unified Social Provider
-- Social Health Score
-- Cross-platform reporting
-- Executive social intelligence
-- Competitor benchmarking
-- Marketing attribution
-- Demo fallback preserved
+- Accounting Provider v1.0
+- booking-intelligence groundwork beneath the Executive Action Centre
+- hardening the future execution-adapter layer without enabling automation
 
 ### Status
 
-🟡 In progress
+🟡 Ready after v2.0 release
 
 ## NEXT
 
-The **Next** section contains the next two to four planned initiatives.
-
-These should be considered committed priorities unless changed by the product owner.
-
-1. Accounting Provider v1.0
-2. Booking Intelligence
+1. Booking Intelligence
+2. CRM / Customer Intelligence
 3. Mailchimp Provider
-4. CRM / Customer Intelligence
+4. future live execution activation on top of the existing adapter layer
 
 ## LATER
 
-The **Later** section contains larger initiatives that are planned but intentionally scheduled after the Next items.
-
-- X formal direct-provider expansion
-- Staff Portal
-- Multi-location support
-- Predictive Forecasting
-- Advanced Reporting
-- Mobile Experience
-- Multi-company support
-
-These remain visible but should not distract from current priorities.
+- deeper Board / investor reporting
+- multi-location operating support
+- predictive forecasting
+- multi-company support
+- staff portal
+- richer mobile executive experience
 
 ## ICEBOX
 
-The Icebox stores ideas that may have value but are intentionally deferred.
-
-- Voice Assistant
-- Mobile App
+- voice assistant
+- mobile app
 - Apple Watch support
 - Slack integration
 - Microsoft Teams integration
 - WhatsApp integration
-- Predictive staffing
+- predictive staffing
 - AI meeting assistant
-- Investor dashboard
-- White-label version
-- Marketplace
-- Plugin ecosystem
-
-Items can move from Icebox into Later when prioritised.
+- marketplace / plugin ecosystem
 
 ## Release Roadmap
 
-### v1.2 — Business Operations
+### v2.1 — Accounting & Cash Control
 
-- Gmail
-- Calendar
-- Executive Inbox
-- Operational Intelligence
+- Accounting Provider v1.0
+- live finance feeds beneath the CFO workspace
+- invoice / supplier / forecast actions into the Executive Action Centre
+- stronger approval-first finance workflow
 
-### v1.3 — Financial Intelligence
-
-- QuickBooks/Xero
-- Live Finance
-- Forecasting
-- Cash Flow
-- VAT
-
-### v1.4 — Customer Intelligence
+### v2.2 — Booking & Customer Intelligence
 
 - Booking Intelligence
-- CRM
-- Customer Journey
-- Review Management
+- CRM / Customer Intelligence
+- customer follow-up actions
+- complaint / retention / service-risk actioning
 
-### v1.5 — Marketing Expansion
+### v2.3 — Marketing Expansion
 
-- Mailchimp
-- Paid media / attribution refinement
+- Mailchimp Provider
+- richer attribution and campaign sequencing
 - CRM-linked demand intelligence
-- Cross-channel campaign execution
-- Social provider consolidation into formal release packaging
+- deeper content and audience actioning
 
-### v2.0 — Executive Operating System
+### v2.4 — Controlled Execution
 
-- Cross-provider reasoning
-- AI Copilot
-- Approval-first execution
-- Multi-agent collaboration
-- Natural language business queries
+- future live execution activation on top of Email, Calendar, Social, Accounting, and CRM adapters
+- one-click execution only after explicit governance approval
+- execution audit history and tighter permission controls
+
+## What just shipped
+
+### v2.0 — Executive Action Centre & Executive Copilot
+
+- Executive Action Centre
+- Executive Queue
+- Action Detail workspace
+- Approval Workflow
+- Executive Copilot
+- action-aware Business Health
+- action / approval / decision / workload reports
+- action-backed memory, search, and knowledge-graph coverage
+- future execution adapter scaffolding with execution intentionally locked to **Approval Required**
 
 ## Prioritisation Principles
 
@@ -127,37 +101,10 @@ When deciding what to build next, use this order:
 4. Platform leverage
 5. Technical complexity
 
-Features that save significant executive time should be prioritised over cosmetic improvements.
-
 ## Roadmap Rules
 
-- Only one major initiative should be in **Now**.
-- **Next** should contain no more than four active priorities.
-- **Later** should remain high level.
-- **Icebox** should preserve ideas without creating development pressure.
+- Only one major initiative should sit in **Now**.
+- **Next** should stay short and explicit.
+- **Later** should remain directional rather than over-specified.
 - Every completed release should move the roadmap forward.
-- Every new feature request should first be evaluated against `PRODUCT_VISION.md` and `PROJECT_PRINCIPLES.md` before being added.
-
-## Documentation Updates
-
-Reference the current roadmap from:
-
-- `README.md`
-- `START_HERE.md`
-- `EXECUTIVE_DEMO_SCRIPT.md`
-
-Every roadmap change should also continue to respect `PRODUCT_VISION.md`, `PROJECT_PRINCIPLES.md` and `DEFINITION_OF_DONE.md`.
-
-Where appropriate, include references to the current release and roadmap.
-
-## Permanent Rule
-
-At the end of every completed release:
-
-- Update `Roadmap.md`
-- Move completed work into `CHANGELOG.md`
-- Advance the next priority into the **Now** section
-- Review and reprioritise the **Next**, **Later**, and **Icebox** sections
-- Confirm the latest sprint satisfied `DEFINITION_OF_DONE.md`
-
-This document becomes the permanent planning guide for EP Intelligence.
+- New work must still respect `PRODUCT_VISION.md`, `PROJECT_PRINCIPLES.md`, `DEFINITION_OF_DONE.md`, and `RELEASE_MANAGEMENT.md`.

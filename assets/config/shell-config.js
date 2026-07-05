@@ -1,5 +1,7 @@
 export const TOP_LEVEL_NAV = [
   ['/ceo', 'CEO Dashboard', 'home'],
+  ['/executive-action-centre', 'Executive Action Centre', 'check-circle'],
+  ['/executive-copilot', 'Executive Copilot', 'sparkles'],
   ['/executive-inbox', 'Executive Inbox', 'mail'],
   ['/cfo', 'CFO', 'coins'],
   ['/cmo', 'CMO', 'sparkles'],
@@ -9,7 +11,6 @@ export const TOP_LEVEL_NAV = [
   ['/operations', 'Operations', 'grid'],
   ['/hr', 'HR', 'book-open'],
   ['/projects', 'Projects', 'target'],
-  ['/ai-assistant', 'AI Assistant', 'sparkles'],
   ['/approvals', 'Approvals', 'check-circle'],
   ['/reports', 'Reports', 'presentation'],
   ['/settings', 'Settings', 'settings']
@@ -18,6 +19,18 @@ export const TOP_LEVEL_NAV = [
 export const SUBNAV = {
   executiveInbox: [
     ['/executive-inbox', 'Overview']
+  ],
+  executiveActionCentre: [
+    ['/executive-action-centre', 'Overview'],
+    ['/executive-action-centre/queue', 'Executive Queue'],
+    ['/executive-action-centre/action-detail', 'Action Detail'],
+    ['/executive-action-centre/approval-workflow', 'Approval Workflow']
+  ],
+  executiveCopilot: [
+    ['/executive-copilot', 'Overview'],
+    ['/executive-copilot/ask', 'Ask EP Intelligence'],
+    ['/executive-copilot/executive-briefing', 'Executive Briefing'],
+    ['/executive-copilot/memory-context', 'Memory Context']
   ],
   cfo: [
     ['/cfo', 'Workspace'],
@@ -54,6 +67,12 @@ export const SUBNAV = {
   ],
   reports: [
     ['/reports', 'Overview'],
+    ['/reports/executive-actions', 'Executive Actions Report'],
+    ['/reports/outstanding-approvals', 'Outstanding Approvals'],
+    ['/reports/decision-history', 'Decision History'],
+    ['/reports/action-analytics', 'Action Analytics'],
+    ['/reports/approval-performance', 'Approval Performance'],
+    ['/reports/department-workload', 'Department Workload'],
     ['/reports/weekly-briefings', 'Weekly Briefings'],
     ['/reports/executive-timeline', 'Executive Timeline'],
     ['/reports/decision-journal', 'Decision Journal'],
@@ -79,6 +98,7 @@ export const SUBNAV = {
     ['/settings', 'Overview'],
     ['/settings/integrations', 'Integration Status'],
     ['/settings/configuration', 'Demo Mode Configuration'],
+    ['/settings/action-centre', 'Action Centre Settings'],
     ['/settings/provider-architecture', 'Provider Architecture'],
     ['/settings/about', 'About']
   ]
@@ -91,6 +111,14 @@ export const MODE_OPTIONS = [
 
 export const ROUTE_META = {
   '/ceo': { title: 'CEO Dashboard', subtitle: 'The executive home view for the whole business.', module: 'CEO Dashboard', sidebarKey: '/ceo', parentLabel: 'CEO Dashboard' },
+  '/executive-action-centre': { title: 'Executive Action Centre', subtitle: 'The single approval-first operating queue for what the business needs next.', module: 'Executive Action Centre', sidebarKey: '/executive-action-centre', parentLabel: 'Executive Action Centre' },
+  '/executive-action-centre/queue': { title: 'Executive Queue', subtitle: 'My Queue, today, urgent work, and approval-stage items in one ranked view.', module: 'Executive Action Centre', sidebarKey: '/executive-action-centre', parentLabel: 'Executive Action Centre' },
+  '/executive-action-centre/action-detail': { title: 'Action Detail', subtitle: 'The full decision workspace for one executive action, including evidence, memory, recommendations, and linked providers.', module: 'Executive Action Centre', sidebarKey: '/executive-action-centre', parentLabel: 'Executive Action Centre' },
+  '/executive-action-centre/approval-workflow': { title: 'Approval Workflow', subtitle: 'How actions move through approval-first review without automatic execution.', module: 'Executive Action Centre', sidebarKey: '/executive-action-centre', parentLabel: 'Executive Action Centre' },
+  '/executive-copilot': { title: 'Executive Copilot', subtitle: 'The action-oriented conversational layer sitting on top of providers, services, intelligence, memory, and the knowledge graph.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/executive-copilot/ask': { title: 'Ask EP Intelligence', subtitle: 'A conversational executive workspace for action-ready business questions and explainable answers.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/executive-copilot/executive-briefing': { title: 'Executive Briefing', subtitle: 'A compiled leadership briefing spanning queue pressure, finance, marketing, inbox, and operations.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/executive-copilot/memory-context': { title: 'Memory Context', subtitle: 'Searchable memory, action history, and knowledge graph context for Executive Copilot.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/executive-inbox': { title: 'Executive Inbox', subtitle: 'Deterministic executive communications intelligence built from Gmail-style inbox triage.', module: 'Executive Inbox', sidebarKey: '/executive-inbox', parentLabel: 'Executive Inbox' },
 
   '/cfo': { title: 'CFO Workspace', subtitle: 'A complete finance module inside the wider EP Intelligence shell.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
@@ -131,18 +159,24 @@ export const ROUTE_META = {
   '/hr': { title: 'HR Module', subtitle: 'Future staffing, capability, and people operations intelligence.', module: 'HR', sidebarKey: '/hr', parentLabel: 'HR' },
   '/projects': { title: 'Projects Module', subtitle: 'Future roadmap, ownership, and execution tracking.', module: 'Projects', sidebarKey: '/projects', parentLabel: 'Projects' },
 
-  '/ai-assistant': { title: 'AI Assistant', subtitle: 'The executive AI layer for questions, reasoning, assumptions, and follow-up.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/ask': { title: 'Ask EP Intelligence', subtitle: 'A conversational executive workspace for business questions and AI reasoning.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/executive-briefing': { title: 'Executive Briefing', subtitle: 'A compiled leadership briefing spanning finance, marketing, communications, and operations scheduling.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/follow-up-questions': { title: 'Follow-up Questions', subtitle: 'A placeholder for deeper AI-led executive questioning.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/suggested-actions': { title: 'Suggested Actions', subtitle: 'A placeholder for staged AI recommendations awaiting approval.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/assumptions': { title: 'Assumptions', subtitle: 'A placeholder for the assumptions driving AI output.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/missing-information': { title: 'Missing Information', subtitle: 'A placeholder for gaps the AI layer needs surfaced clearly.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/memory-context': { title: 'AI Memory / Context', subtitle: 'Searchable executive memory, historical context, and knowledge graph coverage.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
+  '/ai-assistant': { title: 'Executive Copilot', subtitle: 'Legacy alias for the executive AI layer, now superseded by Executive Copilot.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/ask': { title: 'Ask EP Intelligence', subtitle: 'Legacy alias for the conversational executive workspace.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/executive-briefing': { title: 'Executive Briefing', subtitle: 'Legacy alias for the compiled leadership briefing.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/follow-up-questions': { title: 'Follow-up Questions', subtitle: 'Legacy placeholder route retained for compatibility.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/suggested-actions': { title: 'Suggested Actions', subtitle: 'Legacy placeholder route retained for compatibility.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/assumptions': { title: 'Assumptions', subtitle: 'Legacy placeholder route retained for compatibility.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/missing-information': { title: 'Missing Information', subtitle: 'Legacy placeholder route retained for compatibility.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/memory-context': { title: 'AI Memory / Context', subtitle: 'Legacy alias for executive memory and knowledge-graph coverage.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
 
   '/approvals': { title: 'Approvals', subtitle: 'A central, business-wide approval centre spanning functions.', module: 'Approvals', sidebarKey: '/approvals', parentLabel: 'Approvals' },
 
   '/reports': { title: 'Reports', subtitle: 'Weekly, monthly, quarterly, and board-ready reporting outputs.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/executive-actions': { title: 'Executive Actions Report', subtitle: 'A packaged view of active actions, backlog, ownership, and what leadership should do next.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/outstanding-approvals': { title: 'Outstanding Approvals', subtitle: 'Approval-stage work grouped into the items that deserve immediate executive review.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/decision-history': { title: 'Decision History', subtitle: 'Approved, rejected, and completed action outcomes now retained as searchable executive history.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/action-analytics': { title: 'Action Analytics', subtitle: 'Backlog shape, approval pressure, and action throughput across the operating system.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/approval-performance': { title: 'Approval Performance', subtitle: 'How fast and how selectively executive decisions are moving through the action layer.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/department-workload': { title: 'Department Workload', subtitle: 'Active and urgent action distribution by department.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/weekly-briefings': { title: 'Weekly Briefings', subtitle: 'Board-style Sunday briefing experience.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/executive-timeline': { title: 'Executive Timeline', subtitle: 'Permanent executive timeline of milestones, launches, decisions, and strategic events.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/decision-journal': { title: 'Decision Journal', subtitle: 'Structured executive decision memory with reasons, expected outcomes, and future actual outcomes.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
@@ -157,6 +191,7 @@ export const ROUTE_META = {
   '/settings': { title: 'Settings', subtitle: 'Prototype controls for shell behaviour, preferences, and future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/integrations': { title: 'Integration Status', subtitle: 'Live, demo, and readiness status for registered executive integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/configuration': { title: 'Demo Mode Configuration', subtitle: 'Runtime mode, provider bindings, and service activation overview.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
+  '/settings/action-centre': { title: 'Action Centre Settings', subtitle: 'Priority rules, confidence thresholds, approval defaults, routing, and retention for the executive operating system.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/provider-architecture': { title: 'Provider Architecture', subtitle: 'Presentation, service, and provider layer overview for future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/about': { title: 'About EP Intelligence', subtitle: 'Release metadata, governance references, and platform positioning.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' }
 };
@@ -164,9 +199,57 @@ export const ROUTE_META = {
 export const QUESTION_SETS = {
   '/ceo': {
     what: ['The business is healthy, but only a few things deserve attention', 'The CEO Dashboard now distils the business into the handful of changes and decisions that actually matter today.'],
-    why: ['Cross-functional signals are moving together', 'Finance, marketing, customer trust, approvals, and execution are all influencing each other rather than acting as isolated dashboards.'],
+    why: ['Cross-functional signals are moving together', 'Finance, marketing, customer trust, approvals, and execution are now influencing each other rather than behaving like isolated dashboards.'],
     matters: ['Yes — because clarity beats volume', 'The CEO should see the business through an AI Chief of Staff lens, not through a wall of disconnected metrics.'],
     next: ['Prioritise the most valuable decisions first', 'Use the dashboard to decide what to approve, what to challenge, and what deserves deeper review in another module.']
+  },
+  '/executive-action-centre': {
+    what: ['The action backlog is now the operating system', 'The Executive Action Centre replaces tab-hopping with one ranked queue of explainable actions.'],
+    why: ['Provider signals are being turned into reviewable actions', 'GA4, YouTube, social, Gmail, calendar, finance, memory, and knowledge-graph context are now merged into one approval-first workflow.'],
+    matters: ['Yes, because the CEO needs sequence, not volume', 'The core job is to show what should happen next and why it deserves attention now.'],
+    next: ['Work the queue in order of value and urgency', 'Approve, reject, delegate, or defer the highest-value actions instead of manually stitching routes together.']
+  },
+  '/executive-action-centre/queue': {
+    what: ['The queue is segmented for decision speed', 'My Queue, today, urgent work, and waiting items are split into practical leadership buckets.'],
+    why: ['Not every action deserves the same timing', 'The operating system now ranks work by urgency, owner, risk, and due date.'],
+    matters: ['Yes, because ordering changes outcomes', 'A good queue reduces decision drag and keeps executive attention on the few things that matter most.'],
+    next: ['Clear the highest-value bucket first', 'Handle urgent and waiting items before expanding into the longer weekly queue.']
+  },
+  '/executive-action-centre/action-detail': {
+    what: ['Every action now has a full decision workspace', 'The action detail view shows executive context, evidence, alternatives, history, and linked providers together.'],
+    why: ['Approval quality depends on explanation quality', 'The product should make it easy to challenge a recommendation before approving anything.'],
+    matters: ['Yes, because hidden logic creates weak decisions', 'If an action cannot explain itself, it should not lead the executive queue.'],
+    next: ['Review the evidence, risk, and recommended outcome', 'Approve, reject, edit, delegate, or defer only after the action is fully understood.']
+  },
+  '/executive-action-centre/approval-workflow': {
+    what: ['Workflow now stays approval-first end to end', 'Actions move through review, evidence, memory, and adapter preparation without executing automatically.'],
+    why: ['Governance comes before automation', 'v2.0 prepares the operating system for future one-click execution without giving up executive control.'],
+    matters: ['Yes, because trust is structural', 'The CEO should know exactly what can happen, what cannot happen, and why.'],
+    next: ['Use workflow to move decisions forward deliberately', 'Approve, reject, or delegate actions while keeping execution adapters locked.']
+  },
+  '/executive-copilot': {
+    what: ['The Copilot is now action-oriented', 'Executive Copilot answers with queue-aware, memory-backed guidance rather than generic commentary.'],
+    why: ['It now sits on top of the full architecture', 'Questions resolve through providers, services, intelligence, memory, and the knowledge graph.'],
+    matters: ['Yes, because explanation quality changes decision quality', 'Leadership can now challenge recommendations and still keep the answer anchored to evidence.'],
+    next: ['Ask what to focus on next', 'Use the Copilot to move from understanding into action, approvals, and follow-through.']
+  },
+  '/executive-copilot/ask': {
+    what: ['Executive questions now resolve into actions', 'Ask EP Intelligence now answers with operating guidance, not just commentary.'],
+    why: ['The question layer now sees the queue and memory', 'Copilot can reason across provider data, historical context, and approval-stage work together.'],
+    matters: ['Yes, because questions should shorten the path to action', 'A strong answer should make the next decision clearer, not just summarise the problem.'],
+    next: ['Use the prompt library to pressure-test priorities', 'Ask what deserves approval now, what is creating drag, and what can wait.']
+  },
+  '/executive-copilot/executive-briefing': {
+    what: ['The briefing now includes queue pressure', 'It packages action backlog, approvals, inbox pressure, finance, marketing, and operations in one leadership readout.'],
+    why: ['Cross-functional pressure is more useful when synthesised', 'The CEO should not have to mentally merge dashboards to understand the current operating week.'],
+    matters: ['Yes, because leadership needs synthesis not tabs', 'A better briefing improves approval quality and reduces distracted navigation.'],
+    next: ['Use the briefing to choose the next approvals', 'Challenge the key risks, approve the best actions, and decide which route deserves deeper review next.']
+  },
+  '/executive-copilot/memory-context': {
+    what: ['Copilot can now see action history and memory together', 'Historical context, decisions, timeline events, and action search are now one explainable substrate.'],
+    why: ['The business should remember what it already learned', 'Memory and graph context stop the operating system from making context-free recommendations.'],
+    matters: ['Yes, because repeated decisions should get smarter', 'The operating system improves when prior approvals, rejections, and milestones stay visible.'],
+    next: ['Use this route to challenge recommendation quality', 'Check whether the current action lines up with prior decisions, risks, and recurring themes.']
   },
   '/executive-inbox': {
     what: ['The inbox now shows only the conversations that deserve executive attention', 'Executive Inbox turns Gmail-style message volume into a ranked operating view for customer replies, supplier issues, finance threads, and booking demand.'],
@@ -228,17 +311,47 @@ export const QUESTION_SETS = {
     matters: ['Yes, because schedule quality affects commercial quality', 'A busy diary is not automatically good. Leadership needs to see when demand is healthy, when capacity is under-used, and when service quality is about to be squeezed.'],
     next: ['Protect the best schedule decisions first', 'Use this view to reschedule compression, protect buffers, and convert free fitting capacity into revenue without creating avoidable operating strain.']
   },
-  '/ai-assistant/executive-briefing': {
-    what: ['The AI layer now packages a real executive briefing', 'This briefing combines deterministic signals from finance, marketing, the Executive Inbox, and the Operations Calendar into one leadership readout.'],
-    why: ['Cross-functional signals are stronger when read together', 'Scheduling pressure, communications backlog, margin watchpoints, and marketing momentum often matter more in combination than in isolation.'],
-    matters: ['Yes, because leadership needs synthesis not tabs', 'The CEO should understand the operating week, risks, and opportunities without manually stitching routes together.'],
-    next: ['Use the briefing to choose the next approvals', 'Challenge the key risks, approve the best actions, and decide which route deserves deeper review next.']
-  },
   '/reports': {
     what: ['Executive reporting is now memory-backed', 'Reports package current performance alongside historical context, goal progress, and prior decisions.'],
     why: ['Leadership needs reporting that remembers', 'A strong report should explain not just what changed, but what the business has already learned and committed to.'],
     matters: ['Yes, because executive memory improves decision quality', 'Historical context helps leadership separate one-off movement from repeat patterns.'],
-    next: ['Use reports to review decisions, trends, and goals together', 'Open the relevant report route depending on whether the priority is briefing, timeline, goals, or board discussion.']
+    next: ['Use reports to review decisions, trends, and goals together', 'Open the relevant report route depending on whether the priority is briefing, timeline, actions, or board discussion.']
+  },
+  '/reports/executive-actions': {
+    what: ['The action backlog is now reportable', 'Executive Actions Report packages active actions, urgent work, and queue shape into one leadership summary.'],
+    why: ['Leadership needs more than a live queue', 'A report helps the business review operating pressure over time instead of only in the moment.'],
+    matters: ['Yes, because backlog quality is strategic', 'If the queue becomes bloated or mis-ranked, the operating system stops being useful.'],
+    next: ['Use the report to challenge queue quality', 'Review what is active, what is urgent, and whether the top items truly deserve priority.']
+  },
+  '/reports/outstanding-approvals': {
+    what: ['Approval-stage work is now packaged separately', 'Outstanding Approvals shows the decisions waiting for leadership in one clean review surface.'],
+    why: ['Approval drag is now visible', 'The system should show where governance is slowing action and where caution is healthy.'],
+    matters: ['Yes, because approval latency changes momentum', 'Slow decisions can hurt customer conversion, marketing timing, and operating quality.'],
+    next: ['Clear the most valuable approvals first', 'Use the report to keep approval-first governance disciplined rather than slow.']
+  },
+  '/reports/decision-history': {
+    what: ['Approved, rejected, and completed actions are now history objects', 'Decision History keeps the operating system from forgetting what leadership already decided.'],
+    why: ['The platform should learn from executive behaviour', 'Each action outcome can now feed memory, timeline, and future context.'],
+    matters: ['Yes, because repeated decisions should improve', 'Decision quality compounds when prior outcomes remain easy to inspect.'],
+    next: ['Review what leadership is approving and rejecting', 'Use this route to spot patterns, discipline, and recurring blind spots.']
+  },
+  '/reports/action-analytics': {
+    what: ['The action system can now analyse itself', 'Action Analytics measures backlog shape, approval pressure, and where executive time is going.'],
+    why: ['An operating system should expose its own behaviour', 'Leadership should know whether queue design is helping or hurting decision speed.'],
+    matters: ['Yes, because process quality affects business quality', 'If the queue is noisy, the business loses clarity even when the data is right.'],
+    next: ['Use analytics to refine queue rules', 'Tighten priority, reduce noise, and keep the action layer selective.']
+  },
+  '/reports/approval-performance': {
+    what: ['Approval performance is now measurable', 'The business can now see how quickly and how selectively approvals are moving.'],
+    why: ['Governance should be visible, not assumed', 'Approval behaviour shapes cash, campaigns, replies, and delivery quality.'],
+    matters: ['Yes, because executive control should not become executive delay', 'Good approval systems remain cautious without becoming slow.'],
+    next: ['Challenge low-value or slow approvals', 'Use the report to tighten decision speed while preserving control.']
+  },
+  '/reports/department-workload': {
+    what: ['Department action pressure is now visible', 'Department Workload shows where active and urgent work are accumulating.'],
+    why: ['Leadership needs to spot strain before it becomes performance drag', 'Workload view links executive actions back to the teams carrying them.'],
+    matters: ['Yes, because queue pressure becomes operational pressure', 'A healthy business should show where bottlenecks or overload are emerging.'],
+    next: ['Rebalance or escalate where pressure is highest', 'Use this route to decide where support, delegation, or focus is needed next.']
   },
   '/reports/executive-timeline': {
     what: ['The business now has a permanent executive timeline', 'Major milestones, launches, decisions, and system events are now stored independently of any current provider feed.'],
@@ -263,5 +376,11 @@ export const QUESTION_SETS = {
     why: ['Leadership needs one clear marketing narrative', 'The point is to explain what is happening, why it matters, and what should be approved next without forcing the CEO or CMO to stitch pages together manually.'],
     matters: ['Yes, because hybrid live/demo reporting needs clarity', 'Decision quality improves when the report makes source coverage, confidence, and the conversion gap explicit.'],
     next: ['Use the report to sequence action', 'Review source coverage, challenge the risks, and move the strongest recommended actions into the approval flow.']
+  },
+  '/settings/action-centre': {
+    what: ['The operating system now has queue rules', 'Action Centre Settings controls how priority, confidence, routing, retention, and notifications should work.'],
+    why: ['Queue quality depends on explicit rules', 'If the settings are vague, the Executive Action Centre becomes noisy or inconsistent.'],
+    matters: ['Yes, because governance is product behaviour', 'Settings determine how disciplined and explainable the operating system feels.'],
+    next: ['Use settings to keep the queue selective', 'Tune thresholds and routing so the action layer remains genuinely useful to leadership.']
   }
 };

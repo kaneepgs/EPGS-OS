@@ -1,177 +1,131 @@
 # Executive Demo Script
 
-**Current release:** EP Intelligence v1.1 — Marketing Intelligence  
+**Current release:** EP Intelligence v2.0 — Executive Action Centre & Executive Copilot  
 **Current roadmap:** `Roadmap.md`  
 **Product vision:** `PRODUCT_VISION.md`  
 **Formal release changelog:** `CHANGELOG.md`  
 **Detailed sprint history:** `changelog/CHANGELOG.md`  
-**Definition of Done:** `DEFINITION_OF_DONE.md`
+**Definition of Done:** `DEFINITION_OF_DONE.md`  
+**Release management:** `RELEASE_MANAGEMENT.md`
 
 ## 1) Open with the purpose
 
-> “This is a prototype of EP Intelligence — a future Executive Operating System for EP Golf Studios. It is designed to help leadership see the business more clearly, make better decisions, and work from one calmer executive shell.”
+> “This is EP Intelligence — a prototype executive operating system for EP Golf Studios. It brings together business intelligence, recommended actions, and approval-first workflow into one calmer executive shell.”
 
 ## 2) Start on the CEO Dashboard
 
 Show:
 
-- Executive Briefing
-- Business Health Score
-- today’s priorities
-- cross-department intelligence
-- executive risks and opportunities
-- AI Executive Briefing
+- Business Health
+- Today’s Executive Queue
+- Top Priorities
+- Pending Approvals
+- Business Risks
+- Business Opportunities
+- Recent Decisions
+- Today’s Recommended Actions
 
 Say:
 
-> “The application now opens at a true CEO Intelligence Dashboard, not just a shell home page. It should feel like sitting down with an AI Chief of Staff who explains what happened, why it happened, what matters, and what deserves a decision today.”
+> “The CEO Dashboard is now not just a summary page. It acts like an AI Chief of Staff that explains what matters and what deserves a decision today.”
 
-Then add:
-
-> “In v1.1, the CEO can also see a proper Marketing Intelligence layer — not just separate pages for website and YouTube, but a combined executive marketing readout with score, source status, and cross-channel findings.”
-
-Then add:
-
-> “Post-v1.1, that same shell now also surfaces Executive Inbox and Operations Calendar intelligence, so communications pressure and schedule capacity sit beside finance and marketing instead of being hidden in separate tools.”
-
-## 3) Open the CFO module
-
-Say:
-
-> “The CFO Workspace still works in full, but now lives inside the wider executive operating system.”
+## 3) Open Executive Action Centre
 
 Show:
 
-- CFO home view
-- executive cards
-- priorities
-- commentary
+- action metrics
+- top priorities
+- queue segments
+- department workload
+- execution adapter status
 
-## 4) Open one or two strong CFO pages
+Say:
+
+> “This is the single operating queue. Instead of the CEO jumping between finance, marketing, inbox, and calendar, the product now surfaces what should happen next in one approval-first system.”
+
+## 4) Open Executive Queue and Action Detail
+
+Show:
+
+- My Queue
+- Today’s Actions
+- Urgent
+- Waiting For Me
+- one full Action Detail page
+
+Say:
+
+> “Every action is now explainable. It has business context, evidence, linked metrics, memory, alternatives, risk, and history before anything gets approved.”
+
+## 5) Open Approval Workflow
+
+Say:
+
+> “Nothing executes automatically. The platform supports approve, reject, edit, delegate, snooze, and archive — but execution is intentionally locked for now.”
+
+## 6) Open Executive Copilot
+
+Show:
+
+- prompt library
+- Ask EP Intelligence
+- Executive Briefing
+- Memory Context
+
+Say:
+
+> “Executive Copilot now answers action-oriented questions like ‘What should I focus on today?’ or ‘Show every action awaiting approval’ by using providers, services, intelligence, memory, and the knowledge graph together.”
+
+## 7) Open CFO and CMO
+
+Say:
+
+> “The old modules still work — but now they feed the action layer instead of living in silos.”
 
 Recommended:
 
-- **Revenue**
-- **Cash Flow** or **Supplier Spend**
+- **CFO → Cash Flow / Forecasting**
+- **CMO → Social Media Overview / Website Analytics / YouTube / Marketing Reports**
+
+## 8) Open Executive Inbox and Operations Calendar
 
 Say:
 
-> “Each module is structured around four executive questions: what happened, why it happened, whether it matters, and what to do next.”
+> “Inbox and calendar are no longer separate apps in practice. They now produce action-ready operating signals and approval-first recommendations.”
 
-## 5) Open the CMO module
-
-Say:
-
-> “Marketing now has its own executive workspace, built to the same standard and using the same design language as finance.”
+## 9) Open Reports
 
 Show:
 
-- Marketing Dashboard
-- Social Media Overview
-- Website Analytics
-- YouTube
-- Marketing Intelligence Report
-- AI Marketing Advisor
-
-Say:
-
-> “The goal is to show not just channel metrics, but what is working, what matters commercially, what risks exist, and what actions deserve approval next.”
-
-Then add:
-
-> “Website Analytics can now read from a locally generated GA4 snapshot, YouTube can now read from a locally generated channel snapshot, and Sprint 18 adds a Unified Social Provider so Instagram, Facebook, LinkedIn, and X can all hydrate through one generated local social snapshot path while keeping the rest of the product in safe Demo Mode.”
-
-## 6) Open Executive Inbox
-
-Say:
-
-> “Executive Inbox is not trying to be an email client. It turns business email into a ranked operating view so the CEO can immediately see what needs attention, what is waiting on a reply, and which conversations have strategic weight.”
-
-Show:
-
-- Priority
-- Needs Reply
-- Customer Enquiries
-- Booking Requests
-- Supplier Communications
-- Finance
-
-Then add:
-
-> “The Gmail path follows the same generated-snapshot pattern as the other live-capable providers, so credentials stay local, the browser sees only a safe snapshot, and all reply / archive / label / forward / follow-up actions stay approval-first.”
-
-## 7) Open Approvals
-
-Say:
-
-> “Approvals are now centralised across the business, not just finance. Gmail now feeds reply, archive, label, forward, task, and follow-up cards into the same approval-first system, with no automated actions executing on their own.”
-
-Then add:
-
-> “Google Calendar now feeds reschedule, extend fitting, block time, accept invitation, and decline invitation cards into that same approval-first layer — still no automatic actions.”
-
-## 7B) Open Operations Calendar
-
-Say:
-
-> “Operations Calendar is not trying to recreate Google Calendar. It translates scheduling into executive operational intelligence — fittings, capacity, workload, deadlines, and scheduling risk.”
-
-Show:
-
-- today’s fittings
-- meetings and deadlines
-- staff availability
-- free capacity
-- week capacity
-- operational intelligence cards
-
-Then add:
-
-> “The provider follows the same local generated-snapshot pattern as GA4, YouTube, and Gmail, so credentials stay local and the browser only sees safe operational output.”
-
-## 8) Open Reports
-
-Show:
-
-- Reports overview
-- Weekly Briefings
-- Marketing Intelligence Report
+- Executive Actions Report
+- Outstanding Approvals
+- Decision History
+- Action Analytics
+- Approval Performance
+- Department Workload
 - Board Meeting Mode
 
 Say:
 
-> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report now packages website demand, YouTube authority, cross-platform social health, attribution, competitor benchmarking, risks, and actions into one executive readout, while Board Meeting Mode also has communications-aware and operations-aware context rather than ignoring the inbox or the schedule.”
+> “Reporting now packages the operating system itself — not just raw business metrics.”
 
-## 9) Open AI Assistant
+## 10) Open Settings
 
-Say:
+Show:
 
-> “The AI Assistant section is now the conversational workspace for executive questions. It shows how EP Intelligence can answer leadership questions directly, including what the Executive Inbox and today’s schedule need from the CEO first, not just display cards.”
-
-## 10) Show one placeholder module
-
-Recommended:
-
-- **Sales**
+- Action Centre Settings
+- Integration Status
+- Provider Architecture
+- About
 
 Say:
 
-> “This shows how future modules will slot into the same shell using the same executive design language. Operations is no longer just a placeholder — it now has a real executive scheduling surface.”
+> “The queue is governed deliberately. Priority rules, confidence thresholds, retention, routing, and notification preferences are now visible product behaviour.”
 
 ## 11) Close with the positioning
 
-> “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance, Marketing, executive communications, and scheduling operations, the working CFO and CMO modules, the Executive Inbox, the Operations Calendar, and the platform direction for the rest of the business.”
-
-## 12) Close with roadmap context
-
-Say:
-
-> “The current formal release is still v1.1 — Marketing Intelligence. The product has now also grown Gmail-backed Executive Inbox and Google Calendar-backed Operations Calendar paths, while the active roadmap in Roadmap.md now points toward live accounting beneath the CFO layer.”
-
-Then add:
-
-> “That means the platform now has a clear separation between what has shipped, what is being built now, what is next, and what is deliberately deferred. Formal release history lives in CHANGELOG.md.”
+> “EP Intelligence is now the central operating surface for the business. Every provider contributes intelligence. Every recommendation is explainable. Every action is approval-first. Every decision becomes part of Executive Memory.”
 
 ## Short closing line
 
-> “This is not the final operating platform — it is the executive-grade operating surface that shows what the platform should become.”
+> “This is the executive operating system shape — useful now, and ready for future one-click execution only when leadership wants it.”

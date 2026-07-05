@@ -1,4 +1,4 @@
-export function createIntegrationService(registry, { executiveService, financeService, marketingService, communicationsService, approvalService, reportService, timelineService, intelligenceService, memoryService } = {}) {
+export function createIntegrationService(registry, { executiveService, financeService, marketingService, communicationsService, approvalService, reportService, timelineService, intelligenceService, memoryService, actionService } = {}) {
   return Object.freeze({
     getConfiguration() {
       const modeSummary = registry.getModeSummary();
@@ -33,6 +33,7 @@ export function createIntegrationService(registry, { executiveService, financeSe
           { title: 'TimelineService', body: 'Owns reusable executive timeline shaping and now also exposes Operations Calendar workspace data for scheduling intelligence.' },
           { title: 'ApprovalService', body: 'Owns grouped approval data and approval contract normalization.' },
           { title: 'ReportService', body: 'Owns reporting-route datasets and report contract normalization.' },
+          { title: 'ActionService', body: 'Owns the Executive Action Centre, cross-provider action aggregation, queue logic, action analytics, execution-adapter scaffolding, and Executive Copilot prompt framing.' },
           { title: 'MemoryService', body: 'Owns persistent executive memory, decision history, strategic goals, deterministic historical context, and knowledge graph relationships.' },
           { title: 'IntelligenceService', body: 'Owns deterministic insight generation, health scoring, recommendations, and narratives on top of provider-backed service data.' }
         ],
@@ -55,6 +56,7 @@ export function createIntegrationService(registry, { executiveService, financeSe
           reports: (reportService?.getWorkspace?.()?.overview || []).length,
           timeline: (timelineService?.getBusinessTimeline?.() || []).length,
           intelligence: intelligenceService?.getWorkspace?.()?.insights?.executive?.length || 0,
+          actions: actionService?.getWorkspace?.()?.metrics?.active || 0,
           memoryEvents: memoryService?.getTimeline?.()?.length || 0,
           memoryGoals: memoryService?.getGoals?.()?.length || 0,
           memoryDecisions: memoryService?.getDecisions?.()?.length || 0

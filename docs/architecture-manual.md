@@ -2,170 +2,164 @@
 
 ## Overview
 
-EP Intelligence is intended to become an AI Executive Operating System for EP Golf Studios.
+EP Intelligence is an AI Executive Operating System for EP Golf Studios.
 
-`PRODUCT_VISION.md` now defines why the platform exists and where it is going.
+It is now formally packaged as **v2.0 — Executive Action Centre & Executive Copilot**.
 
-`PROJECT_PRINCIPLES.md` defines the engineering and architecture philosophy.
+The architecture is designed so that:
 
-`DEFINITION_OF_DONE.md` acts as the permanent delivery standard for any architecture changes described in this manual.
+- providers supply business data
+- services normalise business domains
+- the intelligence layer explains what changed and what matters
+- Executive Memory retains durable context
+- the Executive Action Centre turns recommendations into one approval-first workflow
+- Executive Copilot answers executive questions on top of the same stack
 
-The system will eventually coordinate executive agents, connected business data, decision memory, approval workflows, and recurring briefings.
+## Governing references
 
-Sprint 6 introduced the first real integration framework for that future direction, Sprint 7 added the first deterministic Executive Intelligence Engine on top of it, Sprint 8 proved the first live-capable provider path, and Sprint 9 now adds a provider-independent Executive Memory & Knowledge Graph layer:
+- `PRODUCT_VISION.md`
+- `PROJECT_PRINCIPLES.md`
+- `DEFINITION_OF_DONE.md`
+- `RELEASE_MANAGEMENT.md`
+- `docs/integration-framework.md`
+- `docs/executive-memory.md`
 
-- presentation routes remain stable
-- business logic sits behind reusable services
-- data access sits behind interchangeable providers
-- executive reasoning now sits in dedicated intelligence engines
-- executive memory now sits in dedicated local stores and a reusable memory service
-- the wider application still runs in Demo Mode, with only Website Analytics eligible for a generated GA4 overlay
+## System layers
 
-## Proposed System Layers
+### 1. Provider Layer
 
-### 1. Data Provider Layer
+Providers remain the controlled source of business data.
 
-Future inputs may include:
+Current live-capable provider paths:
 
-- accounting platforms such as QuickBooks or Xero
-- marketing and analytics platforms such as YouTube and Google Analytics
-- communications systems such as Gmail
-- calendar systems such as Google Calendar
-- payment systems such as Stripe
-- future OpenClaw executive context and workflow metadata
+- GA4
+- YouTube
+- Unified Social
+- Gmail
+- Google Calendar
 
-Sprint 8 still avoids direct browser-side live integrations.
+All provider hydration still happens through local generated snapshots, not browser-side secrets.
 
-Instead, the provider architecture now includes:
+### 2. Service Layer
 
-- `MockProvider` as the baseline source in Demo Mode
-- `AnalyticsProvider` as the first live-capable provider, reading from a locally generated GA4 snapshot file
-- placeholder providers for Finance, Marketing, CRM, Calendar, and AI domains
-- a provider registry that decides which provider each business domain uses
+Services remain the stable business API for the UI.
 
-### 2. Business Logic Layer
-
-This layer now lives in `assets/services/`.
-
-It:
-
-- normalises business data through shared contracts
-- preserves domain boundaries between executive modules
-- shields the UI from provider-specific data shapes
-- exposes stable service-backed business objects to the runtime composition layer
-
-Current services:
+Key services now include:
 
 - `ExecutiveService`
 - `FinanceService`
 - `MarketingService`
+- `CommunicationsService`
+- `TimelineService`
 - `ApprovalService`
 - `ReportService`
-- `TimelineService`
+- `MemoryService`
+- `ActionService`
 - `IntegrationService`
 - `IntelligenceService`
-- `MemoryService`
 
-### 3. Executive Intelligence Layer
+### 3. Intelligence Layer
 
-The deterministic reasoning layer now lives in `assets/intelligence/`.
+The deterministic intelligence layer continues to own:
 
-Current engines:
+- health scoring
+- correlations
+- recommendations
+- insights
+- narratives
+- executive Q&A framing
 
-- `InsightEngine`
-- `CorrelationEngine`
-- `RecommendationEngine`
-- `PriorityEngine`
-- `HealthEngine`
-- `NarrativeEngine`
-- `ConfidenceEngine`
-
-Responsibilities:
-
-- consume provider-backed data through the service layer
-- explain what happened, why it happened, why it matters, and what should happen next
-- generate cross-department correlations before the UI renders them
-- rank priorities and recommendations using configurable scoring weights
-- generate health scores for CEO, CFO, CMO, and overall business health
-- create reusable narratives for daily, weekly, board, and department briefings
-- provide a reasoning core that future LLM features can enhance rather than replace
+It should consume service-backed data, not raw provider payloads.
 
 ### 4. Executive Memory & Knowledge Graph Layer
 
-This layer now lives in `assets/memory/`.
+Executive Memory remains provider-independent and local-first.
 
-It maintains:
+It now stores and links:
 
-- a permanent executive timeline
-- a structured decision journal
-- persistent strategic goals
-- recurring issues and historical trends
-- memory highlights and deterministic context
-- a structured knowledge graph linking business entities and relationships
+- timeline events
+- decisions
+- goals
+- deterministic context
+- action history
+- approved / rejected / completed action outcomes
 
-Current modules:
+The knowledge graph now includes action nodes and action-linked edges alongside goals, decisions, risks, opportunities, approvals, and recommendations.
 
-- `MemoryStore`
-- `EventStore`
-- `DecisionStore`
-- `GoalStore`
-- `ContextStore`
-- `KnowledgeGraph`
-- `MemoryService`
+### 5. Action Layer
+
+v2.0 introduces a formal Action Layer.
+
+Core modules:
+
+- `assets/services/action-service.js`
+- `assets/actions/action-store.js`
+- `assets/execution/execution-layer.js`
 
 Responsibilities:
 
-- keep memory separate from providers so business knowledge survives data-source changes
-- persist business context in structured local storage and seed files only
-- generate deterministic historical context for the intelligence layer
-- expose memory-backed search, dashboard, report, and settings workspaces
-- represent business relationships as structured nodes and edges rather than visual graph UI
+- synthesise actions from finance, marketing, inbox, operations, approvals, reports, memory, and intelligence
+- rank actions into executive queues
+- expose action analytics and reports
+- feed Business Health, CEO Dashboard, search, memory, and Board Meeting Mode
+- keep all action state approval-first and non-automatic
 
-### 5. Approval and Action Layer
+### 6. Execution Layer
 
-All significant actions remain approval-first.
+Execution adapters now exist structurally, but not operationally.
 
-Possible future actions include:
+Current adapters:
 
-- drafting but not sending communications
-- preparing financial recommendations
-- producing executive briefings
-- staging operational plans
-- generating strategic review packs
+- `EmailAdapter`
+- `CalendarAdapter`
+- `SocialAdapter`
+- `AccountingAdapter`
+- `CRMAdapter`
 
-### 6. Reporting Layer
+Each adapter exposes:
 
-The reporting layer will eventually provide:
+- `validate()`
+- `preview()`
+- `execute()`
 
-- weekly executive briefings
-- Sunday CFO briefings
-- decision review summaries
-- risk and performance alerts
-- historical trend summaries
+In v2.0, `execute()` must intentionally return **Approval Required**.
 
-Sprint 6 moved report access behind `ReportService`, Sprint 7 let report views consume generated narratives and recommendations from the intelligence layer without direct UI-side reasoning, and Sprint 9 now allows reports to consume memory-backed historical events, decisions, milestones, and goal progress.
+### 7. Presentation Layer
 
-## Architectural Rules for This Sprint
+The UI remains a static SPA built with HTML, CSS, and vanilla JavaScript.
 
-1. No direct browser-side live integrations or embedded secrets.
-2. No direct access to financial accounts.
-3. No automation without explicit approval.
-4. All executive recommendations must be explainable.
-5. Views should not import raw mock datasets directly.
-6. Services should request data only through providers.
-7. Intelligence engines should consume service-backed data, not call raw data sources directly.
-8. Provider swaps should happen in the registry before any UI rewrite is considered.
-9. Demo fallback should remain first-class whenever live provider inputs are missing or invalid.
-10. Future LLM integrations should augment deterministic reasoning rather than replace it outright.
-11. Executive memory must remain provider-independent and local-first.
-12. Knowledge graph relationships must remain explainable structured objects, not opaque AI inferences.
+New top-level operating-system surfaces include:
 
-## Current Integration Build Sequence
+- `/executive-action-centre`
+- `/executive-action-centre/queue`
+- `/executive-action-centre/action-detail`
+- `/executive-action-centre/approval-workflow`
+- `/executive-copilot`
+- `/executive-copilot/ask`
+- `/executive-copilot/executive-briefing`
+- `/executive-copilot/memory-context`
 
-1. Define provider contracts and shared schemas.
-2. Implement the mock-backed provider registry.
-3. Route executive workspaces through reusable services.
-4. Add configuration and integration status surfaces.
-5. Onboard future APIs by implementing providers and rebinding domains.
-6. Keep the presentation layer stable unless product requirements themselves change.
-7. Layer any future AI assistance on top of the deterministic intelligence outputs before allowing it to shape visible executive briefings.
+## Architectural rules
+
+1. No browser-side secrets.
+2. No direct provider calls from presentation code.
+3. No automatic action execution.
+4. All executive recommendations must remain explainable.
+5. Services should be the assembly point for action synthesis.
+6. Memory must remain provider-independent.
+7. Search should index actions, approvals, decisions, memory, providers, and KPIs deliberately.
+8. Future automation must sit on top of the execution layer, never bypass it.
+9. Demo fallback must remain first-class.
+10. Executive Copilot must consume the same provider → service → intelligence → memory → graph path as the rest of the system.
+
+## v2.0 architectural outcome
+
+The product is no longer just a set of executive dashboards.
+
+It is now an approval-first operating system where:
+
+- every provider can contribute intelligence
+- intelligence can become actions
+- actions can become decisions
+- decisions can become memory
+- memory can improve future action quality

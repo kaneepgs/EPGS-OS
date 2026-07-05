@@ -1,9 +1,9 @@
 {
   "name": "ep-intelligence",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, provider architecture, deterministic intelligence engine, executive memory, Executive Inbox, and Operations Calendar overlays built from local GA4, YouTube, Gmail, and Google Calendar snapshots for EP Golf Studios.",
+  "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, Executive Action Centre, Executive Copilot, provider architecture, deterministic intelligence engine, executive memory, and approval-first action workflows built from local GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshots for EP Golf Studios.",
   "scripts": {
     "serve": "python3 -m http.server 3012",
     "validate:js": "node --check assets/app.js",
@@ -24,6 +24,9 @@
     "ga4",
     "youtube",
     "prototype",
+    "executive-action-centre",
+    "executive-copilot",
+    "approval-first",
     "chartjs"
   ],
   "license": "UNLICENSED",

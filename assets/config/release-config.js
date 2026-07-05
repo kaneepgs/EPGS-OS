@@ -1,17 +1,18 @@
 export const RELEASE_CONFIG = Object.freeze({
   productName: 'EP Intelligence',
-  version: '1.1.0',
-  releaseLabel: 'v1.1',
-  codename: 'Marketing Intelligence',
+  version: '2.0.0',
+  releaseLabel: 'v2.0',
+  codename: 'Executive Action Centre & Executive Copilot',
   releaseDate: '2026-07-05',
-  buildNumber: '2026.07.05.5',
-  currentSprint: 'Sprint 18',
+  buildNumber: '2026.07.05.6',
+  currentSprint: 'Major Release',
   environment: 'Demo',
-  environmentDetail: 'Demo-first executive shell with selective GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshot overlays when local generated data is available.',
+  environmentDetail: 'Demo-first executive operating system with selective GA4, YouTube, Unified Social, Gmail, and Google Calendar snapshot overlays plus an approval-first Executive Action Centre and Executive Copilot.',
   changelogPath: 'CHANGELOG.md',
   roadmapPath: 'Roadmap.md',
   sprintHistoryPath: 'changelog/CHANGELOG.md',
-  principlesPath: 'PROJECT_PRINCIPLES.md'
+  principlesPath: 'PROJECT_PRINCIPLES.md',
+  releaseManagementPath: 'RELEASE_MANAGEMENT.md'
 });
 
 export function releaseDisplayName() {
@@ -56,7 +57,8 @@ export function buildReleaseWorkspace({ liveData = {} } = {}) {
       changelog: RELEASE_CONFIG.changelogPath,
       roadmap: RELEASE_CONFIG.roadmapPath,
       sprintHistory: RELEASE_CONFIG.sprintHistoryPath,
-      principles: RELEASE_CONFIG.principlesPath
+      principles: RELEASE_CONFIG.principlesPath,
+      releaseManagement: RELEASE_CONFIG.releaseManagementPath
     }
   });
 }

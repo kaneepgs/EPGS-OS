@@ -2,19 +2,20 @@
 
 EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios.
 
-It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
+It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer, a new **Executive Action Centre**, and a new **Executive Copilot**.
 
-The formal shipped release is still **v1.1 — Marketing Intelligence**, but the platform now also has post-v1.1 **Executive Inbox**, **Operations Calendar**, and **Unified Social Provider** extensions, so leadership can read live website demand, live YouTube authority, cross-platform social performance, inbox pressure, and scheduling capacity together through one executive shell while still falling back safely to demo data.
+The formal shipped release is now **v2.0 — Executive Action Centre & Executive Copilot**. EP Intelligence can now pull recommendations from Finance, Marketing, Unified Social, Executive Inbox, Operations Calendar, Executive Memory, and the Knowledge Graph into one approval-first workflow while still falling back safely to demo data.
 
 ## Release & Roadmap
 
-- **Current release:** EP Intelligence v1.1 — Marketing Intelligence
+- **Current release:** EP Intelligence v2.0 — Executive Action Centre & Executive Copilot
 - **Active roadmap:** `Roadmap.md`
 - **Product vision:** `PRODUCT_VISION.md`
 - **Formal release changelog:** `CHANGELOG.md`
 - **Detailed sprint history:** `changelog/CHANGELOG.md`
 - **Project principles:** `PROJECT_PRINCIPLES.md`
 - **Definition of Done:** `DEFINITION_OF_DONE.md`
+- **Release management:** `RELEASE_MANAGEMENT.md`
 
 Release metadata is now centralised in `assets/config/release-config.js`, so the app, docs, and release process can all read from one source of truth.
 
@@ -198,6 +199,20 @@ Added the first operational scheduling provider without breaking the wider archi
 - kept all scheduling actions **approval-first** by staging Reschedule, Extend Fitting, Block Time, Accept Invitation, and Decline Invitation cards without executing anything automatically
 - preserved safe demo fallback when Google Calendar credentials are missing, rejected, or the generated snapshot is unavailable
 
+### v2.0 — Executive Action Centre & Executive Copilot
+
+Major release that turns EP Intelligence into an approval-first executive operating system:
+
+- added a top-level **Executive Action Centre** with ranked action queues for My Queue, Today, Urgent, This Week, Waiting For Me, Completed Today, Recently Approved, and Recently Rejected
+- introduced a full **Action Detail workspace** with executive summary, business context, evidence, related metrics, historical context, alternatives, decision history, and linked providers
+- added an **Approval Workflow** surface so actions remain explainable, reviewable, and explicitly non-automatic
+- introduced **Executive Copilot** as the new action-oriented conversational layer on top of providers, services, intelligence, memory, and the knowledge graph
+- added a local-first **ActionStore**, an **ActionService**, and future execution adapters for Email, Calendar, Social, Accounting, and CRM, all with `execute()` intentionally returning **Approval Required**
+- integrated action backlog, approval backlog, inbox pressure, schedule pressure, and goal progress into **Business Health**
+- extended **Executive Memory**, timeline, decisions, search, reports, and knowledge-graph coverage so approved, rejected, and completed actions become durable business context
+- added new reports for **Executive Actions**, **Outstanding Approvals**, **Decision History**, **Action Analytics**, **Approval Performance**, and **Department Workload**
+- updated the **CEO Dashboard** and **Board Meeting Mode** so queue pressure, pending approvals, recent decisions, risks, opportunities, and department workload are now visible in the main executive views
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -207,6 +222,7 @@ This prototype intentionally remains:
 - **no browser-side secrets or direct GA4 calls from the UI**
 - **mostly demo-mode**, with Website Analytics, YouTube, Unified Social, Executive Inbox, and Operations Calendar eligible for optional local snapshot hydration
 - **without backend services, databases, authentication, or automation inside the product itself**
+- **approval-first**, with future execution prepared structurally but intentionally disabled in v2.0
 
 ## Project Structure
 
@@ -216,8 +232,12 @@ This prototype intentionally remains:
 - `DEFINITION_OF_DONE.md` — permanent sprint completion standard and handoff format
 - `DEPLOYMENT_NOTE.md` — simple deployment notes for Replit and Hostinger static hosting
 - `EXECUTIVE_DEMO_SCRIPT.md` — short demo script for live walkthroughs
+- `RELEASE_MANAGEMENT.md` — release packaging, versioning, and governance rules
 - `index.html` — main app shell and metadata
 - `assets/app.js` — application state, routing, rendering, and interactions
+- `assets/services/action-service.js` — Executive Action Centre aggregation, queueing, search, reports, and copilot prompts
+- `assets/actions/action-store.js` — local-first action-state and history overlay storage
+- `assets/execution/execution-layer.js` — future execution adapter scaffolding with locked execution
 - `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
 - `assets/config/app-config.js` — central runtime mode and framework configuration
 - `assets/config/release-config.js` — single source of truth for current release metadata and version display

@@ -58,9 +58,10 @@ const state = {
   journalQuery: '',
   contentQuery: '',
   memoryQuery: '',
+  selectedActionId: '',
   boardSlide: 0,
-  favourites: ['/ceo', '/cfo', '/reports/board-meeting'],
-  recent: ['/ceo', '/cfo', '/approvals']
+  favourites: ['/ceo', '/executive-action-centre', '/reports/board-meeting'],
+  recent: ['/ceo', '/executive-action-centre', '/approvals']
 };
 
 let skeletonTimer;
@@ -79,11 +80,12 @@ function topLevelKey(route = state.route) {
 function currentSubnav() {
   const key = topLevelKey();
   if (key === '/executive-inbox') return SUBNAV.executiveInbox;
+  if (key === '/executive-action-centre') return SUBNAV.executiveActionCentre;
+  if (key === '/executive-copilot' || key === '/ai-assistant') return SUBNAV.executiveCopilot;
   if (key === '/cfo') return SUBNAV.cfo;
   if (key === '/cmo') return SUBNAV.cmo;
   if (key === '/operations') return [['/operations', 'Operations Calendar']];
   if (key === '/reports') return SUBNAV.reports;
-  if (key === '/ai-assistant') return SUBNAV.aiAssistant;
   if (key === '/settings') return SUBNAV.settings;
   return [];
 }
@@ -96,7 +98,8 @@ function saveState() {
       theme: state.theme,
       sidebarCollapsed: state.sidebarCollapsed,
       favourites: state.favourites,
-      recent: state.recent
+      recent: state.recent,
+      selectedActionId: state.selectedActionId
     })
   );
 }
@@ -113,6 +116,8 @@ function loadState() {
 function syncUrl() {
   const params = new URLSearchParams(window.location.search);
   params.set('route', state.route);
+  if (state.selectedActionId) params.set('action', state.selectedActionId);
+  else params.delete('action');
   history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
 }
 
@@ -120,6 +125,7 @@ function loadFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const route = params.get('route');
   if (route && VALID_ROUTES.has(route)) state.route = route;
+  state.selectedActionId = params.get('action') || state.selectedActionId;
   if (params.get('nav') === 'open') state.sidebarOpen = true;
 }
 
@@ -184,6 +190,16 @@ function routeLabel(route) {
   return metaFor(route).title;
 }
 
+function selectedAction() {
+  const actions = WORKSPACE_DATA.actions?.actions || [];
+  return actions.find((item) => item.id === state.selectedActionId) || actions[0] || null;
+}
+
+function openActionDetail(actionId) {
+  state.selectedActionId = actionId;
+  setRoute('/executive-action-centre/action-detail');
+}
+
 function memoryStatusTone(status = '') {
   const value = String(status).toLowerCase();
   if (value.includes('high') || value.includes('severe')) return 'risk';
@@ -206,7 +222,8 @@ function globalSearchEntries(query = '') {
   const memoryEntries = WORKSPACE_DATA.memory.searchIndex || [];
   const communicationsEntries = WORKSPACE_DATA.communications.searchIndex || [];
   const operationsEntries = WORKSPACE_DATA.operations.searchIndex || [];
-  const combined = [...routeEntries, ...communicationsEntries, ...operationsEntries, ...memoryEntries];
+  const actionEntries = WORKSPACE_DATA.actions.searchIndex || [];
+  const combined = [...routeEntries, ...actionEntries, ...communicationsEntries, ...operationsEntries, ...memoryEntries];
   if (!needle) return combined.slice(0, 12);
   return combined.filter((item) => [item.title, item.body, item.meta, item.type, item.route].join(' ').toLowerCase().includes(needle)).slice(0, 12);
 }
@@ -329,6 +346,7 @@ function boardSlides() {
   const ceo = WORKSPACE_DATA.ceo;
   const intelligence = WORKSPACE_DATA.intelligence;
   const operations = WORKSPACE_DATA.operations;
+  const actions = WORKSPACE_DATA.actions;
   return [
     {
       key: 'summary',
@@ -434,19 +452,24 @@ function boardSlides() {
     },
     {
       key: 'actions',
-      eyebrow: 'Actions',
+      eyebrow: 'Executive Actions',
       title: 'What should be approved or acted on today',
-      body: 'The board view should end with clear actions, not just commentary.',
+      body: 'Board Mode now ends with a real operating queue rather than just general recommendations.',
       html: `
         <div class="grid-2">
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Executive recommendations', title: 'Priority actions', body: 'These are ranked by value, urgency, customer effect, and confidence.' })}
-            <div class="section-stack">${intelligence.recommendations.slice(0, 4).map((item, index) => priorityCard({ index: index + 1, title: item.recommendation, body: `${item.why} Owner ${item.suggestedOwner} · Estimated value ${item.estimatedValue}.`, tone: toneFromPriority(item.priority) })).join('')}</div>
+            ${sectionHeader({ eyebrow: 'Executive queue', title: 'Top action priorities', body: 'These are the actions currently leading the operating system.' })}
+            <div class="section-stack">${actions.queues.urgent.slice(0, 4).map((item, index) => priorityCard({ index: index + 1, title: item.title, body: `${item.summary} Owner ${item.owner} · ${item.status}.`, tone: toneFromPriority(item.priority) })).join('')}</div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Approvals requiring CEO attention', title: 'CEO approval queue', body: 'Keep the queue selective, ranked, and time-bound.' })}
-            <div class="section-stack">${ceo.approvalSummary.slice(0, 3).map((item) => approvalCard(item)).join('')}</div>
+            ${sectionHeader({ eyebrow: 'Outstanding approvals', title: 'Approval backlog', body: 'Approval-stage actions remain visible and non-executing.' })}
+            <div class="section-stack">${actions.queues.waitingForMe.slice(0, 4).map((item) => registerRow({ kicker: `${pill(item.status, memoryStatusTone(item.status))}${pill(item.category, 'info')}`, title: item.title, body: item.summary })).join('')}</div>
           </section>
+        </div>
+        <div class="grid-3">
+          ${insightCard({ eyebrow: 'Business risks', title: `${ceo.executiveRisks.length} visible`, body: ceo.executiveRisks[0]?.title || 'No major risk registered.', tone: 'warn' })}
+          ${insightCard({ eyebrow: 'Major decisions', title: ceo.recentDecisions?.[0]?.title || ceo.memory?.recentDecisions?.[0]?.title || 'Decision history active', body: ceo.memory?.recentDecisions?.[0]?.summary || 'Recent approved, rejected, and completed actions now feed Executive Memory.', tone: 'info' })}
+          ${insightCard({ eyebrow: 'Department workload', title: actions.departmentWorkload[0]?.department || 'Workload view active', body: actions.departmentWorkload[0]?.summary || 'Department-level action workload is now available.', tone: 'good' })}
         </div>
       `
     }
@@ -490,6 +513,10 @@ function pageQuestions(route = state.route) {
 function attachPageEvents() {
   pageContent.querySelectorAll('[data-route]').forEach((button) => {
     button.addEventListener('click', () => setRoute(button.dataset.route));
+  });
+
+  pageContent.querySelectorAll('[data-action-id]').forEach((button) => {
+    button.addEventListener('click', () => openActionDetail(button.dataset.actionId));
   });
 
   pageContent.querySelectorAll('[data-favourite-route]').forEach((button) => {
@@ -561,7 +588,7 @@ function renderCommandPalette() {
   paletteResults.innerHTML = results
     .map(
       (item) => `
-        <button type="button" class="command-result" data-route="${item.route}">
+        <button type="button" class="command-result" data-route="${item.route}" ${item.actionId ? `data-action-id="${item.actionId}"` : ''}>
           <span class="card-kicker">${icon(item.type === 'Route' ? 'arrowRight' : 'search')}<span>${escapeHtml(item.title)}</span></span>
           <small>${escapeHtml(`${item.type} · ${item.meta || item.route}`)}</small>
         </button>
@@ -572,6 +599,10 @@ function renderCommandPalette() {
   paletteResults.querySelectorAll('[data-route]').forEach((button) => {
     button.addEventListener('click', () => {
       closeCommandPalette();
+      if (button.dataset.actionId) {
+        openActionDetail(button.dataset.actionId);
+        return;
+      }
       setRoute(button.dataset.route);
     });
   });
@@ -753,6 +784,37 @@ function ceoDashboardView() {
             ${intelligence.insights.executive.slice(0, 3).map((item) => insightCard({ eyebrow: `${item.priority} priority`, title: item.title, body: item.executiveSummary, tone: toneFromPriority(item.priority) })).join('')}
           </div>
         </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Action Centre', title: 'What should happen next', body: 'The CEO dashboard now surfaces queue pressure, approvals, risks, opportunities, and recommended actions directly from the operating system.' })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: "Today's Executive Queue", value: String(data.todaysExecutiveQueue.length), body: 'Actions due now or needing same-day review.' })}
+            ${statCard({ iconName: 'alert-triangle', label: 'Top Priorities', value: String(data.topPriorities.length), body: 'Highest-priority or highest-risk actions.' })}
+            ${statCard({ iconName: 'calendar', label: 'Pending Approvals', value: String(data.pendingApprovals.length), body: 'Approval-stage items waiting for leadership.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Recommended Actions', value: String(data.todaysRecommendedActions.length), body: 'Actions most worth approving or challenging next.' })}
+          </div>
+          <div class="grid-2">
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Top priorities', title: 'Queue leaders', body: 'The action layer now tells the CEO what deserves attention first.' })}
+              <div class="section-stack">${data.topPriorities.slice(0, 4).map((item) => registerRow({ kicker: `${pill(item.priority, toneFromPriority(item.priority))}${pill(item.category, 'info')}${pill(item.status, memoryStatusTone(item.status))}`, title: item.title, body: item.summary, extra: `<button type="button" class="text-link" data-action-id="${item.id}">${icon('arrowRight')} Open action</button>` })).join('')}</div>
+            </section>
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Pending approvals', title: 'What leadership still needs to decide', body: 'These items remain approval-first and non-executing.' })}
+              <div class="section-stack">${data.pendingApprovals.slice(0, 4).map((item) => registerRow({ kicker: `${pill(item.status, memoryStatusTone(item.status))}${pill(item.owner, 'neutral')}`, title: item.title, body: item.summary, extra: `<button type="button" class="text-link" data-action-id="${item.id}">${icon('arrowRight')} Open action</button>` })).join('')}</div>
+            </section>
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Business Risks', title: 'What could hurt the business if ignored', body: 'Risks are now visible alongside the action backlog.' })}
+            <div class="section-stack">${data.executiveRisks.slice(0, 4).map((item) => insightCard({ eyebrow: item.severity, title: item.title, body: item.mitigation || item.financialImpact, tone: 'warn' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Business Opportunities', title: 'What could create value fastest', body: 'Opportunities remain visible so the queue is not only defensive.' })}
+            <div class="section-stack">${data.executiveOpportunities.slice(0, 4).map((item) => insightCard({ eyebrow: item.estimatedValue, title: item.title, body: item.nextAction, tone: 'good' })).join('')}</div>
+          </section>
+        </div>
 
         <section class="panel">
           ${sectionHeader({ eyebrow: 'Website Intelligence', title: website.source.label, body: website.source.body })}
@@ -2381,6 +2443,8 @@ function reportsOverviewView() {
   const memory = WORKSPACE_DATA.reports.memory;
   const memoryRoutes = [
     { title: 'Executive Inbox', body: 'Communications intelligence, approval-first inbox triage, and executive email summaries.', route: '/executive-inbox' },
+    { title: 'Executive Actions Report', body: 'A packaged view of active actions, backlog, and what leadership should do next.', route: '/reports/executive-actions' },
+    { title: 'Outstanding Approvals', body: 'Approval-stage work organised for fast executive review.', route: '/reports/outstanding-approvals' },
     { title: 'Operations Calendar', body: 'Operations capacity, fittings, deadlines, scheduling risks, and free capacity in one executive operations surface.', route: '/operations' },
     { title: 'Executive Timeline', body: 'Permanent business chronology of launches, milestones, and structural changes.', route: '/reports/executive-timeline' },
     { title: 'Decision Journal', body: 'Structured executive decision memory with reasons, outcomes, and linked KPIs.', route: '/reports/decision-journal' },
@@ -3103,6 +3167,351 @@ function aiAssistantPlaceholderView(route) {
   };
 }
 
+function executiveActionCentreView() {
+  const data = WORKSPACE_DATA.actions;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="hero-grid">
+          <div class="hero-block">
+            <section class="summary-banner">
+              <div class="eyebrow">Executive Action Centre</div>
+              <div class="hero-title">One queue for what the business needs next.</div>
+              <p class="hero-summary">${escapeHtml(data.summary.body)}</p>
+            </section>
+            <section class="snapshot-grid">
+              ${statCard({ iconName: 'check-circle', label: 'Active actions', value: String(data.metrics.active), body: 'Open executive work across the operating system.' })}
+              ${statCard({ iconName: 'alert-triangle', label: 'Urgent items', value: String(data.metrics.urgent), body: 'High-priority or high-risk work needing fast attention.' })}
+              ${statCard({ iconName: 'sparkles', label: 'Approval-stage items', value: String(data.metrics.approvals), body: 'Nothing executes automatically; everything stays approval-first.' })}
+              ${statCard({ iconName: 'calendar', label: "Today's queue", value: String(data.queues.todaysActions.length), body: 'Due today or needing same-day executive attention.' })}
+            </section>
+          </div>
+          <div class="hero-side">
+            <section class="score-panel">
+              <div class="score-tile">
+                <div class="label">My Queue</div>
+                <strong class="score-value">${data.queues.myQueue.length}</strong>
+                <div class="score-note">${escapeHtml(data.summary.headline)}</div>
+              </div>
+              <div class="snapshot-panel">
+                <div class="label">Categories</div>
+                <h3>${escapeHtml(data.categories.slice(0, 4).join(' · '))}</h3>
+                <p>${escapeHtml(`All ${data.categories.length} action categories are now available inside one operating queue.`)}</p>
+              </div>
+            </section>
+          </div>
+        </section>
+        ${renderRoutePillbar(SUBNAV.executiveActionCentre)}
+        ${pageQuestions('/executive-action-centre')}
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Top priorities', title: 'What leadership should handle first', body: 'These are the highest-value actions across finance, marketing, inbox, and operations.' })}
+            <div class="section-stack">${data.queues.urgent.slice(0, 5).map((item) => registerRow({ kicker: `${pill(item.priority, toneFromPriority(item.priority))}${pill(item.category, 'info')}${pill(item.status, memoryStatusTone(item.status))}`, title: item.title, body: item.summary, extra: `<button type="button" class="text-link" data-action-id="${item.id}">${icon('arrowRight')} Open detail</button>` })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Queue segments', title: 'How the executive queue is organised', body: 'The queue is deliberately small, ranked, and explainable.' })}
+            <div class="tile-grid">
+              ${insightCard({ eyebrow: 'My Queue', title: `${data.queues.myQueue.length} items`, body: 'CEO-owned work awaiting attention.', tone: 'info' })}
+              ${insightCard({ eyebrow: 'Today', title: `${data.queues.todaysActions.length} items`, body: 'Work due today or already pressing.', tone: 'warn' })}
+              ${insightCard({ eyebrow: 'Waiting', title: `${data.queues.waitingForMe.length} items`, body: 'Items waiting for executive review or decision.', tone: 'neutral' })}
+              ${insightCard({ eyebrow: 'Approved / Rejected', title: `${data.metrics.approved} / ${data.metrics.rejected}`, body: 'Decision history now persists as executive memory.', tone: 'good' })}
+            </div>
+          </section>
+        </div>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Department workload', title: 'Where action pressure is accumulating', body: 'Action volume now makes department strain visible before it becomes operating drag.' })}
+            <div class="section-stack">${data.departmentWorkload.slice(0, 6).map((item) => registerRow({ kicker: `${pill(`${item.active} active`, 'info')}${pill(`${item.urgent} urgent`, item.urgent ? 'warn' : 'neutral')}`, title: item.department, body: item.summary })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Future execution layer', title: 'Adapters are prepared, execution is still locked', body: 'Validate and preview exist now; execute intentionally returns Approval Required.' })}
+            <div class="section-stack">${data.executionLayer.map((item) => insightCard({ eyebrow: item.label, title: item.provider, body: `${item.supports.join(', ')}. Execute → ${item.execution}.`, tone: 'neutral' })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveQueueView() {
+  const data = WORKSPACE_DATA.actions;
+  const sections = [
+    ['My Queue', data.queues.myQueue],
+    ["Today's Actions", data.queues.todaysActions],
+    ['Urgent', data.queues.urgent],
+    ['This Week', data.queues.thisWeek],
+    ['Waiting For Me', data.queues.waitingForMe],
+    ['Completed Today', data.queues.completedToday],
+    ['Recently Approved', data.queues.recentlyApproved],
+    ['Recently Rejected', data.queues.recentlyRejected]
+  ];
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Queue', title: 'Queue segments for decision speed', body: 'The queue is split into practical executive buckets so the CEO sees sequence, not noise.' })}
+          ${renderRoutePillbar(SUBNAV.executiveActionCentre)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: 'My Queue', value: String(data.queues.myQueue.length), body: 'CEO-owned actions.' })}
+            ${statCard({ iconName: 'alert-triangle', label: 'Urgent', value: String(data.queues.urgent.length), body: 'High priority or high risk.' })}
+            ${statCard({ iconName: 'calendar', label: 'This Week', value: String(data.queues.thisWeek.length), body: 'Actions due before the week closes.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Completed Today', value: String(data.queues.completedToday.length), body: 'Completed actions remain searchable in memory.' })}
+          </div>
+        </section>
+        <div class="settings-grid">${sections.map(([title, items]) => `
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Queue', title, body: items.length ? `${items.length} items currently in this bucket.` : 'No items currently in this bucket.' })}
+            <div class="section-stack">${(items.length ? items : [{ title: 'No items', summary: 'Nothing currently visible here.', priority: 'Low', category: 'General', status: 'Clear', id: '' }]).map((item) => registerRow({ kicker: `${pill(item.priority || 'Low', toneFromPriority(item.priority || 'Low'))}${pill(item.category || 'General', 'info')}${pill(item.status || 'Clear', memoryStatusTone(item.status || 'Clear'))}`, title: item.title, body: item.summary, extra: item.id ? `<button type="button" class="text-link" data-action-id="${item.id}">${icon('arrowRight')} Open detail</button>` : '' })).join('')}</div>
+          </section>
+        `).join('')}</div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function actionDetailView() {
+  const action = selectedAction();
+  if (!action) return executiveActionCentreView();
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: action.category, title: action.title, body: action.executiveSummary || action.summary })}
+          ${renderRoutePillbar(SUBNAV.executiveActionCentre)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'alert-triangle', label: 'Priority', value: action.priority, body: `Risk ${action.risk} · Confidence ${action.confidence}.` })}
+            ${statCard({ iconName: 'calendar', label: 'Due', value: action.dueDate, body: `Created ${action.created}. Estimated ${action.estimatedTime}.` })}
+            ${statCard({ iconName: 'check-circle', label: 'Status', value: action.status, body: `Owner ${action.owner}.` })}
+            ${statCard({ iconName: 'sparkles', label: 'Business value', value: action.businessValue, body: 'This action exists because it should change an executive outcome, not just clear admin.' })}
+          </div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Executive Summary', title: 'Business context', body: action.businessContext })}
+            ${insightCard({ eyebrow: 'Recommended outcome', title: action.recommendedOutcome, body: action.summary, tone: toneFromPriority(action.priority) })}
+            <div class="chip-list">${action.workflowActions.map((item) => `<span class="sidebar-chip">${escapeHtml(item)}</span>`).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Linked providers', title: action.linkedProviders.join(' · ') || 'Provider-linked action', body: 'The action detail page explains where the recommendation came from and what it connects to.' })}
+            <div class="section-stack">${action.evidence.map((item) => insightCard({ eyebrow: item.label, title: item.value, body: item.note, tone: item.tone || 'info' })).join('')}</div>
+          </section>
+        </div>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Related Metrics', title: 'KPIs and dependencies', body: 'Every action carries the signals it should be judged against.' })}
+            <div class="section-stack">${action.relatedKpis.map((item) => registerRow({ kicker: pill('KPI', 'info'), title: item, body: 'This KPI is directly relevant to the action outcome.' })).join('') || insightCard({ eyebrow: 'KPI', title: 'No linked KPIs', body: 'This action currently relies more on narrative and provider context than numeric KPIs.', tone: 'neutral' })}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Historical Context', title: 'Memory and decision history', body: 'Approved, rejected, and completed actions become part of Executive Memory.' })}
+            <div class="section-stack">${action.history.map((item) => registerRow({ kicker: `${pill(item.type, 'info')}${pill(item.status, memoryStatusTone(item.status))}`, title: item.timestamp, body: item.summary })).join('')}</div>
+          </section>
+        </div>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Alternatives', title: 'Other options leadership could take', body: 'An action is explainable only when alternatives remain visible.' })}
+            <div class="section-stack">${action.alternatives.map((item) => insightCard({ eyebrow: 'Alternative', title: item, body: 'Available but intentionally not executed automatically.', tone: 'neutral' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Supporting Evidence', title: 'Why this action exists', body: 'Evidence stays explicit so the recommendation can be challenged.' })}
+            <div class="section-stack">${action.supportingEvidence.map((item) => registerRow({ kicker: pill('Evidence', 'good'), title: item, body: 'Provider-backed or memory-backed supporting signal.' })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function approvalWorkflowView() {
+  const data = WORKSPACE_DATA.actions.approvalWorkflow;
+  const adapters = WORKSPACE_DATA.actions.adapters;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Approval Workflow', title: data.title, body: data.principle })}
+          ${renderRoutePillbar(SUBNAV.executiveActionCentre)}
+          <div class="chip-list">${data.workflowActions.map((item) => `<span class="sidebar-chip">${escapeHtml(item)}</span>`).join('')}</div>
+          <div class="tile-grid">${data.stages.map((item) => insightCard({ eyebrow: 'Workflow stage', title: item, body: 'Every stage is explicit, explainable, and approval-first.', tone: 'neutral' })).join('')}</div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Approval-stage actions', title: 'What is currently moving through workflow', body: 'These items are staged, not executed.' })}
+            <div class="section-stack">${data.items.map((item) => registerRow({ kicker: `${pill(item.status, memoryStatusTone(item.status))}${pill(item.priority, toneFromPriority(item.priority))}`, title: item.title, body: item.summary, extra: `<button type="button" class="text-link" data-action-id="${item.id}">${icon('arrowRight')} Open detail</button>` })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Execution adapters', title: 'Prepared for the future, blocked in v2.0', body: 'validate() and preview() work now; execute() intentionally returns Approval Required.' })}
+            <div class="section-stack">${adapters.map((item) => insightCard({ eyebrow: item.label, title: item.execute.status, body: `${item.provider} · supports ${item.supports.join(', ')}.`, tone: 'warn' })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveCopilotOverviewView() {
+  const data = WORKSPACE_DATA.executiveCopilot;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Copilot', title: 'Ask what to do next', body: data.intro })}
+          ${renderRoutePillbar(SUBNAV.executiveCopilot)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'sparkles', label: 'Prompt library', value: String(data.prompts.length), body: 'High-value executive questions are now pre-wired.' })}
+            ${statCard({ iconName: 'grid', label: 'Architecture layers', value: String(data.architecture.length), body: data.architecture.join(' → ') })}
+            ${statCard({ iconName: 'check-circle', label: 'Approval-first answers', value: 'Yes', body: 'Copilot explains actions but does not execute them.' })}
+            ${statCard({ iconName: 'book-open', label: 'Memory-backed', value: 'Yes', body: 'Executive memory and action history now shape answers.' })}
+          </div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Suggested questions', title: 'What the CEO can ask now', body: 'These questions are resolved through provider data, services, intelligence, memory, and the knowledge graph.' })}
+          <div class="chip-list">${data.suggestedQuestions.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
+        </section>
+        <div class="grid-2">${data.prompts.slice(0, 4).map((item) => insightCard({ eyebrow: item.title, title: item.question, body: item.answer, tone: 'info' })).join('')}</div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveCopilotAskView() {
+  const data = WORKSPACE_DATA.executiveCopilot;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Copilot', title: 'Ask EP Intelligence', body: 'Answers are action-oriented, explainable, and approval-first.' })}
+          ${renderRoutePillbar(SUBNAV.executiveCopilot)}
+        </section>
+        <div class="section-stack">${data.prompts.map((item) => registerRow({ kicker: `${pill('Executive question', 'info')}${pill(item.supportingRoutes.join(' · '), 'neutral')}`, title: item.question, body: `${item.answer} ${item.rationale}`, extra: `<div class="chip-list">${item.supportingRoutes.map((route) => `<button type="button" class="sidebar-chip" data-route="${route}">${escapeHtml(routeLabel(route))}</button>`).join('')}</div>` })).join('')}</div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveCopilotBriefingView() {
+  const actions = WORKSPACE_DATA.actions;
+  const intelligence = WORKSPACE_DATA.intelligence;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Copilot', title: 'Executive Briefing', body: 'This briefing now includes queue pressure, approvals, and action history alongside performance signals.' })}
+          ${renderRoutePillbar(SUBNAV.executiveCopilot)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: 'Active actions', value: String(actions.metrics.active), body: 'Action backlog is now part of executive health.' })}
+            ${statCard({ iconName: 'alert-triangle', label: 'Urgent', value: String(actions.metrics.urgent), body: 'Urgent work awaiting executive handling.' })}
+            ${statCard({ iconName: 'calendar', label: 'Approvals', value: String(actions.metrics.approvals), body: 'Approval-stage work needing governance.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Business health', value: String(intelligence.health.overall.score), body: intelligence.health.overall.label })}
+          </div>
+        </section>
+        <div class="grid-2">
+          ${insightCard({ eyebrow: 'Top insight', title: intelligence.insights.topInsight.title, body: intelligence.insights.topInsight.executiveSummary, tone: toneFromPriority(intelligence.insights.topInsight.priority) })}
+          ${insightCard({ eyebrow: 'Top action', title: actions.queues.myQueue[0]?.title || 'No active queue item', body: actions.queues.myQueue[0]?.summary || 'Queue currently clear.', tone: actions.queues.myQueue[0] ? toneFromPriority(actions.queues.myQueue[0].priority) : 'neutral' })}
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function executiveCopilotMemoryContextView() {
+  const memory = WORKSPACE_DATA.aiAssistant.memory;
+  const actionResults = WORKSPACE_DATA.actions.searchIndex.slice(0, 8);
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive Copilot', title: 'Memory & Action Context', body: 'Copilot can now see action history, executive memory, and knowledge-graph relationships together.' })}
+          ${renderRoutePillbar(SUBNAV.executiveCopilot)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'book-open', label: 'Memory events', value: String(memory.timeline.length), body: 'Structured chronology retained across the product.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Decisions', value: String(memory.decisions.length), body: 'Approved/rejected/completed decisions retained.' })}
+            ${statCard({ iconName: 'sparkles', label: 'Graph edges', value: String(memory.graph.summary.edgeCount), body: 'Knowledge graph links actions, goals, and decisions.' })}
+            ${statCard({ iconName: 'grid', label: 'Action search hits', value: String(actionResults.length), body: 'Actions are now part of global search.' })}
+          </div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Memory context', title: 'Deterministic historical context', body: 'Longer-term patterns remain available to Copilot answers.' })}
+            <div class="section-stack">${memory.context.deterministic.slice(0, 6).map((item) => registerRow({ kicker: pill(item.department || 'Executive Memory', 'info'), title: item.title, body: item.summary })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Indexed actions', title: 'Action coverage in search', body: 'Action detail routes are now first-class search targets.' })}
+            <div class="section-stack">${actionResults.map((item) => registerRow({ kicker: `${pill(item.type, 'info')}${pill(item.meta, 'neutral')}`, title: item.title, body: item.body, extra: `<button type="button" class="text-link" data-action-id="${item.actionId || ''}">${icon('arrowRight')} Open</button>` })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function actionReportView(key, title, body) {
+  const report = WORKSPACE_DATA.actions.reports[key];
+  const items = report.items || report.highlights || report.breakdown || report.backlogByStatus || [];
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Reports', title: report.title || title, body: report.summary || body })}
+          ${renderRoutePillbar(SUBNAV.reports)}
+        </section>
+        <section class="panel">
+          <div class="section-stack">${items.map((item) => registerRow({ kicker: `${pill(item.status || item.department || item.priority || 'Report', 'info')}${item.count != null ? pill(String(item.count), 'neutral') : ''}`, title: item.title || item.department || item.status, body: item.summary || item.body || item.note || `${item.count || ''}`.trim(), extra: item.id ? `<button type="button" class="text-link" data-action-id="${item.id}">${icon('arrowRight')} Open detail</button>` : '' })).join('')}</div>
+        </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function settingsActionCentreView() {
+  const config = WORKSPACE_DATA.actions.settings;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Settings', title: 'Action Centre configuration', body: 'v2.0 adds configurable queue rules for how the executive operating system should behave.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: 'Retention', value: 'Enabled', body: config.actionRetention })}
+            ${statCard({ iconName: 'sparkles', label: 'Business hours', value: config.businessHours, body: 'Used to judge urgency and review cadence.' })}
+            ${statCard({ iconName: 'grid', label: 'Store key', value: config.storeKey, body: 'Reserved for future persistent action-state overlays.' })}
+            ${statCard({ iconName: 'alert-triangle', label: 'Execution state', value: 'Approval Required', body: 'Adapters are scaffolded, not live.' })}
+          </div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Priority rules', title: 'What gets surfaced faster', body: 'Priority is now shaped by business value, risk, trust, and timing.' })}
+            <div class="section-stack">${config.priorityRules.map((item) => insightCard({ eyebrow: 'Rule', title: item, body: 'Used inside the Executive Action Centre queueing logic.', tone: 'info' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Confidence thresholds', title: 'How confidence is interpreted', body: 'Confidence stays visible so leadership can challenge weak recommendations.' })}
+            <div class="section-stack">${Object.entries(config.confidenceThresholds).map(([key, value]) => registerRow({ kicker: pill(key, 'neutral'), title: value, body: 'Confidence level used across action ranking and explanation.' })).join('')}</div>
+          </section>
+        </div>
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Defaults', title: 'Approval and routing defaults', body: 'Nothing auto-executes; everything routes through explicit ownership and review.' })}
+            <div class="section-stack">${config.approvalDefaults.concat(config.departmentRouting).map((item) => registerRow({ kicker: pill('Default', 'warn'), title: item, body: 'Action Centre configuration item.' })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Notifications', title: 'Visibility preferences', body: 'The action layer should be visible without becoming noisy.' })}
+            <div class="section-stack">${config.notificationPreferences.map((item) => insightCard({ eyebrow: 'Preference', title: item, body: 'Used to decide where action pressure is surfaced in the product.', tone: 'neutral' })).join('')}</div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
 function settingsView() {
   const config = WORKSPACE_DATA.settings.configuration;
   const memory = WORKSPACE_DATA.settings.memory;
@@ -3400,6 +3809,14 @@ function settingsAboutView() {
 
 const routeRenderers = {
   '/ceo': ceoDashboardView,
+  '/executive-action-centre': executiveActionCentreView,
+  '/executive-action-centre/queue': executiveQueueView,
+  '/executive-action-centre/action-detail': actionDetailView,
+  '/executive-action-centre/approval-workflow': approvalWorkflowView,
+  '/executive-copilot': executiveCopilotOverviewView,
+  '/executive-copilot/ask': executiveCopilotAskView,
+  '/executive-copilot/executive-briefing': executiveCopilotBriefingView,
+  '/executive-copilot/memory-context': executiveCopilotMemoryContextView,
   '/executive-inbox': executiveInboxView,
   '/cfo': cfoHomeView,
   '/cfo/revenue': cfoRevenueView,
@@ -3438,6 +3855,12 @@ const routeRenderers = {
   '/projects': () => placeholderModuleView('/projects'),
   '/approvals': approvalsView,
   '/reports': reportsOverviewView,
+  '/reports/executive-actions': () => actionReportView('executiveActionsReport', 'Executive Actions Report', 'Action backlog and current leadership priorities.'),
+  '/reports/outstanding-approvals': () => actionReportView('outstandingApprovals', 'Outstanding Approvals', 'Approval-stage work awaiting executive review.'),
+  '/reports/decision-history': () => actionReportView('decisionHistory', 'Decision History', 'Approved, rejected, and completed action outcomes.'),
+  '/reports/action-analytics': () => actionReportView('actionAnalytics', 'Action Analytics', 'Backlog and throughput analysis across the operating system.'),
+  '/reports/approval-performance': () => actionReportView('approvalPerformance', 'Approval Performance', 'Approval-stage performance and backlog shape.'),
+  '/reports/department-workload': () => actionReportView('departmentWorkload', 'Department Workload', 'Department-level action pressure and throughput.'),
   '/reports/weekly-briefings': weeklyBriefingsView,
   '/reports/executive-timeline': executiveTimelineView,
   '/reports/decision-journal': executiveDecisionJournalView,
@@ -3448,15 +3871,16 @@ const routeRenderers = {
   '/reports/cfo-reports': () => reportPlaceholderView('/reports/cfo-reports', 'CFO Reports', WORKSPACE_DATA.reports.cfoReports),
   '/reports/cmo-reports': marketingIntelligenceReportView,
   '/reports/ceo-reports': () => reportPlaceholderView('/reports/ceo-reports', 'CEO Reports', WORKSPACE_DATA.reports.ceoReports),
-  '/ai-assistant': aiAssistantOverviewView,
-  '/ai-assistant/ask': aiAssistantAskView,
-  '/ai-assistant/executive-briefing': aiAssistantExecutiveBriefingView,
+  '/ai-assistant': executiveCopilotOverviewView,
+  '/ai-assistant/ask': executiveCopilotAskView,
+  '/ai-assistant/executive-briefing': executiveCopilotBriefingView,
   '/ai-assistant/follow-up-questions': () => aiAssistantPlaceholderView('/ai-assistant/follow-up-questions'),
   '/ai-assistant/suggested-actions': () => aiAssistantPlaceholderView('/ai-assistant/suggested-actions'),
   '/ai-assistant/assumptions': () => aiAssistantPlaceholderView('/ai-assistant/assumptions'),
   '/ai-assistant/missing-information': () => aiAssistantPlaceholderView('/ai-assistant/missing-information'),
-  '/ai-assistant/memory-context': aiAssistantMemoryContextView,
+  '/ai-assistant/memory-context': executiveCopilotMemoryContextView,
   '/settings': settingsView,
+  '/settings/action-centre': settingsActionCentreView,
   '/settings/integrations': settingsIntegrationStatusView,
   '/settings/configuration': settingsConfigurationView,
   '/settings/provider-architecture': settingsProviderArchitectureView,

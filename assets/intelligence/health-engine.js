@@ -25,7 +25,7 @@ export function createHealthEngine(config) {
   const weights = config.weights.health;
 
   return Object.freeze({
-    evaluate({ executive, finance, marketing, approvals, operations = {} }) {
+    evaluate({ executive, finance, marketing, approvals, operations = {}, communications = {}, actions = {}, memory = {} }) {
       const revenueGrowth = parsePercent(finance.metrics?.find((item) => item.key === 'revenue')?.trend);
       const profitTrend = parsePercent(finance.metrics?.find((item) => item.key === 'profit')?.trend);
       const grossMargin = parsePercent(finance.kpis?.groups?.[1]?.[1]?.[0]?.[1]);
@@ -35,13 +35,17 @@ export function createHealthEngine(config) {
       const expenseDrift = parsePercent(finance.kpis?.groups?.[4]?.[1]?.[1]?.[1]);
       const workingCapitalRisk = finance.kpis?.groups?.[3]?.[1]?.[2]?.[1] || 'Medium';
       const approvalCount = Object.values(approvals.groups || {}).reduce((sum, entries) => sum + entries.length, 0);
+      const actionBacklog = Number(actions.metrics?.active || actions.actions?.filter?.((item) => !['Completed', 'Archived', 'Dismissed'].includes(item.status)).length || 0);
+      const approvalBacklog = Number(actions.metrics?.approvals || approvalCount);
+      const unreadExecutiveEmails = Number(communications.metrics?.needsReply || 0);
+      const goalProgress = average((memory.goals || []).map((item) => Number(item.progress || 0))) || 72;
 
       const cfoComponents = {
         revenueMomentum: scoreFromGrowth(revenueGrowth),
         marginQuality: scoreFromMargin(grossMargin, profitTrend),
         cashResilience: scoreFromRunway(runwayMonths, forecastCash && currentCash ? forecastCash / currentCash : 0.8),
         workingCapital: clamp(workingCapitalRisk.includes('Medium') ? 74 : 82),
-        governance: clamp(88 - approvalCount * 1.2 - Math.max(expenseDrift, 0) * 0.4)
+        governance: clamp(88 - approvalBacklog * 1.2 - Math.max(expenseDrift, 0) * 0.4 - Math.min(actionBacklog * 0.6, 8))
       };
       const cfoScore = weightedScore(Object.entries(cfoComponents), weights.cfo);
 
@@ -138,15 +142,15 @@ export function createHealthEngine(config) {
       const operationsScore = average([
         businessModules.find((item) => item.module === 'Operations')?.score || 80,
         businessModules.find((item) => item.module === 'Projects')?.score || 77,
-        clamp(88 - Math.max(operationsCapacity - 70, 0) * 0.7 - operationsRisks * 4 + Math.min(openBookingSlots * 3, 8)),
+        clamp(88 - Math.max(operationsCapacity - 70, 0) * 0.7 - operationsRisks * 4 + Math.min(openBookingSlots * 3, 8) - Math.min(actionBacklog * 0.3, 6)),
         clamp(86 - Math.max(operationsWeekCapacity - 80, 0) * 0.5 - operationsRisks * 3)
       ]);
-      const governance = clamp(86 - approvalCount * 0.8);
+      const governance = clamp(86 - approvalBacklog * 0.8 - Math.min(actionBacklog * 0.5, 10) - Math.min(unreadExecutiveEmails * 1.1, 8) + Math.min((goalProgress - 60) * 0.1, 4));
 
       const ceoComponents = {
         finance: cfoScore,
         marketing: cmoScore,
-        customerTrust,
+        customerTrust: clamp(customerTrust - Math.min(unreadExecutiveEmails * 0.8, 6)),
         operationsDelivery: operationsScore,
         governance
       };

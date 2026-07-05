@@ -15,7 +15,9 @@ export const DATA_CONTRACTS = Object.freeze({
   risk: ['id', 'title', 'severity', 'likelihood', 'financialImpact', 'department', 'mitigation'],
   aiRecommendation: ['id', 'question', 'answer', 'confidence', 'rationale'],
   report: ['id', 'title', 'body', 'route', 'category'],
-  departmentSummary: ['id', 'department', 'score', 'status', 'trend', 'summary']
+  departmentSummary: ['id', 'department', 'score', 'status', 'trend', 'summary'],
+  executiveAction: ['id', 'title', 'summary', 'category', 'department', 'actionType', 'priority', 'confidence', 'risk', 'businessValue', 'estimatedTime', 'created', 'dueDate', 'owner', 'status', 'dependencies', 'relatedKpis', 'relatedTimelineEvents', 'relatedDecisions', 'supportingEvidence', 'recommendedOutcome'],
+  actionHistory: ['id', 'type', 'status', 'timestamp', 'summary', 'owner']
 });
 
 export function deepClone(value) {
@@ -274,6 +276,58 @@ export function normalizeDepartmentSummary(entry = {}) {
     status: text(entry.status),
     trend: text(entry.trend),
     summary: text(entry.summary)
+  };
+}
+
+export function normalizeActionHistory(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, `${entry.type || 'history'}-${entry.timestamp || entry.status || 'entry'}`),
+    type: text(entry.type, 'History'),
+    status: text(entry.status),
+    timestamp: text(entry.timestamp ?? entry.date),
+    summary: text(entry.summary),
+    owner: text(entry.owner)
+  };
+}
+
+export function normalizeExecutiveAction(entry = {}) {
+  return {
+    ...entry,
+    id: identifier(entry.id, entry.title || 'executive-action'),
+    title: text(entry.title),
+    summary: text(entry.summary),
+    category: text(entry.category, 'General'),
+    department: text(entry.department, entry.category || 'Executive'),
+    actionType: text(entry.actionType, 'Complete Task'),
+    priority: text(entry.priority, 'Medium'),
+    confidence: text(entry.confidence, 'Medium'),
+    risk: text(entry.risk, 'Medium'),
+    businessValue: text(entry.businessValue),
+    estimatedTime: text(entry.estimatedTime),
+    created: text(entry.created),
+    dueDate: text(entry.dueDate),
+    owner: text(entry.owner, 'CEO'),
+    status: text(entry.status, 'New'),
+    dependencies: (entry.dependencies || []).map((item) => text(item)).filter(Boolean),
+    relatedKpis: (entry.relatedKpis || []).map((item) => text(item)).filter(Boolean),
+    relatedTimelineEvents: (entry.relatedTimelineEvents || []).map((item) => text(item)).filter(Boolean),
+    relatedDecisions: (entry.relatedDecisions || []).map((item) => text(item)).filter(Boolean),
+    supportingEvidence: (entry.supportingEvidence || []).map((item) => text(item)).filter(Boolean),
+    recommendedOutcome: text(entry.recommendedOutcome),
+    linkedProviders: (entry.linkedProviders || []).map((item) => text(item)).filter(Boolean),
+    workflowActions: (entry.workflowActions || []).map((item) => text(item)).filter(Boolean),
+    queueTags: (entry.queueTags || []).map((item) => text(item)).filter(Boolean),
+    alternatives: (entry.alternatives || []).map((item) => text(item)).filter(Boolean),
+    evidence: normalizeCollection(entry.evidence || [], (item) => ({ label: text(item.label), value: text(item.value), note: text(item.note), tone: text(item.tone, 'info') })),
+    history: normalizeCollection(entry.history || [], normalizeActionHistory),
+    linkedRoute: text(entry.linkedRoute),
+    detailRoute: text(entry.detailRoute),
+    departmentRoute: text(entry.departmentRoute),
+    businessContext: text(entry.businessContext),
+    executiveSummary: text(entry.executiveSummary ?? entry.summary),
+    decisionHistory: (entry.decisionHistory || []).map((item) => text(item)).filter(Boolean),
+    memory: (entry.memory || []).map((item) => text(item)).filter(Boolean)
   };
 }
 

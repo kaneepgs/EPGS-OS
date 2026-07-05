@@ -103,3 +103,8 @@
 - Added a Social Health Score, unified social source coverage, deterministic marketing attribution, competitor benchmarking, and cross-platform executive social reporting across the CEO dashboard, CMO workspace, reports, settings, and runtime state.
 - Extended deterministic intelligence, recommendations, and correlations so social momentum, LinkedIn authority, X drag, competitor pressure, and attribution clarity now flow through the existing executive reasoning layer without adding direct browser-side APIs.
 - Updated roadmap, release metadata, demo handoff docs, and integration-framework documentation so Sprint 18 now sits cleanly on top of the existing provider/service/intelligence architecture.
+- Added v2.0 and introduced a top-level Executive Action Centre with ranked executive queues, approval-first workflow, action detail pages, action analytics, department workload, and cross-provider action synthesis.
+- Added `assets/actions/action-store.js`, `assets/services/action-service.js`, and `assets/execution/execution-layer.js` so actions can persist locally, feed reports/search/memory, and prepare future execution adapters without enabling automation.
+- Added Executive Copilot routes and prompt coverage so action-oriented executive questions now resolve through providers, services, intelligence, memory, and the knowledge graph.
+- Extended Business Health, CEO Dashboard, Board Meeting Mode, reports, memory, search, and knowledge-graph coverage so approved, rejected, and completed actions now become durable executive operating context.
+- Updated formal release metadata, release management, roadmap, architecture manual, and v2.0 handoff documentation.

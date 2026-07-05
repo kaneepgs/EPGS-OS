@@ -1,5 +1,25 @@
 # EP Intelligence Changelog
 
+## v2.0 — Executive Action Centre & Executive Copilot
+
+EP Intelligence now formalises the shift from an Executive Intelligence platform into an approval-first Executive Operating System.
+
+Included milestones:
+
+- Executive Action Centre
+- Executive Queue
+- Action Detail workspace
+- Approval Workflow
+- Executive Copilot
+- Action-backed Business Health
+- Action reports and analytics
+- Global action / approval / history search coverage
+- Execution adapter scaffolding with `Approval Required` execution locks
+- Executive Memory updates from approved, rejected, and completed actions
+- CEO dashboard queue / approval / decision integrations
+- Board Meeting Mode action, risk, decision, opportunity, and workload coverage
+- Release Management formalisation for major-release packaging
+
 ## v1.0 — Platform Foundation
 
 EP Intelligence established the executive platform foundation and moved from isolated prototypes into a coherent executive operating system.
@@ -57,45 +77,9 @@ Included milestones:
 - Competitor benchmarking
 - Marketing attribution
 
-## v1.2 — Business Operations
+## Next formal release candidates
 
-Planned:
-
-- Unified Business Operations release packaging
-- Executive Inbox + Operations Calendar consolidation
-- Operational Intelligence
-- Approval Centre Improvements
-- Cross-provider operational workflows
-
-## v1.3 — Financial Intelligence
-
-Planned:
-
-- QuickBooks/Xero Provider
-- Live Finance
-- Cash Flow
-- VAT
-- Revenue Intelligence
-- Financial Forecasting
-
-## v1.4 — Social Intelligence
-
-Planned formal release packaging:
-
-- Unified Social Provider release consolidation
-- Social Health Score
-- Cross-platform reporting
-- Executive social intelligence
-- Competitor benchmarking
-- Marketing attribution
-
-## v2.0 — Executive Operating System
-
-Vision:
-
-- Multi-provider Intelligence
-- Cross-department Reasoning
-- Approval-first Execution
-- Multi-agent Collaboration
-- Executive Copilot
-- AI-assisted Decision Support
+- Accounting Provider v1.0
+- Booking Intelligence
+- CRM / Customer Intelligence
+- Future live execution activation on top of the existing approval-first adapter layer

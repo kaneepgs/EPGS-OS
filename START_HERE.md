@@ -4,70 +4,56 @@
 
 **EP Intelligence** is a frontend-only **Executive Operating System** prototype for **EP Golf Studios**.
 
-It has now moved from a CFO-first prototype into a broader **Executive Operating System** with a true **CEO Intelligence Dashboard** at the centre.
+The formal shipped release is now **EP Intelligence v2.0 — Executive Action Centre & Executive Copilot**.
 
-Today it is still primarily a **demo product**, but it now has five controlled live-data paths: **Website Analytics** can hydrate from a locally generated GA4 snapshot, **YouTube** can hydrate from a locally generated channel snapshot, **Unified Social** can hydrate Instagram, Facebook, LinkedIn, and X from a locally generated social snapshot, **Executive Inbox** can hydrate from a locally generated Gmail snapshot, and **Operations Calendar** can hydrate from a locally generated Google Calendar snapshot.
+It combines:
 
-The formal shipped release remains **EP Intelligence v1.1 — Marketing Intelligence**, with Unified Social, Gmail, and Google Calendar currently layered on top as post-v1.1 platform extensions.
+- a true **CEO Dashboard**
+- a top-level **Executive Action Centre**
+- a new **Executive Copilot**
+- full **CFO** and **CMO** workspaces
+- a deterministic intelligence layer
+- provider-independent **Executive Memory** and **Knowledge Graph**
+- live-capable snapshot overlays for **GA4**, **YouTube**, **Unified Social**, **Gmail**, and **Google Calendar**
 
 ## Release and roadmap references
 
-- **Current release:** EP Intelligence v1.1 — Marketing Intelligence
+- **Current release:** EP Intelligence v2.0 — Executive Action Centre & Executive Copilot
 - **Current roadmap:** `Roadmap.md`
 - **Product vision:** `PRODUCT_VISION.md`
 - **Formal release changelog:** `CHANGELOG.md`
 - **Detailed sprint history:** `changelog/CHANGELOG.md`
 - **Definition of Done:** `DEFINITION_OF_DONE.md`
-
-Release metadata is now centralised in `assets/config/release-config.js`, so the displayed version and release references should stay consistent across the product.
+- **Release management:** `RELEASE_MANAGEMENT.md`
 
 ## What it includes
 
-- a true **CEO Intelligence Dashboard** as the application home page
-- a complete **CFO module** inside the wider shell
-- a complete first-pass **CMO module** inside the wider shell
-- integrated executive intelligence that links Finance and Marketing together inside one CEO-level daily briefing
-- a new **Integration Framework** beneath the UI so future live data can be added through providers rather than dashboard rewrites
-- a deterministic **Executive Intelligence Engine** that turns structured business data into scored health views, correlations, recommendations, narratives, and executive Q&A outputs before any external AI is introduced
-- the first **Google Analytics 4 live-provider path** for CMO Website Analytics, using a local sync script and generated snapshot file
-- a live-capable **YouTube provider path** for channel totals, recent uploads, visibility, and content-library items
-- a live-capable **Gmail provider path** for Executive Inbox triage, communications intelligence, and approval-first inbox actions
-- a live-capable **Google Calendar provider path** for Operations Calendar, capacity visibility, scheduling-risk detection, timeline events, search coverage, and approval-first operational actions
-- a reusable **Marketing Intelligence Report** that now packages GA4, YouTube, Unified Social, competitor benchmarking, and attribution into one executive report
-- a proper **Marketing Health Score** with score, trend, confidence, and source status
-- provider-independent **Executive Memory** that now stores marketing milestones as part of the business timeline
-- a dedicated **Executive Inbox** with deterministic business email classification and CEO-ready summaries
-- a dedicated **Operations Calendar** with fittings, meetings, staff utilisation, free capacity, travel, deadlines, and all-day event visibility
-- placeholder module landing pages for:
-  - COO
-  - Sales
-  - Customer Success
-  - Operations
-  - HR
-  - Projects
-- central **Approvals** section
-- central **Reports** section
-- dedicated **AI Assistant** section
-- interactive charts using realistic mock/demo data only
+- **CEO Dashboard** with action-aware business health, risks, opportunities, approvals, recent decisions, and recommended actions
+- **Executive Action Centre** with My Queue, Today, Urgent, This Week, Waiting For Me, Completed Today, Recently Approved, and Recently Rejected
+- **Action Detail** workspace with executive summary, business context, evidence, metrics, history, memory, alternatives, and linked providers
+- **Approval Workflow** with approve, reject, edit, delegate, snooze, archive, evidence, history, and related-item review
+- **Executive Copilot** for action-oriented executive questions
+- **Executive Inbox** for deterministic communications triage
+- **Operations Calendar** for capacity, fitting, and scheduling intelligence
+- **Reports** for Executive Actions, Outstanding Approvals, Decision History, Action Analytics, Approval Performance, Department Workload, timeline, goals, and board output
+- **Action Centre Settings** for priority rules, confidence thresholds, retention, routing, business hours, and notifications
 
 ## What it does not include
 
-- no always-on live APIs inside the browser
-- no authentication
 - no backend
-- no databases
-- no automation
-- no live financial data yet
+- no database
+- no browser-side secrets
+- no automatic execution
+- no live accounting provider yet
 
-The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics**, **YouTube**, **Unified Social**, **Gmail / Executive Inbox**, and **Google Calendar / Operations Calendar** when credentials are added and snapshots are synced.
+Execution adapters exist for the future, but every adapter currently returns **Approval Required**.
 
 ## How to open it locally
 
-This project is a static website.
+This project is a static site.
 
 1. Open the `EP-Intelligence` folder
-2. Open a terminal in that folder
-3. Run:
+2. Run:
 
 ```bash
 npm install
@@ -75,88 +61,48 @@ npm run vendor:chart
 npm run serve
 ```
 
-4. Open this address in your browser:
+3. Open:
 
 ```text
 http://127.0.0.1:3012
 ```
 
-The default home page is now the **CEO Dashboard**.
-
 ## What to demo first
 
-Start with these in order:
+1. **CEO Dashboard**
+2. **Executive Action Centre**
+3. **Executive Queue / Action Detail / Approval Workflow**
+4. **Executive Copilot**
+5. **CFO**
+6. **CMO**
+7. **Executive Inbox**
+8. **Operations Calendar**
+9. **Reports → Executive Actions / Outstanding Approvals / Board Meeting Mode**
+10. **Settings → Action Centre / Integration Status / Provider Architecture**
 
-1. **CEO Dashboard** — now the AI Chief of Staff-style executive home page
-2. **Board Meeting Mode** — shows the presentation-ready board experience
-3. **CFO** — shows the most complete finance module in the system
-4. **CMO** — shows the first full executive marketing workspace
-5. **Approvals** — shows business-wide approval thinking
-6. **AI Assistant** — shows the conversational executive AI direction
-7. **CMO → Website Analytics** — shows the live GA4 path and conversion visibility clearly
-8. **CMO → YouTube** — shows the live YouTube path, recent uploads, and authority-channel momentum
-9. **Executive Inbox** — shows deterministic inbox triage, approval-first communications actions, and CEO-ready email summaries
-10. **Operations Calendar** — shows fittings, capacity, scheduling risks, free booking slots, and operational deadlines without becoming a calendar client
-11. **Approvals** — shows Gmail-derived and Calendar-derived actions staged without automation
-12. **Reports → Marketing Intelligence Report / Board Meeting Mode / Executive Timeline** — shows packaged reporting plus communications-aware and operations-aware executive narrative
-13. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
-14. **CEO Dashboard marketing intelligence / inbox intelligence / operations intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
-
-## Key pages to show
-
-- **CEO Dashboard** — AI Chief of Staff daily briefing
-- **CFO Workspace** — complete finance module within the shell
-- **CFO Revenue / Cash Flow / Supplier Spend** — strongest decision-support examples
-- **CMO Marketing Dashboard** — executive marketing command centre
-- **CMO Social Media Overview / YouTube / Website Analytics / AI Marketing Advisor** — strongest marketing examples
-- **Executive Inbox** — business email converted into executive triage rather than raw inbox volume
-- **Operations Calendar** — executive scheduling intelligence, capacity, and fitting workload visibility
-- **Reports → Marketing Intelligence Report** — packaged v1.1 marketing output
-- **Approvals** — centralised business-wide approval centre
-- **Reports** — shared reporting structure
-- **Board Meeting Mode** — leadership / board presentation view
-- **AI Assistant** — future AI reasoning and briefing area
-
-## Current limitations
-
-This is intentionally still a prototype.
-
-- almost all data is still mock/demo data
-- charts are illustrative, not connected to real systems
-- most non-finance / non-marketing modules are still placeholders, though Operations now has a real executive scheduling surface
-- no save/sync between users or devices
-- no real approvals or workflow execution
-- only Website Analytics, YouTube, Unified Social, Executive Inbox, and Operations Calendar are live-capable today, all through manual local snapshot sync
-- no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
-
-## Current roadmap position
-
-The product roadmap is now managed in `Roadmap.md`.
-
-Current **Now** focus:
-
-- Sprint 18 — Social Providers v1.0
-- Unified Social Provider
-- Social Health Score
-- Cross-platform reporting
-- Executive social intelligence
-- Competitor benchmarking
-- Marketing attribution
-- Demo fallback preserved
-
-Current **Next** priorities:
-
-1. Accounting Provider v1.0
-2. Booking Intelligence
-3. Mailchimp Provider
-4. CRM / Customer Intelligence
-
-## Suggested positioning when presenting it
+## Key positioning
 
 Describe it as:
 
-> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance, Marketing, executive communications, and business operations scheduling.”
+> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Dashboard, a single Executive Action Centre, and an Executive Copilot that brings cross-provider intelligence into one approval-first workflow.”
 
-You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a dedicated **Executive Inbox**, a dedicated **Operations Calendar**, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube + Unified Social + Gmail + Google Calendar** provider paths, with the rest of the business architecture prepared for future module builds.
+## Current roadmap position
 
-After each completed release, update `CHANGELOG.md` for the formal release summary, then advance `Roadmap.md`, then move detailed sprint notes into `changelog/CHANGELOG.md`.
+See `Roadmap.md`.
+
+Current **Now** focus after v2.0:
+
+- Accounting Provider v1.0
+- Booking Intelligence groundwork beneath the Action Centre
+- execution-adapter hardening ahead of future live activation
+
+Current **Next** priorities:
+
+1. Booking Intelligence
+2. CRM / Customer Intelligence
+3. Mailchimp Provider
+4. future live execution activation on top of the existing adapter layer
+
+## Closing line
+
+> “EP Intelligence is now ready to act like the business operating system, while still keeping every decision explainable and under executive control.”
