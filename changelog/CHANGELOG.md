@@ -20,3 +20,4 @@
 - Expanded executive commentary blocks with summary, evidence, confidence, impact, risks, alternatives, recommended action, missing information, and suggested follow-up prompts.
 - Added deployment-readiness assets including favicon, manifest, metadata, package scripts, and static-host-friendly local vendor assets.
 - Captured Sprint 4 validation screenshots for dashboard, board mode, revenue, cash flow, executive AI commentary, and mobile layout.
+- Added a clean demo handoff pack with `START_HERE.md`, `DEPLOYMENT_NOTE.md`, and `EXECUTIVE_DEMO_SCRIPT.md` for non-technical review and presentation use.

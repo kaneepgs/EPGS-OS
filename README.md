@@ -54,6 +54,9 @@ This prototype intentionally remains:
 
 ## Project Structure
 
+- `START_HERE.md` — non-technical demo handoff guide
+- `DEPLOYMENT_NOTE.md` — simple deployment notes for Replit and Hostinger static hosting
+- `EXECUTIVE_DEMO_SCRIPT.md` — short demo script for live walkthroughs
 - `index.html` — main app shell and metadata
 - `assets/app.js` — application state, routing, rendering, and interactions
 - `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
