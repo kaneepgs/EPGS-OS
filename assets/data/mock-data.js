@@ -117,7 +117,7 @@ export const ROUTE_META = {
   '/projects': { title: 'Projects Module', subtitle: 'Future roadmap, ownership, and execution tracking.', module: 'Projects', sidebarKey: '/projects', parentLabel: 'Projects' },
 
   '/ai-assistant': { title: 'AI Assistant', subtitle: 'The executive AI layer for questions, reasoning, assumptions, and follow-up.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
-  '/ai-assistant/ask': { title: 'Ask EP Intelligence', subtitle: 'A placeholder for natural-language executive querying.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
+  '/ai-assistant/ask': { title: 'Ask EP Intelligence', subtitle: 'A conversational executive workspace for business questions and AI reasoning.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/executive-briefing': { title: 'Executive Briefing', subtitle: 'A placeholder for AI-compiled leadership briefings.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/follow-up-questions': { title: 'Follow-up Questions', subtitle: 'A placeholder for deeper AI-led executive questioning.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
   '/ai-assistant/suggested-actions': { title: 'Suggested Actions', subtitle: 'A placeholder for staged AI recommendations awaiting approval.', module: 'AI Assistant', sidebarKey: '/ai-assistant', parentLabel: 'AI Assistant' },
@@ -131,7 +131,7 @@ export const ROUTE_META = {
   '/reports/weekly-briefings': { title: 'Weekly Briefings', subtitle: 'Board-style Sunday briefing experience.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/monthly-reports': { title: 'Monthly Reports', subtitle: 'A placeholder monthly leadership report surface.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/quarterly-reviews': { title: 'Quarterly Reviews', subtitle: 'Prepared board paper for the quarter just gone.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
-  '/reports/board-meeting': { title: 'Board Meeting Mode', subtitle: 'A clean board-oriented view for leadership discussions.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/board-meeting': { title: 'Board Meeting Mode', subtitle: 'A presentation-ready board view with keyboard navigation and executive slides.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/cfo-reports': { title: 'CFO Reports', subtitle: 'A placeholder hub for finance-specific reports.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/cmo-reports': { title: 'CMO Reports', subtitle: 'A placeholder hub for marketing-specific reports.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/ceo-reports': { title: 'CEO Reports', subtitle: 'A placeholder hub for CEO-level reports and summaries.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
@@ -141,10 +141,10 @@ export const ROUTE_META = {
 
 export const QUESTION_SETS = {
   '/ceo': {
-    what: ['The business is broadly healthy', 'Health, cash, demand, and operating momentum are positive overall, with a few clear watchpoints.'],
-    why: ['Growth and control are holding together', 'The business is benefiting from healthy demand while still keeping enough discipline around risk and approvals.'],
-    matters: ['Yes — because leadership attention should stay selective', 'The goal is not to react to everything, but to focus on the small number of decisions that meaningfully shape outcomes.'],
-    next: ['Review priorities, risks, and approvals', 'Move from summary into the module or report that best supports the next decision.']
+    what: ['The business is healthy, but only a few things deserve attention', 'The CEO Dashboard now distils the business into the handful of changes and decisions that actually matter today.'],
+    why: ['Cross-functional signals are moving together', 'Finance, marketing, customer trust, approvals, and execution are all influencing each other rather than acting as isolated dashboards.'],
+    matters: ['Yes — because clarity beats volume', 'The CEO should see the business through an AI Chief of Staff lens, not through a wall of disconnected metrics.'],
+    next: ['Prioritise the most valuable decisions first', 'Use the dashboard to decide what to approve, what to challenge, and what deserves deeper review in another module.']
   },
   '/cfo': {
     what: ['Revenue is healthy, profit is slightly tighter', 'The business is growing, but the quality of that growth matters more than volume alone.'],
@@ -203,61 +203,152 @@ export const MOCK_DATA = {
     description: 'A calm, premium executive operating system prototype for EP Golf Studios.'
   },
   ceo: {
-    score: 86,
-    previousScore: 83,
-    trend: '+3 points vs last month',
-    label: 'Healthy with selective watchpoints',
-    summary: 'EP Golf Studios is trading from a position of strength. Leadership attention should stay focused on cash timing, margin discipline, marketing conversion quality, a few open approvals, and keeping execution aligned across the business.',
-    businessHealth: [
-      { label: 'Revenue Snapshot', value: '£46.8k', body: 'Demand remains healthy and premium conversion is holding up.', icon: 'trending-up' },
-      { label: 'Profit Snapshot', value: '£11.6k', body: 'Still strong overall, with margin pressure worth watching.', icon: 'coins' },
-      { label: 'Cash Position', value: '£28.1k', body: 'Healthy enough for calm decision-making under current assumptions.', icon: 'wallet' },
-      { label: 'Pending Approvals', value: '17', body: 'Open decisions now span finance, marketing, sales, and operations.', icon: 'check-circle' }
-    ],
-    todayPriorities: [
-      { title: 'Protect short-term flexibility', note: 'Collections timing and staged outgoing approvals remain the highest-leverage executive decisions.', tone: 'warn' },
-      { title: 'Back the strongest marketing channels', note: 'Video and proof-led content are outperforming weaker channels and should shape the next cycle.', tone: 'good' },
-      { title: 'Keep cross-functional execution aligned', note: 'Projects, marketing, and customer experience all look positive, but leadership focus should stay selective.', tone: 'risk' }
-    ],
-    snapshots: [
-      { label: 'Marketing Snapshot', value: 'Momentum up', body: 'Marketing health is positive, with YouTube and Instagram leading the strongest gains.', icon: 'sparkles' },
-      { label: 'Sales Snapshot', value: 'Pipeline stable', body: 'Conversion quality looks healthy in the placeholder sales view.', icon: 'trending-up' },
-      { label: 'Operations Snapshot', value: 'Delivery on track', body: 'Operational execution is calm, with a few process improvements identified.', icon: 'building' },
-      { label: 'Customer Experience', value: 'Satisfaction strong', body: 'Retention and service quality remain positive in the mock environment.', icon: 'pulse' },
-      { label: 'Staff / HR Snapshot', value: 'Capacity steady', body: 'The people view suggests manageable workload with leadership visibility still needed.', icon: 'book-open' },
-      { label: 'Open Projects', value: '6 active', body: 'Projects are visible, but prioritisation remains an executive task.', icon: 'target' }
-    ],
-    risks: [
-      'Receivables timing remains the clearest short-term pressure point.',
-      'Supplier concentration could reduce margin quality if left unchallenged.',
-      'Marketing effort could drift into low-return channels if rankings are ignored.'
-    ],
-    opportunities: [
-      'Accelerate overdue cash collection without reducing growth activity.',
-      'Double down on the strongest marketing formats and conversion paths.',
-      'Use shared reporting to tighten weekly leadership rhythm.'
-    ],
-    approvalsPreview: [
-      'Finance: staged supplier payment sequencing',
-      'Marketing: publish premium fitting proof campaign',
-      'Sales: pricing exception review',
-      'Operations: process improvement action approval'
-    ],
-    aiBriefing: {
-      title: 'AI Executive Briefing',
-      summary: 'The business is healthy overall. The smartest CEO actions today are to protect flexibility, keep marketing attention on the strongest channels, and ensure approvals are not becoming passive bottlenecks.',
-      evidence: 'Revenue and cash are healthy, marketing health is positive, customer and operational signals are stable, and most watchpoints are controllable rather than structural.',
+    score: 88,
+    previousScore: 84,
+    trend: '+4 points vs yesterday',
+    label: 'Strong overall, with a few decisions that deserve immediate attention',
+    summary: 'EP Intelligence should now feel like an AI Chief of Staff. The business is healthy overall, but cash timing, conversion quality, approval speed, and cross-functional focus will determine whether that health strengthens or drifts.',
+    executiveBriefing: {
+      headline: 'Daily Executive Briefing',
+      overallHealth: 'The business is in good shape overall. Demand remains healthy, marketing is creating useful momentum, and delivery capacity is stable enough to support growth without obvious strain.',
+      wins: [
+        'Revenue is ahead of the recent baseline, supported by premium fitting demand and stronger accessory conversion.',
+        'YouTube and Instagram content are producing higher-quality reach, which is lifting website attention and enquiry volume.',
+        'Open approvals are visible and prioritised rather than buried inside isolated workflows.'
+      ],
+      concerns: [
+        'Collections timing is still the clearest short-term pressure point on flexibility.',
+        'Traffic is improving faster than booking conversion, which means some marketing momentum is not yet turning into enough commercial value.',
+        'Supplier cost pressure could keep softening margin if leadership attention drifts.'
+      ],
+      changes: [
+        'Business Health Score rose 4 points since yesterday as marketing momentum and approval clarity improved.',
+        'Website traffic increased after recent video activity, but booking conversion softened slightly against the traffic gain.',
+        'One finance approval moved into the CEO queue because timing now matters more than routine processing.'
+      ],
+      priorities: [
+        'Protect cash timing before making any new discretionary commitments.',
+        'Approve the next highest-confidence marketing action while narrowing effort on weaker channels.',
+        'Keep finance, marketing, and operations aligned around a small number of decisions that materially affect the next seven days.'
+      ],
+      boardSummary: 'This is not a day for more motion. It is a day for sharper prioritisation, faster approvals on the right actions, and calm pressure on the few issues that could meaningfully alter momentum.'
+    },
+    businessHealthScore: {
+      overall: 88,
+      trend: '+4 vs yesterday',
       confidence: 'Medium–High',
-      impact: 'Better prioritisation this week should improve decision speed without increasing risk.',
-      risks: 'If leadership attention becomes too fragmented, the business may react to noise rather than leverage.',
-      alternatives: 'Lean into growth, focus on control, or keep a balanced posture while reviewing approvals and risks closely.',
-      action: 'Review priorities, clear the most important approvals, and use the reports area to drive the weekly leadership conversation.',
-      missing: 'All signals remain mock/demo only. No live integrations are connected in this sprint.',
-      followUp: ['What needs CEO attention first?', 'Which approvals are actually strategic?', 'What changed since last week?']
+      direction: 'Positive, but selective action required',
+      modules: [
+        { module: 'Finance', score: 84, trend: '+3', summary: 'Cash and profit remain healthy overall, though collections and supplier pressure still matter.' },
+        { module: 'Marketing', score: 82, trend: '+4', summary: 'Video-led and proof-led content are driving strong attention and useful demand signals.' },
+        { module: 'Sales', score: 79, trend: '+1', summary: 'Pipeline quality remains stable, but pricing discipline still needs review on larger opportunities.' },
+        { module: 'Customer Experience', score: 86, trend: '+2', summary: 'Satisfaction remains strong and recent reviews suggest trust is compounding.' },
+        { module: 'Operations', score: 81, trend: '0', summary: 'Delivery quality is stable, with a few process improvements queued rather than urgent.' },
+        { module: 'Projects', score: 77, trend: '-1', summary: 'Execution remains manageable, but prioritisation discipline needs CEO attention.' }
+      ]
+    },
+    todayPriorities: [
+      { title: 'Review 30-day cash flow forecast', detail: 'Collections timing now matters more than new discretionary commitments.', impact: 'High', urgency: 'Today', value: 'Protects £6k–£8k of short-term flexibility', owner: 'CFO', tone: 'warn' },
+      { title: 'Approve the next YouTube-led campaign sequence', detail: 'The strongest-performing content engine is ready to be extended across website and email.', impact: 'High', urgency: 'Today', value: 'Potential £4k–£6k pipeline uplift', owner: 'CMO', tone: 'good' },
+      { title: 'Contact the largest overdue customer', detail: 'A single overdue balance is now disproportionately shaping near-term flexibility.', impact: 'High', urgency: 'Immediate', value: 'Could accelerate £2.4k of cash receipt', owner: 'CFO / Sales', tone: 'risk' },
+      { title: 'Review supplier spend concentration', detail: 'One supplier line is growing faster than margin quality can comfortably absorb.', impact: 'Medium–High', urgency: 'This morning', value: 'Potential £1.2k monthly margin recovery', owner: 'CFO / COO', tone: 'warn' },
+      { title: 'Publish the LinkedIn authority article', detail: 'A professional trust-building asset is ready and complements the strongest current marketing themes.', impact: 'Medium', urgency: 'Today', value: 'Supports authority and downstream lead quality', owner: 'CMO', tone: 'good' }
+    ],
+    executiveKpis: [
+      { label: 'Revenue', value: '£46.8k', trend: '+8.4% vs last month', body: 'Healthy top-line performance with premium demand intact.', icon: 'trending-up' },
+      { label: 'Profit', value: '£11.6k', trend: '-3.1% vs last month', body: 'Still strong, though margin quality deserves attention.', icon: 'coins' },
+      { label: 'Cash Position', value: '£28.1k', trend: '5.4 months runway', body: 'Strong enough for calm decisions if collections land on time.', icon: 'wallet' },
+      { label: 'Website Visitors', value: '21.7k', trend: '+5.3% vs yesterday', body: 'Traffic is improving, but conversion is the more important next lever.', icon: 'grid' },
+      { label: 'Leads Generated', value: '184', trend: '+11 this week', body: 'Lead quality looks constructive in the current demo scenario.', icon: 'target' },
+      { label: 'Booking Conversion', value: '3.2%', trend: '-0.4 pts vs yesterday', body: 'More attention is arriving than is converting, which needs active review.', icon: 'pulse' },
+      { label: 'Customer Satisfaction', value: '4.8 / 5', trend: '+0.1 vs last week', body: 'Recent feedback suggests trust and delivery quality remain strong.', icon: 'check-circle' },
+      { label: 'Open Approvals', value: '12', trend: '5 need CEO review', body: 'Decision quality now depends on keeping the queue selective and fast.', icon: 'presentation' }
+    ],
+    businessTimeline: [
+      { time: '08:05', title: 'YouTube campaign launched', body: 'A new proof-led long-form video went live and immediately lifted traffic from core audience segments.', type: 'Marketing' },
+      { time: '08:40', title: 'Revenue baseline updated', body: 'Daily revenue pacing moved ahead of yesterday’s projection after stronger premium fitting demand.', type: 'Finance' },
+      { time: '09:10', title: 'New five-star review received', body: 'Customer feedback reinforced premium positioning and service confidence.', type: 'Customer Experience' },
+      { time: '09:35', title: 'Expense spike flagged', body: 'A supplier-related cost line moved above the comfort threshold for the current margin plan.', type: 'Finance / Operations' },
+      { time: '10:00', title: 'Weekly report generated', body: 'The shared reporting layer produced the latest executive summary pack for leadership review.', type: 'Reports' },
+      { time: '10:25', title: 'Approval completed', body: 'A marketing asset approval cleared, allowing follow-on scheduling to move forward.', type: 'Approvals' }
+    ],
+    crossDepartmentIntelligence: [
+      { title: 'Traffic increased because video quality improved', body: 'Website traffic increased 18% following two YouTube uploads, generating 14 additional fitting enquiries and lifting lead quality across the week.', impact: 'Marketing → Website → Sales', tone: 'good' },
+      { title: 'Revenue growth is being softened by cost pressure', body: 'Revenue improved, but profit did not rise at the same rate because supplier and support costs expanded faster than premium conversion.', impact: 'Finance → Operations', tone: 'warn' },
+      { title: 'Higher reach is not fully becoming bookings', body: 'Marketing visibility is up, but booking conversion dipped slightly, suggesting the website CTA path now deserves more attention than raw traffic acquisition.', impact: 'Marketing → Website → Customer Journey', tone: 'risk' },
+      { title: 'Customer trust is reinforcing demand quality', body: 'Recent positive reviews are strengthening premium positioning, which is improving the quality of traffic and enquiries rather than just increasing volume.', impact: 'Customer Experience → Marketing → Sales', tone: 'good' }
+    ],
+    executiveRisks: [
+      { title: 'Receivables timing is reducing flexibility', severity: 'High', likelihood: 'Medium', financialImpact: '£6k–£8k cash timing pressure', mitigation: 'Escalate follow-up on concentrated overdue balances and align outgoing approvals to confirmed receipts.', department: 'Finance / Sales' },
+      { title: 'Margin softness could become normalised', severity: 'Medium–High', likelihood: 'Medium', financialImpact: '£1k–£2k monthly erosion', mitigation: 'Review supplier concentration, contribution margin, and non-essential spend before next week’s plan is locked.', department: 'Finance / Operations' },
+      { title: 'Traffic quality may outpace conversion quality', severity: 'Medium', likelihood: 'Medium', financialImpact: 'Lost booking upside from existing demand', mitigation: 'Refresh booking CTA paths and prioritise high-intent content-to-website journeys.', department: 'Marketing / Website' },
+      { title: 'Approval queues could create passive drag', severity: 'Medium', likelihood: 'Low–Medium', financialImpact: 'Delayed value capture rather than direct cost', mitigation: 'Keep the CEO approval queue small, ranked, and explicitly time-bound.', department: 'Approvals / Leadership' }
+    ],
+    executiveOpportunities: [
+      { title: 'Repurpose top YouTube proof content into website and email conversion assets', estimatedValue: '£4k–£6k pipeline uplift', confidence: 'Medium–High', effort: 'Medium', team: 'Marketing / Website', nextAction: 'Approve the repurposing sprint and CTA refresh this morning.' },
+      { title: 'Tighten collections cadence on concentrated overdue balances', estimatedValue: '£6k–£8k cash acceleration', confidence: 'High', effort: 'Low', team: 'Finance / Sales', nextAction: 'Assign named follow-up dates and review progress before close of day.' },
+      { title: 'Renegotiate the most expensive supplier relationship', estimatedValue: '£1.2k monthly margin recovery', confidence: 'Medium', effort: 'Medium', team: 'Finance / Operations', nextAction: 'Approve negotiation prep and define the acceptable term range.' },
+      { title: 'Turn strong review momentum into authority content', estimatedValue: 'Higher conversion quality over the next 2–4 weeks', confidence: 'Medium', effort: 'Low–Medium', team: 'CMO / Customer Success', nextAction: 'Approve a review-led LinkedIn and website proof sequence.' }
+    ],
+    approvalSummary: [
+      { title: 'Finance — Supplier payment sequencing', why: 'Timing matters more than routine processing because near-term flexibility is valuable this week.', impact: 'Protects cash while keeping supplier continuity intact.', risk: 'Medium', confidence: 'High' },
+      { title: 'Marketing — YouTube campaign extension', why: 'The strongest-performing channel now has a credible route into more enquiries and better-quality traffic.', impact: 'Could improve reach, trust, and conversion quality together.', risk: 'Low', confidence: 'High' },
+      { title: 'Sales — Pricing exception review', why: 'A larger prospective opportunity needs oversight to avoid creating poor margin precedent.', impact: 'Could preserve conversion without undermining pricing discipline.', risk: 'Medium', confidence: 'Medium' },
+      { title: 'Operations — Supplier process review', why: 'Supplier concentration is now strategically relevant rather than just operational noise.', impact: 'Could reduce margin pressure and improve planning confidence.', risk: 'Low–Medium', confidence: 'Medium' },
+      { title: 'HR — Capacity check for weekend demand', why: 'Delivery quality should not weaken if marketing momentum continues to lift demand.', impact: 'Protects customer experience and staff sustainability.', risk: 'Low', confidence: 'Medium' }
+    ],
+    departmentHealth: [
+      { department: 'CFO', status: 'Stable with control actions', score: 84, trend: '+3', summary: 'Strong overall, but collections and supplier pressure deserve attention.' },
+      { department: 'CMO', status: 'Momentum improving', score: 82, trend: '+4', summary: 'Video-led and proof-led content are outperforming weaker channels.' },
+      { department: 'COO', status: 'Operationally calm', score: 81, trend: '0', summary: 'Execution is steady, with a few process improvements queued.' },
+      { department: 'Sales', status: 'Pipeline healthy', score: 79, trend: '+1', summary: 'Demand quality is stable, though pricing discipline remains important.' },
+      { department: 'Customer Success', status: 'Trust strengthening', score: 86, trend: '+2', summary: 'Recent reviews and service quality suggest strong customer confidence.' },
+      { department: 'Operations', status: 'Efficient but watch supplier linkages', score: 80, trend: '-1', summary: 'Operations remain stable, but supplier-related costs are becoming more strategic.' },
+      { department: 'HR', status: 'Capacity manageable', score: 78, trend: '0', summary: 'Current capacity is sufficient, but leadership should watch demand-led workload shifts.' },
+      { department: 'Projects', status: 'Needs prioritisation discipline', score: 77, trend: '-1', summary: 'Project count is manageable, but sequencing still needs a firmer CEO hand.' }
+    ],
+    decisionCentre: {
+      awaitingReview: [
+        'Approve YouTube campaign extension into website and email.',
+        'Decide whether to stage supplier payments against confirmed collections.',
+        'Review the pricing exception on the larger sales opportunity.'
+      ],
+      recentlyApproved: [
+        'Published premium-fitting proof carousel for social and website reuse.',
+        'Moved one operations improvement sprint into active planning.',
+        'Cleared the weekly executive report pack for wider review.'
+      ],
+      deferred: [
+        'Broader expansion into lower-performing social channels.',
+        'Non-essential discretionary spending beyond current quarter priorities.',
+        'A longer-term tooling review that is useful but not urgent today.'
+      ],
+      strategic: [
+        'How aggressively to optimise bookings conversion before chasing more traffic.',
+        'Whether supplier concentration should trigger a negotiation cycle now.',
+        'How tightly to narrow the CEO approval queue to preserve decision quality.'
+      ]
+    },
+    askExamples: [
+      { question: 'Why has revenue changed?', answer: 'Revenue is up because premium fitting demand and accessory conversion remain strong. The reason that confidence is slightly moderated is that margin has not improved at the same pace due to supplier and support cost pressure.' },
+      { question: 'What is my biggest risk?', answer: 'The clearest near-term risk is receivables timing. It is the issue most likely to reduce flexibility quickly without changing the underlying strength of demand.' },
+      { question: 'Which marketing campaign performed best?', answer: 'The strongest current campaign is the proof-led YouTube sequence, because it improved reach, generated higher-quality website traffic, and lifted fitting enquiries more meaningfully than weaker channels.' },
+      { question: 'What should I focus on today?', answer: 'Focus on cash timing, the highest-confidence marketing approval, and keeping the approval queue small enough that strategic decisions do not get buried in routine work.' },
+      { question: 'Where am I losing money?', answer: 'The business is not losing money structurally, but margin is being softened by supplier concentration, support costs, and by traffic that is not yet converting into enough bookings.' }
+    ],
+    charts: {
+      healthTrend: { type: 'line', labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], values: [79, 80, 82, 83, 84, 86, 88], suffix: '' },
+      departmentScores: { type: 'bar', labels: ['Finance', 'Marketing', 'Sales', 'Customer', 'Operations', 'Projects'], values: [84, 82, 79, 86, 81, 77], suffix: '' },
+      approvalLoad: { type: 'bar', labels: ['Finance', 'Marketing', 'Sales', 'Operations', 'HR'], values: [2, 4, 1, 1, 1], suffix: '' }
+    },
+    boardMeeting: {
+      title: 'AI Chief of Staff Board Briefing',
+      summary: 'A presentation-style weekly leadership view designed for a screen, projector, or board conversation.',
+      agenda: ['Executive Summary', 'KPI Slides', 'Financial Summary', 'Marketing Summary', 'Opportunities', 'Risks', 'Actions']
     },
     weeklySummaryPreview: {
-      headline: 'Healthy week, with attention needed on cash timing, marketing conversion quality, and approval discipline.',
-      body: 'Leadership can remain calm, but the best next decisions are still around collections, marketing focus, supplier leverage, and keeping approvals from becoming passive queue items.'
+      headline: 'Healthy week overall, but today’s leadership leverage sits in cash timing, conversion quality, and selective approvals.',
+      body: 'Leadership can stay calm, but the best next decisions remain around collections, high-confidence marketing actions, supplier control, and keeping strategic attention focused.'
     }
   },
   cfo: {
@@ -719,6 +810,9 @@ export const MOCK_DATA = {
       'Operations approvals': [
         { title: 'Approve process improvement sprint', why: 'Operations placeholder intelligence suggests a small workflow redesign opportunity.', impact: 'Should improve execution quality and reduce repeat friction.', risk: 'Low', confidence: 'Medium' }
       ],
+      'HR approvals': [
+        { title: 'Approve weekend staffing coverage review', why: 'Marketing momentum may lift weekend fitting demand enough to affect service quality and staff capacity.', impact: 'Protects customer experience while avoiding avoidable staffing strain.', risk: 'Low', confidence: 'Medium' }
+      ],
       'AI-generated action approvals': [
         { title: 'Approve AI-generated weekly action set', why: 'The AI layer has proposed a grouped leadership action list for review.', impact: 'Creates a consistent executive rhythm while keeping humans in control.', risk: 'Medium', confidence: 'Medium' }
       ]
@@ -744,25 +838,37 @@ export const MOCK_DATA = {
   },
   aiAssistant: {
     overview: {
-      summary: 'The AI Assistant section becomes the dedicated home for questions, briefings, assumptions, missing information, suggested actions, and executive context.',
+      summary: 'The AI Assistant section is now the conversational executive layer for questions, briefings, assumptions, follow-up prompts, missing information, and staged actions.',
+      status: 'Frontend-only executive conversation prototype',
       cards: [
-        { route: '/ai-assistant/ask', title: 'Ask EP Intelligence', body: 'A natural-language query surface for executive questions.' },
-        { route: '/ai-assistant/executive-briefing', title: 'Executive Briefing', body: 'A generated leadership briefing placeholder.' },
-        { route: '/ai-assistant/follow-up-questions', title: 'Follow-up Questions', body: 'A curated next-question layer for deeper reasoning.' },
-        { route: '/ai-assistant/suggested-actions', title: 'Suggested Actions', body: 'A staged list of AI-suggested actions awaiting human review.' },
-        { route: '/ai-assistant/assumptions', title: 'Assumptions', body: 'The explicit assumptions behind AI outputs.' },
-        { route: '/ai-assistant/missing-information', title: 'Missing Information', body: 'What the AI layer still needs to know before increasing confidence.' },
+        { route: '/ai-assistant/ask', title: 'Ask EP Intelligence', body: 'A conversational workspace for the most important executive questions.' },
+        { route: '/ai-assistant/executive-briefing', title: 'Executive Briefing', body: 'A generated leadership briefing surface spanning finance, marketing, approvals, and priorities.' },
+        { route: '/ai-assistant/follow-up-questions', title: 'Follow-up Questions', body: 'A curated next-question layer for deeper reasoning and challenge.' },
+        { route: '/ai-assistant/suggested-actions', title: 'Suggested Actions', body: 'A staged list of AI-suggested actions awaiting explicit human review.' },
+        { route: '/ai-assistant/assumptions', title: 'Assumptions', body: 'The assumptions behind every recommendation and briefing.' },
+        { route: '/ai-assistant/missing-information', title: 'Missing Information', body: 'What the AI layer still needs surfaced before confidence increases.' },
         { route: '/ai-assistant/memory-context', title: 'AI Memory / Context', body: 'How EP Intelligence will preserve executive context over time.' }
       ]
     },
+    askWorkspace: {
+      intro: 'This workspace is designed to feel like asking an AI Chief of Staff direct questions about the business, then receiving concise, decision-ready answers.',
+      prompts: [
+        { question: 'Why has revenue changed?', answer: 'Revenue improved because premium fitting demand held up and accessory conversion strengthened. The reason the business should stay measured is that supplier and support costs softened margin conversion at the same time.' },
+        { question: 'What is my biggest risk right now?', answer: 'Receivables timing is the clearest near-term risk because it affects flexibility faster than any other currently visible issue. It does not threaten the business structurally, but it does shape what should or should not be approved today.' },
+        { question: 'Which marketing campaign performed best?', answer: 'The proof-led YouTube campaign performed best because it improved reach, watch time, website traffic, and fitting enquiry quality more clearly than the lower-return channels.' },
+        { question: 'What should I focus on today?', answer: 'Protect cash timing, approve the highest-confidence marketing action, and keep the approval queue focused on the small number of decisions that materially affect the next seven days.' },
+        { question: 'Where am I losing money?', answer: 'The business is not losing money broadly, but margin is being eroded by supplier concentration, some support costs, and by website traffic that is not yet converting into enough bookings.' }
+      ],
+      suggestedFollowUps: ['What changed since yesterday?', 'Which approval matters most?', 'Why is booking conversion softer?', 'Where is the easiest profit improvement?']
+    },
     pages: {
-      '/ai-assistant/ask': { description: 'This placeholder page will eventually let leaders ask direct questions across finance, marketing, sales, operations, and projects.', exampleMetrics: ['Questions answered by module', 'Confidence score', 'Follow-up depth'], exampleInsights: ['Why did margin compress?', 'What changed since last week?', 'Where should leadership focus next?'], exampleActions: ['Stage a CFO review', 'Open a related report', 'Request assumption review'] },
-      '/ai-assistant/executive-briefing': { description: 'This placeholder page will eventually generate concise executive briefings spanning the whole business.', exampleMetrics: ['Briefing freshness', 'Coverage by module', 'Leadership priority count'], exampleInsights: ['Health score movement', 'Cross-functional changes', 'Recommended executive focus'], exampleActions: ['Create weekly pack', 'Open board view', 'Review priorities'] },
-      '/ai-assistant/follow-up-questions': { description: 'This placeholder page will eventually surface the best next questions to ask after a report or recommendation.', exampleMetrics: ['Suggested follow-ups', 'Decision depth', 'Outstanding unknowns'], exampleInsights: ['What should we challenge next?', 'Which assumption is weakest?', 'What evidence would change confidence?'], exampleActions: ['Open assumptions', 'Open missing information', 'Escalate to approval'] },
-      '/ai-assistant/suggested-actions': { description: 'This placeholder page will eventually collect AI-suggested actions without ever executing automatically.', exampleMetrics: ['Open suggestions', 'Pending approvals', 'Action categories'], exampleInsights: ['Top recommended actions this week', 'Most urgent staged decisions', 'Cross-functional dependencies'], exampleActions: ['Approve', 'Return for review', 'Hold in draft'] },
-      '/ai-assistant/assumptions': { description: 'This placeholder page will eventually show the assumptions behind every key AI recommendation.', exampleMetrics: ['Assumptions tracked', 'High-risk assumptions', 'Confidence sensitivity'], exampleInsights: ['Which assumptions matter most?', 'What would change the forecast?', 'Where is the reasoning fragile?'], exampleActions: ['Challenge assumption', 'Request more evidence', 'Update briefing'] },
-      '/ai-assistant/missing-information': { description: 'This placeholder page will eventually show what the AI layer still does not know.', exampleMetrics: ['Open data gaps', 'Unknowns affecting confidence', 'Blocked recommendations'], exampleInsights: ['Why confidence is limited', 'Which missing data matters most', 'What evidence would improve output'], exampleActions: ['Mark for review', 'Request data source', 'Keep as placeholder'] },
-      '/ai-assistant/memory-context': { description: 'This placeholder page will eventually explain how executive memory, context, and longitudinal reasoning are maintained.', exampleMetrics: ['Context windows', 'Saved decisions', 'Historical briefing references'], exampleInsights: ['What leadership already decided', 'What lessons should persist', 'Which themes are recurring'], exampleActions: ['Open decision journal', 'Review prior reports', 'Pin context item'] }
+      '/ai-assistant/ask': { description: 'A conversational executive workspace for asking direct cross-functional business questions.', exampleMetrics: ['Questions answered today', 'Confidence score', 'Cross-functional evidence linked'], exampleInsights: ['Why did margin compress?', 'What should the CEO focus on today?', 'Which campaign created the best commercial return?'], exampleActions: ['Open the relevant module', 'Stage an approval review', 'Request a weekly briefing update'] },
+      '/ai-assistant/executive-briefing': { description: 'This route packages a concise executive briefing spanning business health, priorities, risks, and opportunities.', exampleMetrics: ['Briefing freshness', 'Coverage by module', 'Leadership priority count'], exampleInsights: ['Health score movement', 'Cross-functional changes', 'Recommended executive focus'], exampleActions: ['Create weekly pack', 'Open board view', 'Review priorities'] },
+      '/ai-assistant/follow-up-questions': { description: 'This route surfaces the best next questions to ask after a report, recommendation, or approval review.', exampleMetrics: ['Suggested follow-ups', 'Decision depth', 'Outstanding unknowns'], exampleInsights: ['What should we challenge next?', 'Which assumption is weakest?', 'What evidence would change confidence?'], exampleActions: ['Open assumptions', 'Open missing information', 'Escalate to approval'] },
+      '/ai-assistant/suggested-actions': { description: 'This route collects AI-suggested actions without ever executing them automatically.', exampleMetrics: ['Open suggestions', 'Pending approvals', 'Action categories'], exampleInsights: ['Top recommended actions this week', 'Most urgent staged decisions', 'Cross-functional dependencies'], exampleActions: ['Approve', 'Return for review', 'Hold in draft'] },
+      '/ai-assistant/assumptions': { description: 'This route makes the assumptions behind AI recommendations visible and challengeable.', exampleMetrics: ['Assumptions tracked', 'High-risk assumptions', 'Confidence sensitivity'], exampleInsights: ['Which assumptions matter most?', 'What would change the forecast?', 'Where is the reasoning fragile?'], exampleActions: ['Challenge assumption', 'Request more evidence', 'Update briefing'] },
+      '/ai-assistant/missing-information': { description: 'This route surfaces what the AI layer still does not know and why that matters.', exampleMetrics: ['Open data gaps', 'Unknowns affecting confidence', 'Blocked recommendations'], exampleInsights: ['Why confidence is limited', 'Which missing data matters most', 'What evidence would improve output'], exampleActions: ['Mark for review', 'Request data source', 'Keep as placeholder'] },
+      '/ai-assistant/memory-context': { description: 'This route explains how executive memory, decision history, and recurring context themes can persist over time.', exampleMetrics: ['Context windows', 'Saved decisions', 'Historical briefing references'], exampleInsights: ['What leadership already decided', 'What lessons should persist', 'Which themes are recurring'], exampleActions: ['Open decision journal', 'Review prior reports', 'Pin context item'] }
     }
   },
   placeholders: {

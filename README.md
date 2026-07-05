@@ -2,7 +2,7 @@
 
 EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios.
 
-It has now moved beyond a CFO-first prototype into a broader **CEO shell** for a future multi-executive operating system — while remaining entirely static and powered by realistic mock data.
+It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing — while remaining entirely static and powered by realistic mock data.
 
 ## Current Sprint State
 
@@ -68,6 +68,20 @@ Built the first full **Chief Marketing Officer workspace** inside the CEO shell,
 - continued approval-first behaviour for marketing actions such as publishing posts, videos, email campaigns, website updates, blog posts, and LinkedIn articles
 
 EP Intelligence now contains both a complete **CFO workspace** and a complete first-pass **CMO workspace** inside the same executive operating system shell.
+
+### Sprint 5C — CEO Intelligence Dashboard v0.1
+
+Upgraded the default **CEO Dashboard** into an AI Chief of Staff experience with:
+
+- a prominent **Executive Briefing** explaining what happened, why it happened, what matters, and what decisions deserve attention today
+- a combined **Business Health Score** spanning Finance, Marketing, Sales, Customer Experience, Operations, and Projects
+- ranked **Today’s Priorities** with impact, urgency, estimated business value, and recommended owner
+- executive-only **KPI cards**, a business timeline, cross-department intelligence commentary, executive risks, executive opportunities, approval summary, department health, and a CEO **Decision Centre**
+- a richer **Ask EP Intelligence** conversational workspace with realistic example executive questions and answers
+- an upgraded **Board Meeting Mode** with presentation-style slides for Executive Summary, KPI snapshot, Financial Summary, Marketing Summary, Opportunities, Risks, and Actions, plus keyboard navigation
+- integrated executive intelligence across the existing **CFO** and **CMO** modules while keeping the product frontend-only and mock-data-only
+
+EP Intelligence now feels less like a shell with modules and more like a working **CEO operating surface** for the business.
 
 ## Constraints
 
@@ -156,6 +170,26 @@ Sprint 5B validation included:
 - captured screenshots for Marketing Dashboard, Social Media Overview, YouTube, Website Analytics, AI Marketing Advisor, Marketing Calendar, and Mobile Layout
 - source check confirming no app-side `console.*` usage outside the vendored Chart.js file
 
+Sprint 5C validation included:
+
+- `node --check assets/app.js`
+- `node --check assets/data/mock-data.js`
+- CEO Dashboard render checks for Executive Briefing, Business Health Score, Today’s Priorities, Cross-Department Intelligence, Decision Centre, and Ask EP Intelligence
+- search validation through the shell navigation search
+- command palette validation using `Ctrl/Cmd + K`
+- breadcrumb validation across CEO / CMO / Reports routes
+- Board Meeting Mode keyboard navigation validation across all seven slides
+- responsive/mobile validation for the CEO Dashboard
+- runtime validation with no JavaScript errors and no console warnings during the scripted walkthrough
+- captured screenshots for:
+  - CEO Dashboard
+  - Executive Briefing
+  - Today’s Priorities
+  - Cross-Department Intelligence
+  - Risks & Opportunities
+  - Board Meeting Mode
+  - Mobile Layout
+
 ## Design Principles
 
 1. Evidence before recommendation
@@ -168,4 +202,4 @@ Sprint 5B validation included:
 
 ## Near-Term Outcome
 
-The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System shell**, giving EP Golf Studios a credible CEO-level home page plus live prototype depth in both the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.
+The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System**, giving EP Golf Studios a credible AI-Chief-of-Staff-style **CEO Dashboard** plus integrated prototype depth across the **CFO** and **CMO** workspaces, with clear expansion paths for COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.

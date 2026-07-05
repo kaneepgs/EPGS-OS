@@ -22,7 +22,7 @@ import {
 } from './ui/components.js';
 import { renderCharts, destroyCharts } from './ui/charts.js';
 
-const STORAGE_KEY = 'ep-intelligence.workspace.v0.5b';
+const STORAGE_KEY = 'ep-intelligence.workspace.v0.5c';
 const VALID_ROUTES = new Set(Object.keys(ROUTE_META));
 
 const appShell = document.getElementById('app-shell');
@@ -55,6 +55,7 @@ const state = {
   activeMetric: 'revenue',
   journalQuery: '',
   contentQuery: '',
+  boardSlide: 0,
   favourites: ['/ceo', '/cfo', '/reports/board-meeting'],
   recent: ['/ceo', '/cfo', '/approvals']
 };
@@ -134,7 +135,9 @@ function updateRecent(route) {
 
 function setRoute(route, { withLoading = true } = {}) {
   if (!VALID_ROUTES.has(route)) route = '/ceo';
+  const previousRoute = state.route;
   state.route = route;
+  if (route === '/reports/board-meeting' && previousRoute !== route) state.boardSlide = 0;
   updateRecent(route);
   saveState();
   syncUrl();
@@ -248,6 +251,156 @@ function entryChartSpec(entry, canvasId, label = '') {
   return { id: canvasId, label: label || entry.label || 'Value', ...entry };
 }
 
+function toneFromScore(score) {
+  if (score >= 85) return 'good';
+  if (score >= 79) return 'info';
+  if (score >= 72) return 'warn';
+  return 'risk';
+}
+
+function toneFromSeverity(severity = '') {
+  const value = String(severity).toLowerCase();
+  if (value.includes('high')) return 'risk';
+  if (value.includes('medium')) return 'warn';
+  return 'good';
+}
+
+function boardSlides() {
+  const ceo = MOCK_DATA.ceo;
+  return [
+    {
+      key: 'summary',
+      eyebrow: 'Executive Summary',
+      title: 'What happened and why it matters',
+      body: ceo.executiveBriefing.boardSummary,
+      html: `
+        <div class="board-shell-grid">
+          ${insightCard({ eyebrow: 'Overall business health', title: ceo.label, body: ceo.executiveBriefing.overallHealth, tone: 'info' })}
+          ${insightCard({ eyebrow: 'Major win', title: 'Growth and trust are reinforcing each other', body: ceo.executiveBriefing.wins[0], tone: 'good' })}
+          ${insightCard({ eyebrow: 'Area of concern', title: 'Flexibility still depends on timing', body: ceo.executiveBriefing.concerns[0], tone: 'risk' })}
+          ${insightCard({ eyebrow: 'Recommended priority', title: 'Keep the day focused', body: ceo.executiveBriefing.priorities[0], tone: 'warn' })}
+        </div>
+      `
+    },
+    {
+      key: 'kpis',
+      eyebrow: 'KPI Slide',
+      title: 'Executive KPI snapshot',
+      body: 'Only the metrics that deserve CEO attention are shown here.',
+      html: `
+        <div class="grid-4">
+          ${ceo.executiveKpis.slice(0, 8).map((item) => statCard({ iconName: item.icon, label: item.label, value: item.value, body: item.body, meta: item.trend })).join('')}
+        </div>
+      `
+    },
+    {
+      key: 'finance',
+      eyebrow: 'Financial Summary',
+      title: 'Finance should preserve optionality',
+      body: MOCK_DATA.cfo.weeklyBriefing.summary,
+      html: `
+        <div class="grid-3">
+          ${statCard({ iconName: 'trending-up', label: 'Revenue', value: MOCK_DATA.cfo.metrics[0].value, body: MOCK_DATA.cfo.metrics[0].detail })}
+          ${statCard({ iconName: 'coins', label: 'Profit', value: MOCK_DATA.cfo.metrics[1].value, body: MOCK_DATA.cfo.metrics[1].detail })}
+          ${statCard({ iconName: 'wallet', label: 'Cash Position', value: MOCK_DATA.cfo.metrics[2].value, body: MOCK_DATA.cfo.metrics[2].detail })}
+        </div>
+        <div class="grid-2">
+          ${insightCard({ eyebrow: 'Primary risk', title: MOCK_DATA.cfo.risks[0].impact, body: MOCK_DATA.cfo.risks[0].commentary, tone: 'risk' })}
+          ${insightCard({ eyebrow: 'Best opportunity', title: MOCK_DATA.cfo.opportunities[0].title, body: MOCK_DATA.cfo.opportunities[0].description, tone: 'good' })}
+        </div>
+      `
+    },
+    {
+      key: 'marketing',
+      eyebrow: 'Marketing Summary',
+      title: 'Marketing is creating momentum, but conversion matters next',
+      body: MOCK_DATA.cmo.dashboard.weeklyBriefing,
+      html: `
+        <div class="grid-4">
+          ${statCard({ iconName: 'sparkles', label: 'Marketing Health Score', value: String(MOCK_DATA.cmo.dashboard.healthScore), body: MOCK_DATA.cmo.dashboard.summary })}
+          ${statCard({ iconName: 'pulse', label: 'Best Platform', value: MOCK_DATA.cmo.dashboard.bestPlatform, body: 'The strongest current growth and trust engine.' })}
+          ${statCard({ iconName: 'grid', label: 'Website Visitors', value: MOCK_DATA.cmo.dashboard.metrics.visitors, body: 'Traffic is up, but conversion quality is the real lever.' })}
+          ${statCard({ iconName: 'target', label: 'Booking Enquiries', value: MOCK_DATA.cmo.dashboard.metrics.enquiries, body: 'The most commercially relevant current marketing output.' })}
+        </div>
+        <div class="grid-2">
+          ${insightCard({ eyebrow: 'Cross-department intelligence', title: ceo.crossDepartmentIntelligence[0].title, body: ceo.crossDepartmentIntelligence[0].body, tone: 'good' })}
+          ${insightCard({ eyebrow: 'Marketing risk', title: 'Traffic is outperforming conversion', body: ceo.crossDepartmentIntelligence[2].body, tone: 'warn' })}
+        </div>
+      `
+    },
+    {
+      key: 'opportunities',
+      eyebrow: 'Opportunities',
+      title: 'Where value can be created next',
+      body: 'These opportunities are ranked because not every good idea deserves action today.',
+      html: `
+        <div class="section-stack">
+          ${ceo.executiveOpportunities.map((item) => registerRow({
+            kicker: `${pill(item.confidence, item.confidence.includes('High') ? 'good' : 'warn')}${pill(item.team, 'info')}`,
+            title: item.title,
+            body: `Estimated value ${item.estimatedValue} · Effort ${item.effort}. Next action: ${item.nextAction}`,
+            extra: `
+              <div class="grid-4">
+                ${statCard({ iconName: 'coins', label: 'Estimated value', value: item.estimatedValue, body: 'Executive placeholder value estimate.' })}
+                ${statCard({ iconName: 'pulse', label: 'Confidence', value: item.confidence, body: 'Confidence in likely payoff.' })}
+                ${statCard({ iconName: 'grid', label: 'Effort', value: item.effort, body: 'Expected delivery effort.' })}
+                ${statCard({ iconName: 'target', label: 'Responsible team', value: item.team, body: 'Suggested owner of follow-through.' })}
+              </div>
+            `
+          })).join('')}
+        </div>
+      `
+    },
+    {
+      key: 'risks',
+      eyebrow: 'Risks',
+      title: 'What could weaken confidence fastest',
+      body: 'These are the risks most likely to matter if ignored.',
+      html: `
+        <div class="section-stack">
+          ${ceo.executiveRisks.map((item) => registerRow({
+            kicker: `${pill(item.severity, toneFromSeverity(item.severity))}${pill(item.department, 'info')}`,
+            title: item.title,
+            body: `Likelihood ${item.likelihood} · Financial impact ${item.financialImpact}. Suggested mitigation: ${item.mitigation}`,
+            extra: `
+              <div class="grid-4">
+                ${statCard({ iconName: 'alert-triangle', label: 'Severity', value: item.severity, body: 'Current CEO risk rating.' })}
+                ${statCard({ iconName: 'pulse', label: 'Likelihood', value: item.likelihood, body: 'Estimated probability in the current demo view.' })}
+                ${statCard({ iconName: 'coins', label: 'Financial impact', value: item.financialImpact, body: 'Placeholder financial impact range.' })}
+                ${statCard({ iconName: 'shield', label: 'Responsible department', value: item.department, body: item.mitigation })}
+              </div>
+            `
+          })).join('')}
+        </div>
+      `
+    },
+    {
+      key: 'actions',
+      eyebrow: 'Actions',
+      title: 'What should be approved or acted on today',
+      body: 'The board view should end with clear actions, not just commentary.',
+      html: `
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Today\'s priorities', title: 'Priority actions', body: 'These are the actions most likely to change the next few days positively.' })}
+            <div class="section-stack">${ceo.todayPriorities.slice(0, 3).map((item, index) => priorityCard({ index: index + 1, title: item.title, body: `${item.detail} Impact ${item.impact} · Urgency ${item.urgency} · Owner ${item.owner}.`, tone: item.tone })).join('')}</div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Approvals requiring CEO attention', title: 'CEO approval queue', body: 'Keep the queue selective, ranked, and time-bound.' })}
+            <div class="section-stack">${ceo.approvalSummary.slice(0, 3).map((item) => approvalCard(item)).join('')}</div>
+          </section>
+        </div>
+      `
+    }
+  ];
+}
+
+function setBoardSlide(nextSlide) {
+  const slides = boardSlides();
+  state.boardSlide = Math.max(0, Math.min(nextSlide, slides.length - 1));
+  render();
+}
+
 function renderRoutePillbar(items) {
   return `<div class="page-pillbar">${items
     .map(([route, label]) => `<button type="button" class="chip-button" data-route="${route}">${state.route === route ? icon('check-circle') : icon('arrowRight')}${escapeHtml(label)}</button>`)
@@ -322,6 +475,18 @@ function attachPageEvents() {
       render();
     });
   }
+
+  pageContent.querySelectorAll('[data-board-step]').forEach((button) => {
+    button.addEventListener('click', () => {
+      setBoardSlide(state.boardSlide + Number.parseInt(button.dataset.boardStep, 10));
+    });
+  });
+
+  pageContent.querySelectorAll('[data-board-slide]').forEach((button) => {
+    button.addEventListener('click', () => {
+      setBoardSlide(Number.parseInt(button.dataset.boardSlide, 10));
+    });
+  });
 }
 
 function renderCommandPalette() {
@@ -380,6 +545,10 @@ function queueKey(key) {
     keySequence = '';
     setRoute('/cfo');
   }
+  if (keySequence === 'gm') {
+    keySequence = '';
+    setRoute('/cmo');
+  }
   if (keySequence === 'gr') {
     keySequence = '';
     setRoute('/reports');
@@ -416,6 +585,8 @@ function attachGlobalEvents() {
   });
 
   document.addEventListener('keydown', (event) => {
+    const activeTag = document.activeElement?.tagName;
+    const isTyping = activeTag === 'INPUT' || activeTag === 'TEXTAREA';
     const isMetaK = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k';
     if (isMetaK) {
       event.preventDefault();
@@ -435,6 +606,28 @@ function attachGlobalEvents() {
       }
       return;
     }
+    if (state.route === '/reports/board-meeting' && !isTyping) {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+        event.preventDefault();
+        setBoardSlide(state.boardSlide + 1);
+        return;
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        setBoardSlide(state.boardSlide - 1);
+        return;
+      }
+      if (event.key === 'Home') {
+        event.preventDefault();
+        setBoardSlide(0);
+        return;
+      }
+      if (event.key === 'End') {
+        event.preventDefault();
+        setBoardSlide(boardSlides().length - 1);
+        return;
+      }
+    }
     if (!event.metaKey && !event.ctrlKey && !event.altKey) {
       queueKey(event.key.toLowerCase());
     }
@@ -443,6 +636,17 @@ function attachGlobalEvents() {
 
 function ceoDashboardView() {
   const data = MOCK_DATA.ceo;
+  const briefingCommentary = {
+    summary: data.executiveBriefing.boardSummary,
+    evidence: `${data.executiveBriefing.wins[0]} ${data.executiveBriefing.changes[1]}`,
+    confidence: data.businessHealthScore.confidence,
+    impact: 'Sharper prioritisation should improve decision quality across finance, marketing, and approvals over the next 24 hours.',
+    risks: data.executiveBriefing.concerns.join(' '),
+    alternatives: 'Push harder on growth, focus more tightly on control, or keep a balanced posture while challenging conversion quality and supplier pressure.',
+    action: data.executiveBriefing.priorities[0],
+    missing: 'All data in this sprint remains realistic mock/demo data only. No live systems are connected.',
+    followUp: data.askExamples.map((item) => item.question).slice(0, 4)
+  };
   return {
     html: `
       <div class="page-grid">
@@ -450,95 +654,210 @@ function ceoDashboardView() {
           <div class="hero-block">
             <section class="summary-banner">
               <div class="eyebrow">CEO Dashboard</div>
-              <div class="hero-title">EP Intelligence now opens at the leadership shell.</div>
+              <div class="hero-title">Your AI Chief of Staff daily briefing.</div>
               <p class="hero-summary">${escapeHtml(data.summary)}</p>
             </section>
             <section class="snapshot-grid">
-              ${data.businessHealth.map((item) => statCard({ iconName: item.icon, label: item.label, value: item.value, body: item.body })).join('')}
+              ${data.executiveKpis.slice(0, 4).map((item) => statCard({ iconName: item.icon, label: item.label, value: item.value, body: item.body, meta: item.trend })).join('')}
             </section>
           </div>
           <div class="hero-side">
             <section class="score-panel">
               <div class="score-tile">
                 <div class="label">Business Health Score</div>
-                <strong class="score-value">${data.score}</strong>
-                <div class="score-note">${escapeHtml(data.trend)}</div>
+                <strong class="score-value">${data.businessHealthScore.overall}</strong>
+                <div class="score-note">${escapeHtml(data.businessHealthScore.trend)}</div>
               </div>
               <div class="snapshot-panel">
-                <div class="label">What changed</div>
+                <div class="label">Direction</div>
                 <h3>${escapeHtml(data.label)}</h3>
-                <p>Revenue, cash, and execution quality remain strong enough for calm leadership. The biggest decisions now are around timing, discipline, and approvals.</p>
+                <p>${escapeHtml(data.businessHealthScore.direction)} · Confidence ${escapeHtml(data.businessHealthScore.confidence)}.</p>
               </div>
             </section>
           </div>
         </section>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Today’s Priorities', title: 'What needs attention today', body: 'The CEO home view is designed to separate important signals from background noise.' })}
-          <div class="grid-3">
-            ${data.todayPriorities.map((item, index) => priorityCard({ index: index + 1, title: item.title, body: item.note, tone: item.tone })).join('')}
+          ${sectionHeader({ eyebrow: 'Executive Briefing', title: data.executiveBriefing.headline, body: 'A board-level summary of what happened, why it happened, what matters, and what deserves attention today.' })}
+          <div class="grid-2">
+            <div class="section-stack">
+              ${insightCard({ eyebrow: 'Overall business health', title: 'How the business feels today', body: data.executiveBriefing.overallHealth, tone: 'info' })}
+              ${insightCard({ eyebrow: 'Recommended priorities', title: 'What should matter most now', body: data.executiveBriefing.priorities.join(' '), tone: 'warn' })}
+            </div>
+            <div class="section-stack">
+              ${insightCard({ eyebrow: 'Major wins', title: 'What is going well', body: data.executiveBriefing.wins.join(' '), tone: 'good' })}
+              ${insightCard({ eyebrow: 'Areas of concern', title: 'What needs watching', body: data.executiveBriefing.concerns.join(' '), tone: 'risk' })}
+            </div>
+          </div>
+          <div class="tile-grid">
+            ${data.executiveBriefing.changes.map((item) => insightCard({ eyebrow: 'Key change since yesterday', title: item, body: 'Executive change signal surfaced by the dashboard.', tone: 'neutral' })).join('')}
           </div>
         </section>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Cross-business snapshots', title: 'What changed across the business', body: 'These are deliberately high-level so leadership can decide where to go deeper next.' })}
-          <div class="grid-3">
-            ${data.snapshots.map((item) => statCard({ iconName: item.icon, label: item.label, value: item.value, body: item.body })).join('')}
+          ${sectionHeader({ eyebrow: 'Business Health Score', title: 'Combined business health view', body: 'Finance, marketing, sales, customer experience, operations, and projects are synthesised into one daily CEO readout.' })}
+          <div class="grid-2">
+            <section class="score-panel">
+              <div class="score-tile">
+                <div class="label">Overall score</div>
+                <strong class="score-value">${data.businessHealthScore.overall}</strong>
+                <div class="score-note">${escapeHtml(data.businessHealthScore.trend)}</div>
+              </div>
+              <div class="snapshot-panel">
+                <div class="label">Confidence & direction</div>
+                <h3>${escapeHtml(data.businessHealthScore.confidence)}</h3>
+                <p>${escapeHtml(data.businessHealthScore.direction)}</p>
+              </div>
+            </section>
+            <div class="chart-grid">
+              ${chartCard({ eyebrow: 'Business Health', title: 'Score trend', canvasId: 'chart-ceo-health-trend', meta: 'A simple seven-day health trend for the CEO view.' })}
+              ${chartCard({ eyebrow: 'Department Scores', title: 'Cross-functional score distribution', canvasId: 'chart-ceo-department-scores', meta: 'A compressed view of where health is strongest or weakest.' })}
+              ${chartCard({ eyebrow: 'Approvals', title: 'CEO approval load by department', canvasId: 'chart-ceo-approval-load', meta: 'Where decisions are currently accumulating.' })}
+            </div>
+          </div>
+          <div class="tile-grid">
+            ${data.businessHealthScore.modules.map((item) => insightCard({ eyebrow: `${item.module} · ${item.trend}`, title: `${item.score} / 100`, body: item.summary, tone: toneFromScore(item.score) })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Today’s Priorities', title: 'Ranked CEO actions', body: 'Only the actions most likely to affect value, risk, or momentum should appear here.' })}
+          <div class="section-stack">
+            ${data.todayPriorities.map((item, index) => registerRow({
+              kicker: `${pill(`#${index + 1}`, 'info')}${pill(item.impact, item.impact.includes('High') ? 'good' : 'warn')}${pill(item.urgency, item.urgency === 'Immediate' ? 'risk' : 'warn')}`,
+              title: item.title,
+              body: item.detail,
+              extra: `
+                <div class="grid-4">
+                  ${statCard({ iconName: 'pulse', label: 'Impact', value: item.impact, body: 'How materially this could affect the business.' })}
+                  ${statCard({ iconName: 'alert-triangle', label: 'Urgency', value: item.urgency, body: 'How quickly it deserves attention.' })}
+                  ${statCard({ iconName: 'coins', label: 'Estimated value', value: item.value, body: 'Placeholder business value estimate.' })}
+                  ${statCard({ iconName: 'target', label: 'Recommended owner', value: item.owner, body: 'Suggested accountable owner.' })}
+                </div>
+              `
+            })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Executive KPIs', title: 'Only the metrics that deserve attention', body: 'These cards intentionally avoid operational clutter and stay focused on business-shaping signals.' })}
+          <div class="grid-4">
+            ${data.executiveKpis.map((item) => statCard({ iconName: item.icon, label: item.label, value: item.value, body: item.body, meta: item.trend })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Business Timeline', title: 'Recent business activity', body: 'A compressed executive timeline helps the CEO understand what changed without digging through modules.' })}
+          <div class="section-stack">
+            ${data.businessTimeline.map((item) => registerRow({ kicker: `${pill(item.time, 'info')}${pill(item.type, 'neutral')}`, title: item.title, body: item.body })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Cross-Department Intelligence', title: 'What the business signals mean when linked together', body: 'This is the CEO feature that turns separate modules into one coherent operating view.' })}
+          <div class="tile-grid">
+            ${data.crossDepartmentIntelligence.map((item) => insightCard({ eyebrow: item.impact, title: item.title, body: item.body, tone: item.tone })).join('')}
           </div>
         </section>
 
         <div class="grid-2">
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Key Risks', title: 'What could hurt confidence', body: 'Current watchpoints are known, visible, and manageable.' })}
-            <div class="section-stack">${data.risks.map((item) => insightCard({ eyebrow: 'Risk', title: item, body: 'Executive attention required only if it remains unresolved or starts compounding.', tone: 'risk' })).join('')}</div>
+            ${sectionHeader({ eyebrow: 'Executive Risks', title: 'Ranked business risks', body: 'These are the issues most likely to weaken confidence, value, or flexibility if ignored.' })}
+            <div class="section-stack">
+              ${data.executiveRisks.map((item) => registerRow({
+                kicker: `${pill(item.severity, toneFromSeverity(item.severity))}${pill(item.department, 'info')}`,
+                title: item.title,
+                body: `Likelihood ${item.likelihood} · Financial impact ${item.financialImpact}. Suggested mitigation: ${item.mitigation}`
+              })).join('')}
+            </div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Key Opportunities', title: 'Where the leverage is', body: 'The best opportunities are clear enough to guide leadership attention now.' })}
-            <div class="section-stack">${data.opportunities.map((item) => insightCard({ eyebrow: 'Opportunity', title: item, body: 'A future module or approval route will eventually turn this into a more actionable executive workflow.', tone: 'good' })).join('')}</div>
+            ${sectionHeader({ eyebrow: 'Executive Opportunities', title: 'Where the leverage is', body: 'These are the opportunities most likely to create meaningful value with sensible effort.' })}
+            <div class="section-stack">
+              ${data.executiveOpportunities.map((item) => registerRow({
+                kicker: `${pill(item.confidence, item.confidence.includes('High') ? 'good' : 'warn')}${pill(item.team, 'info')}`,
+                title: item.title,
+                body: `Estimated value ${item.estimatedValue} · Effort ${item.effort} · Suggested next action: ${item.nextAction}`
+              })).join('')}
+            </div>
           </section>
         </div>
 
         <div class="grid-2">
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Pending Approvals', title: 'Open decisions', body: 'Approvals are now grouped business-wide rather than living only inside finance.' })}
+            ${sectionHeader({ eyebrow: 'Approval Summary', title: 'Pending CEO approvals', body: 'This is the company-wide decision queue that currently deserves executive attention.' })}
             <div class="section-stack">
-              ${data.approvalsPreview.map((item) => insightCard({ eyebrow: 'Pending approval', title: item, body: 'Everything remains staged for human review only.', tone: 'warn' })).join('')}
+              ${data.approvalSummary.map((item) => approvalCard(item)).join('')}
               <button type="button" class="quick-action-button" data-route="/approvals">Open central Approvals ${icon('arrowRight')}</button>
             </div>
           </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Weekly Summary Preview', title: 'Sunday summary preview', body: 'Reporting now sits in a shared Reports section inside the broader shell.' })}
-            <div class="snapshot-panel">
-              <h3>${escapeHtml(data.weeklySummaryPreview.headline)}</h3>
-              <p>${escapeHtml(data.weeklySummaryPreview.body)}</p>
-              <button type="button" class="quick-action-button" data-route="/reports/weekly-briefings">Open Weekly Briefings ${icon('arrowRight')}</button>
+            ${sectionHeader({ eyebrow: 'Department Health', title: 'How each executive function is doing', body: 'The CEO does not need every detail — just the status, trajectory, and summary for each function.' })}
+            <div class="tile-grid">
+              ${data.departmentHealth.map((item) => insightCard({ eyebrow: `${item.department} · ${item.trend}`, title: `${item.score} / 100 · ${item.status}`, body: item.summary, tone: toneFromScore(item.score) })).join('')}
             </div>
           </section>
         </div>
 
-        ${commentaryCard({ title: data.aiBriefing.title, data: data.aiBriefing })}
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Decision Centre', title: 'The CEO decision workspace', body: 'This section separates what needs review now from what has been approved, deferred, or remains strategic.' })}
+          <div class="settings-grid">
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Decisions awaiting review', title: 'Needs CEO judgment' })}
+              <div class="section-stack">${data.decisionCentre.awaitingReview.map((item) => insightCard({ eyebrow: 'Awaiting review', title: item, body: 'This item should be reviewed before the day loses focus.', tone: 'warn' })).join('')}</div>
+            </section>
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Recently approved decisions', title: 'Already moving' })}
+              <div class="section-stack">${data.decisionCentre.recentlyApproved.map((item) => insightCard({ eyebrow: 'Approved', title: item, body: 'This decision is already moving into execution in the prototype storyline.', tone: 'good' })).join('')}</div>
+            </section>
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Deferred decisions', title: 'Intentionally not now' })}
+              <div class="section-stack">${data.decisionCentre.deferred.map((item) => insightCard({ eyebrow: 'Deferred', title: item, body: 'Deferred deliberately to preserve focus and decision quality.', tone: 'neutral' })).join('')}</div>
+            </section>
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Strategic decisions', title: 'Larger choices still open' })}
+              <div class="section-stack">${data.decisionCentre.strategic.map((item) => insightCard({ eyebrow: 'Strategic', title: item, body: 'This is a broader decision that deserves more deliberate CEO consideration.', tone: 'info' })).join('')}</div>
+            </section>
+          </div>
+        </section>
 
-        <div class="chart-grid">
-          ${chartCard({ eyebrow: 'Revenue Snapshot', title: 'Revenue trend', canvasId: 'chart-ceo-revenue', meta: 'Shared placeholder trend used at the shell level.' })}
-          ${chartCard({ eyebrow: 'Business Health Score', title: 'Score history', canvasId: 'chart-ceo-health', meta: 'A quick historic view for the executive home.' })}
-          <section class="chart-card">
-            <div class="panel-heading compact"><div><div class="eyebrow">What should I do next?</div><h4>Recommended next step</h4></div></div>
-            <div class="snapshot-panel">
-              <h3>Open CFO, Approvals, or Reports</h3>
-              <p>The shell is designed to help leadership move quickly from overview into the module or report that best supports the next decision.</p>
-              <div class="page-pillbar">
-                <button type="button" class="chip-button" data-route="/cfo">${icon('coins')}Open CFO</button>
-                <button type="button" class="chip-button" data-route="/approvals">${icon('check-circle')}Open Approvals</button>
-                <button type="button" class="chip-button" data-route="/reports">${icon('presentation')}Open Reports</button>
-              </div>
-            </div>
-          </section>
-        </div>
+        ${commentaryCard({ title: 'AI Executive Briefing', data: briefingCommentary })}
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Ask EP Intelligence', title: 'A conversational executive workspace', body: 'The CEO should be able to ask direct business questions and get concise, decision-ready responses.' })}
+          <div class="tile-grid">
+            ${data.askExamples.map((item) => insightCard({ eyebrow: item.question, title: 'AI response', body: item.answer, tone: 'neutral' })).join('')}
+          </div>
+          <div class="page-pillbar">
+            <button type="button" class="chip-button" data-route="/ai-assistant/ask">${icon('sparkles')}Open Ask EP Intelligence</button>
+            <button type="button" class="chip-button" data-route="/reports/board-meeting">${icon('presentation')}Open Board Meeting Mode</button>
+            <button type="button" class="chip-button" data-route="/reports/weekly-briefings">${icon('arrowRight')}Open Weekly Briefings</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Sunday summary preview', title: 'Weekly executive narrative', body: 'Reporting now sits in a shared Reports section inside the broader shell.' })}
+          <div class="snapshot-panel">
+            <h3>${escapeHtml(data.weeklySummaryPreview.headline)}</h3>
+            <p>${escapeHtml(data.weeklySummaryPreview.body)}</p>
+            <button type="button" class="quick-action-button" data-route="/reports/weekly-briefings">Open Weekly Briefings ${icon('arrowRight')}</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Board Meeting Mode', title: data.boardMeeting.title, body: data.boardMeeting.summary })}
+          <div class="chip-list">${data.boardMeeting.agenda.map((item) => `<button type="button" class="sidebar-chip" data-route="/reports/board-meeting">${escapeHtml(item)}</button>`).join('')}</div>
+          <div class="page-pillbar"><button type="button" class="chip-button" data-route="/reports/board-meeting">${icon('presentation')}Open presentation mode</button></div>
+        </section>
 
         ${pageQuestions('/ceo')}
       </div>
     `,
-    charts: [chartSpec('revenueTrend', 'chart-ceo-revenue', 'Revenue trend'), chartSpec('historicalScores', 'chart-ceo-health', 'Business health score history')]
+    charts: [
+      entryChartSpec(data.charts.healthTrend, 'chart-ceo-health-trend', 'Business health score trend'),
+      entryChartSpec(data.charts.departmentScores, 'chart-ceo-department-scores', 'Department scores'),
+      entryChartSpec(data.charts.approvalLoad, 'chart-ceo-approval-load', 'Approval load by department')
+    ]
   };
 }
 
@@ -1830,40 +2149,42 @@ function quarterlyReviewsView() {
 }
 
 function boardMeetingView() {
+  const data = MOCK_DATA.ceo;
+  const slides = boardSlides();
+  const slide = slides[state.boardSlide] || slides[0];
   return {
     html: `
       <div class="page-grid">
         <section class="board-shell">
-          ${sectionHeader({ eyebrow: 'Board Meeting Mode', title: 'Sunday Executive Briefing', body: 'This mode transforms EP Intelligence into a board conversation rather than a dashboard view.' })}
+          ${sectionHeader({ eyebrow: 'Board Meeting Mode', title: data.boardMeeting.title, body: 'A presentation-style leadership experience designed for a TV, projector, or board discussion.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
           <div class="board-hero">
             <div class="summary-banner">
-              <div class="hero-title">Leadership briefing for EP Golf Studios</div>
-              <p class="hero-summary">This board-focused view is designed to feel like sitting down with the executive team. Instead of widgets, the emphasis is on business health, executive narratives, top opportunities, top risks, approvals waiting, and the best questions worth asking this week.</p>
+              <div class="hero-title">${escapeHtml(slide.title)}</div>
+              <p class="hero-summary">${escapeHtml(slide.body)}</p>
             </div>
             <div class="score-tile">
-              <div class="label">Business Health Score</div>
-              <strong class="score-value">${MOCK_DATA.ceo.score}</strong>
-              <div class="score-note">${escapeHtml(MOCK_DATA.ceo.label)}</div>
+              <div class="label">Slide ${state.boardSlide + 1} of ${slides.length}</div>
+              <strong class="score-value">${data.businessHealthScore.overall}</strong>
+              <div class="score-note">${escapeHtml(data.businessHealthScore.direction)}</div>
             </div>
           </div>
-          <div class="board-shell-grid">
-            ${insightCard({ eyebrow: 'CEO Executive Summary', title: 'Whole-business leadership view', body: MOCK_DATA.ceo.summary, tone: 'neutral' })}
-            ${insightCard({ eyebrow: 'CFO Executive Report', title: 'Current financial position', body: MOCK_DATA.cfo.weeklyBriefing.summary, tone: 'info' })}
-            ${insightCard({ eyebrow: 'CMO Executive Report', title: 'Marketing momentum is positive', body: MOCK_DATA.cmo.dashboard.weeklyBriefing, tone: 'good' })}
-            ${insightCard({ eyebrow: 'COO Executive Report', title: 'Placeholder', body: 'Future operations intelligence will explain capacity, delivery friction, and execution risk.', tone: 'neutral' })}
+          <div class="board-slide-bar">
+            <div class="chip-list">${slides.map((item, index) => `<button type="button" class="sidebar-chip" data-board-slide="${index}">${index + 1}. ${escapeHtml(item.eyebrow)}</button>`).join('')}</div>
+            <div class="page-pillbar">
+              <button type="button" class="chip-button" data-board-step="-1">${icon('chevronLeft')}Previous</button>
+              <button type="button" class="chip-button" data-board-step="1">Next${icon('chevronRight')}</button>
+            </div>
           </div>
-          <div class="chart-grid board-mode-grid">
-            ${insightCard({ eyebrow: 'Top Opportunities', title: MOCK_DATA.cfo.opportunities[0].title, body: MOCK_DATA.cfo.opportunities[0].description, tone: 'good' })}
-            ${insightCard({ eyebrow: 'Top Risks', title: MOCK_DATA.cfo.risks[0].impact, body: MOCK_DATA.cfo.risks[0].commentary, tone: 'risk' })}
-            ${insightCard({ eyebrow: 'Decisions Required', title: '11 approvals waiting', body: 'The approval queue is visible and grouped to preserve control.', tone: 'warn' })}
-            ${insightCard({ eyebrow: 'This Week’s Priorities', title: MOCK_DATA.ceo.todayPriorities[0].title, body: MOCK_DATA.ceo.todayPriorities[0].note, tone: 'info' })}
-            ${insightCard({ eyebrow: 'Approvals Waiting', title: 'High signal, low noise', body: 'Finance, marketing, sales, operations, and AI-generated actions are all visible in one governed queue.', tone: 'neutral' })}
-            ${insightCard({ eyebrow: 'Questions Worth Asking', title: 'Are we protecting flexibility?', body: 'Challenge assumptions around collections, margin, approvals, and operating discipline before new commitments are approved.', tone: 'neutral' })}
-          </div>
+          <section class="panel board-focus-panel">
+            <div class="eyebrow">${escapeHtml(slide.eyebrow)}</div>
+            <h3>${escapeHtml(slide.title)}</h3>
+            <p>${escapeHtml(slide.body)}</p>
+            ${slide.html}
+          </section>
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Questions Worth Asking', title: 'Board conversation prompts' })}
-            <ul class="board-question-list">${MOCK_DATA.cfo.weeklyBriefing.questions.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+            ${sectionHeader({ eyebrow: 'Board conversation prompts', title: 'Questions worth asking', body: 'Use the keyboard: ← / → or Page Up / Page Down to move through the deck.' })}
+            <ul class="board-question-list">${data.askExamples.map((item) => `<li><strong>${escapeHtml(item.question)}</strong> — ${escapeHtml(item.answer)}</li>`).join('')}</ul>
           </section>
         </section>
       </div>
@@ -1907,8 +2228,8 @@ function aiAssistantOverviewView() {
           <div class="hero-side">
             <section class="snapshot-panel">
               <div class="label">Current status</div>
-              <h3>Frontend-only placeholder</h3>
-              <p>No AI actions execute automatically. This section is about structure, visibility, and future design direction only.</p>
+              <h3>${escapeHtml(data.status)}</h3>
+              <p>No AI actions execute automatically. The value here is decision support, conversational clarity, and explicit reasoning.</p>
             </section>
           </div>
         </section>
@@ -1930,7 +2251,43 @@ function aiAssistantOverviewView() {
               .join('')}
           </div>
         </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Ask EP Intelligence', title: 'Example executive conversations', body: MOCK_DATA.aiAssistant.askWorkspace.intro })}
+          <div class="tile-grid">
+            ${MOCK_DATA.aiAssistant.askWorkspace.prompts.map((item) => insightCard({ eyebrow: item.question, title: 'AI response', body: item.answer, tone: 'neutral' })).join('')}
+          </div>
+          <div class="chip-list">${MOCK_DATA.aiAssistant.askWorkspace.suggestedFollowUps.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
+        </section>
         ${pageQuestions('/ai-assistant')}
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function aiAssistantAskView() {
+  const data = MOCK_DATA.aiAssistant.askWorkspace;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'AI Assistant', title: 'Ask EP Intelligence', body: data.intro })}
+          ${renderRoutePillbar(SUBNAV.aiAssistant)}
+          <div class="snapshot-panel">
+            <h3>Executive questioning workspace</h3>
+            <p>This is designed to feel like asking an AI Chief of Staff a direct question and receiving a concise, decision-ready answer.</p>
+          </div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Conversation examples', title: 'High-value CEO questions', body: 'These examples show how the AI layer should answer with synthesis, not raw metrics.' })}
+          <div class="section-stack">
+            ${data.prompts.map((item) => registerRow({ kicker: pill('Executive question', 'info'), title: item.question, body: item.answer })).join('')}
+          </div>
+        </section>
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Suggested follow-ups', title: 'What the CEO could ask next', body: 'Follow-up prompts keep the conversation moving toward decisions rather than curiosity alone.' })}
+          <div class="chip-list">${data.suggestedFollowUps.map((item) => `<button type="button" class="follow-up-chip" data-follow-up="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
+        </section>
       </div>
     `,
     charts: []
@@ -2038,7 +2395,7 @@ const routeRenderers = {
   '/reports/cmo-reports': () => reportPlaceholderView('/reports/cmo-reports', 'CMO Reports', MOCK_DATA.reports.cmoReports),
   '/reports/ceo-reports': () => reportPlaceholderView('/reports/ceo-reports', 'CEO Reports', MOCK_DATA.reports.ceoReports),
   '/ai-assistant': aiAssistantOverviewView,
-  '/ai-assistant/ask': () => aiAssistantPlaceholderView('/ai-assistant/ask'),
+  '/ai-assistant/ask': aiAssistantAskView,
   '/ai-assistant/executive-briefing': () => aiAssistantPlaceholderView('/ai-assistant/executive-briefing'),
   '/ai-assistant/follow-up-questions': () => aiAssistantPlaceholderView('/ai-assistant/follow-up-questions'),
   '/ai-assistant/suggested-actions': () => aiAssistantPlaceholderView('/ai-assistant/suggested-actions'),

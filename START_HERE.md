@@ -4,15 +4,16 @@
 
 **EP Intelligence** is a frontend-only **Executive Operating System** prototype for **EP Golf Studios**.
 
-It has now moved from a CFO-first prototype into a broader **CEO shell** that can eventually support multiple executive modules across the business.
+It has now moved from a CFO-first prototype into a broader **Executive Operating System** with a true **CEO Intelligence Dashboard** at the centre.
 
 Today it is a **demo product**, not a live operating platform.
 
 ## What it includes
 
-- **CEO Dashboard** as the application home page
+- a true **CEO Intelligence Dashboard** as the application home page
 - a complete **CFO module** inside the wider shell
 - a complete first-pass **CMO module** inside the wider shell
+- integrated executive intelligence that links Finance and Marketing together inside one CEO-level daily briefing
 - placeholder module landing pages for:
   - COO
   - Sales
@@ -60,16 +61,16 @@ The default home page is now the **CEO Dashboard**.
 
 Start with these in order:
 
-1. **CEO Dashboard** — the new executive home page
-2. **CFO** — shows the most complete module in the system
-3. **CMO** — now shows the first full executive marketing workspace
-4. **Approvals** — shows business-wide approval thinking
-5. **Reports** — shows the reporting layer and board structure
-6. **AI Assistant** — shows the future executive AI direction
+1. **CEO Dashboard** — now the AI Chief of Staff-style executive home page
+2. **Board Meeting Mode** — shows the presentation-ready board experience
+3. **CFO** — shows the most complete finance module in the system
+4. **CMO** — shows the first full executive marketing workspace
+5. **Approvals** — shows business-wide approval thinking
+6. **AI Assistant** — shows the conversational executive AI direction
 
 ## Key pages to show
 
-- **CEO Dashboard** — whole-business overview
+- **CEO Dashboard** — AI Chief of Staff daily briefing
 - **CFO Workspace** — complete finance module within the shell
 - **CFO Revenue / Cash Flow / Supplier Spend** — strongest decision-support examples
 - **CMO Marketing Dashboard** — executive marketing command centre
@@ -92,20 +93,19 @@ This is intentionally still a prototype.
 
 ## Recommended next sprint
 
-**Sprint 5C — Executive Depth Beyond Finance + Marketing**
+**Sprint 6 — Operational expansion beyond Finance + Marketing**
 
 Recommended focus:
 
-- deepen the CEO Dashboard narrative and executive cross-links
-- begin the next real non-finance module beyond CMO (likely Operations or Sales)
-- strengthen Approvals, Reports, and AI Assistant internal pages
-- improve shell-level module transitions and richer executive states
-- refine presentation quality for stakeholder demos
+- begin the next real operating module beyond CMO (likely Operations, Sales, or Customer Success)
+- deepen Approvals, Reports, and AI Assistant into richer multi-step executive workflows
+- strengthen cross-department intelligence between CEO, CFO, and CMO before adding live integrations
+- improve stakeholder-demo polish and prepare the shell for future real data connectors
 
 ## Suggested positioning when presenting it
 
 Describe it as:
 
-> “A premium executive operating system prototype for EP Golf Studios — now structured around a CEO shell, with the CFO module already built and the wider business architecture in place for future expansion.”
+> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance and Marketing.”
 
-You can now more accurately say it includes **both CFO and CMO executive workspaces**, with the rest of the business architecture prepared for future module builds.
+You can now more accurately say it includes a real **CEO intelligence layer** plus both **CFO** and **CMO** executive workspaces, with the rest of the business architecture prepared for future module builds.

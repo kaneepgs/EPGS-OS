@@ -809,6 +809,11 @@ strong { font-weight: 700; }
   grid-template-columns: 1.2fr 0.8fr;
   gap: 18px;
 }
+.board-slide-bar,
+.board-focus-panel {
+  display: grid;
+  gap: 16px;
+}
 .board-grid,
 .board-shell-grid { display: grid; gap: 18px; }
 .board-shell-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

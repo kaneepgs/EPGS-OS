@@ -38,3 +38,9 @@
 - Added searchable CMO content-library behaviour while preserving the existing sidebar search and command palette patterns.
 - Updated the board-level shell so marketing now appears as a real executive reporting stream rather than a placeholder.
 - Captured Sprint 5B validation screenshots for Marketing Dashboard, Social Media Overview, YouTube, Website Analytics, AI Marketing Advisor, Marketing Calendar, and mobile layout.
+- Added Sprint 5C and upgraded the default CEO route into a true CEO Intelligence Dashboard v0.1.
+- Added an Executive Briefing, combined Business Health Score, ranked Today’s Priorities, executive KPI cards, business timeline, cross-department intelligence, executive risks, executive opportunities, approval summary, department health, and a CEO Decision Centre.
+- Expanded Ask EP Intelligence into a more conversational executive workspace with realistic example questions and AI-style answers.
+- Upgraded Board Meeting Mode into a presentation-style executive briefing deck with keyboard navigation across Executive Summary, KPI, Finance, Marketing, Opportunities, Risks, and Actions slides.
+- Expanded the structured mock-data layer with richer CEO synthesis data linking Finance and Marketing into one daily executive readout.
+- Captured Sprint 5C validation screenshots for CEO Dashboard, Executive Briefing, Today’s Priorities, Cross-Department Intelligence, Risks & Opportunities, Board Meeting Mode, and mobile layout.

@@ -8,15 +8,16 @@
 
 Show:
 
+- Executive Briefing
 - Business Health Score
 - today’s priorities
-- revenue / profit / cash snapshots
-- cross-business snapshots
+- cross-department intelligence
+- executive risks and opportunities
 - AI Executive Briefing
 
 Say:
 
-> “The application now opens at a CEO-level dashboard, not a finance-only view. The point is to give leadership one whole-business home page.”
+> “The application now opens at a true CEO Intelligence Dashboard, not just a shell home page. It should feel like sitting down with an AI Chief of Staff who explains what happened, why it happened, what matters, and what deserves a decision today.”
 
 ## 3) Open the CFO module
 
@@ -75,13 +76,13 @@ Show:
 
 Say:
 
-> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function.”
+> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. Board Meeting Mode is now a presentation-style executive briefing rather than a dashboard page.”
 
 ## 8) Open AI Assistant
 
 Say:
 
-> “The AI Assistant section is where briefing, assumptions, missing information, follow-up questions, and suggested actions will eventually live.”
+> “The AI Assistant section is now the conversational workspace for executive questions. It shows how EP Intelligence can answer leadership questions directly, not just display cards.”
 
 ## 9) Show one placeholder module
 
@@ -95,8 +96,8 @@ Say:
 
 ## 10) Close with the positioning
 
-> “Today this is a polished static prototype using realistic mock data only. The value right now is the executive structure, the CEO shell, the working CFO and CMO modules, and the platform direction for the rest of the business.”
+> “Today this is a polished static prototype using realistic mock data only. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, and the platform direction for the rest of the business.”
 
 ## Short closing line
 
-> “This is not the final operating platform — it is the executive-grade shell that defines what the platform should become.”
+> “This is not the final operating platform — it is the executive-grade operating surface that shows what the platform should become.”
