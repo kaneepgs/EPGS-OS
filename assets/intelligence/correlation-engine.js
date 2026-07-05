@@ -1,5 +1,13 @@
 import { parseCurrency, parsePercent, parseRangeMidpoint } from './engine-utils.js';
 
+function metricLookup(metrics = []) {
+  return Object.fromEntries(
+    metrics
+      .filter((entry) => Array.isArray(entry) && entry.length >= 2)
+      .map(([label, value]) => [String(label), value])
+  );
+}
+
 export function createCorrelationEngine({ confidenceEngine }) {
   return Object.freeze({
     evaluate({ executive, finance, marketing, approvals }, { health }) {
@@ -15,8 +23,65 @@ export function createCorrelationEngine({ confidenceEngine }) {
       const supplierYoy = parsePercent(finance.suppliers?.[0]?.yoy);
       const approvalCount = Object.values(approvals.groups || {}).reduce((sum, entries) => sum + entries.length, 0);
       const projectScore = executive.departmentHealth?.find((item) => item.department === 'Projects')?.score || 77;
+      const websiteMetrics = metricLookup(marketing.websiteAnalytics?.metrics || []);
+      const websiteDataSource = marketing.websiteAnalytics?.dataSource || {};
+      const websiteSnapshotMeta = marketing.websiteAnalytics?.snapshotMeta || {};
+      const websiteUsers = parseCurrency(websiteMetrics.Users || websiteMetrics['Website Visitors']);
+      const websiteSessions = parseCurrency(websiteMetrics.Sessions);
+      const websiteNewUsers = parseCurrency(websiteMetrics['New Users']);
+      const websiteReturningUsers = parseCurrency(websiteMetrics['Returning Visitors']);
+      const websiteBounceRate = parsePercent(websiteMetrics['Bounce Rate']);
+      const websiteConversionRate = parsePercent(websiteMetrics['Conversion Rate']);
+      const websiteBookings = parseCurrency(websiteMetrics['Fitting Bookings']);
+      const websiteEnquiries = parseCurrency(websiteMetrics['Contact Form Enquiries']);
+      const websiteSignups = parseCurrency(websiteMetrics['Email Sign-ups']);
+      const sessionsDeltaPct = Number(websiteSnapshotMeta.sessionsDeltaPct ?? 0);
+      const isLiveGa4 = websiteDataSource.state === 'live-ga4';
 
       const correlations = [];
+
+      if (isLiveGa4 && websiteSessions > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.96, crossFunctional: 1, consistency: 0.91 });
+        correlations.push({
+          id: 'ga4-live-demand-signal',
+          title: 'Live GA4 confirms website demand is rising',
+          executiveSummary: `GA4 is now live and sessions are ${sessionsDeltaPct >= 0 ? 'up' : 'down'} ${Math.abs(sessionsDeltaPct).toFixed(1)}% versus the prior period, with ${websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—'} users and ${websiteMetrics['New Users'] || '—'} new users. Leadership now has real website momentum data rather than placeholder marketing traffic.`,
+          supportingEvidence: [
+            `Data source: ${websiteDataSource.label || 'Website Analytics'}.`,
+            `Sessions total ${websiteMetrics.Sessions || '—'}.`,
+            `Users total ${websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—'}.`,
+            `New users total ${websiteMetrics['New Users'] || '—'}.`,
+            `Bounce rate is ${websiteMetrics['Bounce Rate'] || '—'}.`
+          ],
+          businessImpact: 'CEO → Marketing → Website demand visibility',
+          financialImpact: 'Live website demand data improves confidence in where attention is compounding and where leadership should expect conversion pressure next.',
+          responsibleDepartment: 'CEO / CMO',
+          prioritySignal: { financialImpact: 84, customerImpact: 73, strategicImportance: 88, timeSensitivity: 79, confidence: confidence.score },
+          confidence,
+          tone: sessionsDeltaPct >= 0 ? 'good' : 'warn'
+        });
+      }
+
+      if (isLiveGa4 && websiteSessions > 0 && websiteConversionRate <= 0.1) {
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.93, crossFunctional: 1, consistency: 0.87 });
+        correlations.push({
+          id: 'ga4-conversion-visibility-gap',
+          title: 'Live traffic is visible, but conversion capture remains weak',
+          executiveSummary: 'GA4 now confirms live website demand, but the synced booking, enquiry, and signup events are currently flat, so leadership has stronger traffic visibility than conversion visibility right now.',
+          supportingEvidence: [
+            `Sessions total ${websiteMetrics.Sessions || '—'} with ${websiteMetrics['New Users'] || '—'} new users.`,
+            `Bounce rate is ${websiteMetrics['Bounce Rate'] || '—'}.`,
+            `Bookings ${websiteMetrics['Fitting Bookings'] || '0'}, enquiries ${websiteMetrics['Contact Form Enquiries'] || '0'}, sign-ups ${websiteMetrics['Email Sign-ups'] || '0'}.`,
+            `Conversion rate is ${websiteMetrics['Conversion Rate'] || '0.0%'}.`
+          ],
+          businessImpact: 'Website → Conversion visibility → Revenue quality',
+          financialImpact: 'Traffic gains may continue to outpace decision-grade commercial attribution until conversion capture becomes stronger or cleaner.',
+          responsibleDepartment: 'CEO / CMO / Website',
+          prioritySignal: { financialImpact: 82, customerImpact: 77, strategicImportance: 86, timeSensitivity: 81, confidence: confidence.score },
+          confidence,
+          tone: 'warn'
+        });
+      }
 
       if (healthDelta > 0 && revenueTrend > 0) {
         const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.9, crossFunctional: 1, consistency: 0.92 });
@@ -50,13 +115,18 @@ export function createCorrelationEngine({ confidenceEngine }) {
         });
       }
 
-      if (visitors > 20000 && enquiries < leads * 0.45) {
+      if ((isLiveGa4 ? websiteUsers > 5000 : visitors > 20000) && enquiries < leads * 0.45) {
         const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.86, crossFunctional: 1, consistency: 0.8 });
         correlations.push({
           id: 'website-conversion-gap',
           title: 'Traffic is improving faster than booking conversion',
           executiveSummary: 'Website attention is strong, but conversion into booking enquiries is not rising at the same speed, which points to a commercial friction point rather than an awareness problem.',
-          supportingEvidence: [`Website visitors total ${marketing.dashboard?.metrics?.visitors}.`, `Leads total ${marketing.dashboard?.metrics?.leads}.`, `Booking enquiries total ${marketing.dashboard?.metrics?.enquiries}.`, `Best-performing channel remains ${marketing.dashboard?.bestPlatform}.`],
+          supportingEvidence: [
+            `Website visitors total ${isLiveGa4 ? (websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—') : marketing.dashboard?.metrics?.visitors}.`,
+            `Leads total ${marketing.dashboard?.metrics?.leads}.`,
+            `Booking enquiries total ${isLiveGa4 ? (websiteMetrics['Contact Form Enquiries'] || '0') : marketing.dashboard?.metrics?.enquiries}.`,
+            `Best-performing channel remains ${marketing.dashboard?.bestPlatform}.`
+          ],
           businessImpact: 'Marketing → Website → Sales / Customer Journey',
           financialImpact: 'Improving the website path could convert more of the current traffic into higher-value enquiries without requiring more media effort.',
           responsibleDepartment: 'CMO / Sales',

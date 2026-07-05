@@ -15,8 +15,8 @@ export function parseNumber(value, fallback = 0) {
   const match = source.match(/-?\d+(?:\.\d+)?/);
   if (!match) return fallback;
   let number = Number.parseFloat(match[0]);
-  if (/m/i.test(source)) number *= 1000000;
-  else if (/k/i.test(source)) number *= 1000;
+  if (/\d(?:\.\d+)?\s*m\b/i.test(source)) number *= 1000000;
+  else if (/\d(?:\.\d+)?\s*k\b/i.test(source)) number *= 1000;
   return number;
 }
 
@@ -33,8 +33,8 @@ export function parseRangeMidpoint(value, fallback = 0) {
   const source = String(value).replace(/,/g, '');
   const matches = [...source.matchAll(/-?\d+(?:\.\d+)?/g)].map((item) => Number.parseFloat(item[0]));
   if (!matches.length) return fallback;
-  if (matches.length === 1) return matches[0] * (/k/i.test(source) ? 1000 : 1);
-  const multiplier = /k/i.test(source) ? 1000 : 1;
+  if (matches.length === 1) return matches[0] * (/\d(?:\.\d+)?\s*k\b/i.test(source) ? 1000 : 1);
+  const multiplier = /\d(?:\.\d+)?\s*k\b/i.test(source) ? 1000 : 1;
   return ((matches[0] + matches[1]) / 2) * multiplier;
 }
 

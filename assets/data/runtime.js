@@ -55,12 +55,90 @@ const CMO_DATA = marketingService.getWorkspace();
 const REPORT_DATA = reportService.getWorkspace();
 const AI_DATA = executiveService.getAiWorkspace();
 
+function metricLookup(metrics = []) {
+  return Object.fromEntries(
+    metrics
+      .filter((entry) => Array.isArray(entry) && entry.length >= 2)
+      .map(([label, value]) => [String(label), value])
+  );
+}
+
+function formatDelta(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return '—';
+  return `${number >= 0 ? '+' : ''}${number.toFixed(1)}%`;
+}
+
+function buildCeoWebsiteIntelligence(websiteAnalytics = {}) {
+  const metrics = metricLookup(websiteAnalytics.metrics || []);
+  const source = websiteAnalytics.dataSource || { label: 'Demo fallback active', body: 'Website Analytics is using demo data.', tone: 'warn', state: 'demo-fallback' };
+  const snapshotMeta = websiteAnalytics.snapshotMeta || {};
+  const sessionsDelta = Number(snapshotMeta.sessionsDeltaPct);
+
+  return {
+    source,
+    summary: websiteAnalytics.summary || 'Website intelligence is not currently available.',
+    propertyId: source.propertyId || '',
+    syncedAt: source.syncedAt || null,
+    isLive: source.state === 'live-ga4',
+    kpis: [
+      {
+        iconName: 'grid',
+        label: 'Website Users',
+        value: metrics.Users || metrics['Website Visitors'] || '—',
+        body: 'The clearest CEO-level view of current website audience scale.',
+        meta: source.label
+      },
+      {
+        iconName: 'trending-up',
+        label: 'Sessions',
+        value: metrics.Sessions || '—',
+        body: 'Session volume shows how much current website demand is actually arriving.',
+        meta: source.label
+      },
+      {
+        iconName: 'target',
+        label: 'New Users',
+        value: metrics['New Users'] || '—',
+        body: 'This shows how much fresh audience the website is attracting right now.',
+        meta: source.label
+      },
+      {
+        iconName: 'home',
+        label: 'Returning Users',
+        value: metrics['Returning Visitors'] || '—',
+        body: 'Returning visitors help the CEO judge whether trust and repeat intent are compounding.',
+        meta: source.label
+      },
+      {
+        iconName: 'pulse',
+        label: 'Bounce Rate',
+        value: metrics['Bounce Rate'] || '—',
+        body: 'This is the quickest live signal for whether traffic is landing with enough relevance.',
+        meta: source.label
+      },
+      {
+        iconName: 'sparkles',
+        label: 'Sessions vs Prior Period',
+        value: Number.isFinite(sessionsDelta) ? formatDelta(sessionsDelta) : '—',
+        body: Number.isFinite(sessionsDelta)
+          ? 'Current session momentum compared with the prior period from the local GA4 snapshot.'
+          : 'Requires a live GA4 snapshot to compare against the prior period.',
+        meta: source.label
+      }
+    ]
+  };
+}
+
+const CEO_WEBSITE_INTELLIGENCE = buildCeoWebsiteIntelligence(CMO_DATA.websiteAnalytics);
+
 export const WORKSPACE_DATA = Object.freeze({
   brand: executiveService.getBrand(),
   ceo: {
     ...CEO_DATA,
     businessTimeline: [...INTELLIGENCE.timelineEvents, ...CEO_DATA.businessTimeline],
     intelligence: INTELLIGENCE.ceo,
+    websiteIntelligence: CEO_WEBSITE_INTELLIGENCE,
     businessHealthScore: {
       ...CEO_DATA.businessHealthScore,
       overall: INTELLIGENCE.health.overall.score,

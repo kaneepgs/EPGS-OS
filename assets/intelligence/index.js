@@ -18,6 +18,15 @@ export function createExecutiveIntelligenceEngine(config) {
 
   function createTimelineEvents({ finance, marketing }, { correlations, recommendations }) {
     const events = [];
+    if (marketing.websiteAnalytics?.dataSource?.state === 'live-ga4') {
+      events.push({
+        id: 'timeline-ga4-live-sync',
+        time: 'Now',
+        type: 'Website live data',
+        title: 'GA4 website snapshot is live',
+        body: marketing.websiteAnalytics?.dataSource?.body || 'Live GA4 website analytics are now available.'
+      });
+    }
     if (correlations.find((item) => item.id === 'marketing-revenue-growth')) {
       events.push({ id: 'timeline-marketing-demand', time: 'Now', type: 'Marketing milestone', title: 'Marketing momentum converted into revenue support', body: `Revenue and marketing momentum are rising together. Recommended next action: ${recommendations.find((item) => item.id === 'video-proof-expansion')?.recommendation || 'Scale the strongest channel.'}` });
     }
@@ -43,7 +52,7 @@ export function createExecutiveIntelligenceEngine(config) {
       risks: extras.risks || insight?.financialImpact || 'No specific risk narrative available.',
       alternatives: extras.alternatives || 'Proceed now, stage a narrower intervention, or defer until a stronger signal appears.',
       action: recommendation?.recommendation || insight?.suggestedActions?.[0] || extras.action || 'Review the relevant executive recommendation.',
-      missing: 'All intelligence remains deterministic, provider-backed, and Demo Mode only in this sprint.',
+      missing: 'Intelligence remains deterministic and provider-backed. Website Analytics may hydrate from a local GA4 snapshot while the wider product stays in Demo Mode.',
       followUp: extras.followUp || [
         'What changed most materially?',
         'Which recommendation creates the fastest value?',

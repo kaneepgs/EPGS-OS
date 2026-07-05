@@ -67,10 +67,16 @@ export class AnalyticsProvider {
     if (!this.ga4Snapshot.available || !this.ga4Snapshot.websiteAnalytics) {
       workspace.websiteAnalytics = {
         ...workspace.websiteAnalytics,
+        snapshotMeta: this.ga4Snapshot.meta || {},
         dataSource: {
           label: 'Demo fallback active',
-          body: 'Google Analytics is not yet synced locally, so Website Analytics is still using demo data.',
-          tone: 'warn'
+          body: this.ga4Snapshot.reason
+            ? `${this.ga4Snapshot.reason} Website Analytics is still using demo data.`
+            : 'Google Analytics is not yet synced locally, so Website Analytics is still using demo data.',
+          tone: 'warn',
+          state: 'demo-fallback',
+          propertyId: this.ga4Snapshot.propertyId || '',
+          syncedAt: this.ga4Snapshot.syncedAt || this.ga4Snapshot.checkedAt || null
         }
       };
       return workspace;
@@ -78,10 +84,14 @@ export class AnalyticsProvider {
 
     workspace.websiteAnalytics = {
       ...this.ga4Snapshot.websiteAnalytics,
+      snapshotMeta: this.ga4Snapshot.meta || {},
       dataSource: {
         label: 'Live GA4 snapshot active',
         body: `Property ${this.ga4Snapshot.propertyId || 'configured'} synced ${this.ga4Snapshot.syncedAt || 'recently'}. The rest of the CMO workspace remains in Demo Mode.`,
-        tone: 'good'
+        tone: 'good',
+        state: 'live-ga4',
+        propertyId: this.ga4Snapshot.propertyId || '',
+        syncedAt: this.ga4Snapshot.syncedAt || null
       }
     };
 

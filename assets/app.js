@@ -615,6 +615,7 @@ function attachGlobalEvents() {
 function ceoDashboardView() {
   const data = WORKSPACE_DATA.ceo;
   const intelligence = WORKSPACE_DATA.intelligence;
+  const website = data.websiteIntelligence;
   return {
     html: `
       <div class="page-grid">
@@ -654,11 +655,23 @@ function ceoDashboardView() {
             </div>
             <div class="section-stack">
               ${insightCard({ eyebrow: 'Business impact', title: intelligence.insights.topInsight.businessImpact, body: intelligence.insights.topInsight.financialImpact, tone: 'info' })}
+              ${insightCard({ eyebrow: 'Website data source', title: website.source.label, body: website.source.body, tone: website.source.tone || 'info' })}
               ${insightCard({ eyebrow: 'Supporting evidence', title: `${intelligence.insights.topInsight.confidence} confidence`, body: intelligence.insights.topInsight.supportingEvidence.join(' '), tone: 'good' })}
             </div>
           </div>
           <div class="tile-grid">
             ${intelligence.insights.executive.slice(0, 3).map((item) => insightCard({ eyebrow: `${item.priority} priority`, title: item.title, body: item.executiveSummary, tone: toneFromPriority(item.priority) })).join('')}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Website Intelligence', title: website.source.label, body: website.source.body })}
+          <div class="grid-3">
+            ${website.kpis.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
+          </div>
+          <div class="grid-2">
+            ${insightCard({ eyebrow: 'Executive readout', title: website.isLive ? 'Live demand visibility is now active' : 'Demo fallback remains active', body: website.summary, tone: website.source.tone || 'info' })}
+            ${insightCard({ eyebrow: 'Fallback behaviour', title: website.isLive ? 'Live GA4 is isolated to website analytics' : 'Website metrics are safely falling back', body: website.isLive ? 'If the GA4 snapshot disappears, the CEO and CMO views automatically revert to demo website intelligence without breaking the broader dashboard.' : 'A missing snapshot does not break the CEO Dashboard. It simply returns website intelligence to the structured demo baseline.', tone: website.isLive ? 'good' : 'warn' })}
           </div>
         </section>
 
@@ -722,7 +735,7 @@ function ceoDashboardView() {
         </section>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Cross-Department Intelligence', title: 'What the business signals mean when linked together', body: 'These correlations are generated before the interface renders them.' })}
+          ${sectionHeader({ eyebrow: 'Cross-Department Intelligence', title: 'What the business signals mean when linked together', body: website.isLive ? 'These correlations are generated before the interface renders them, with live GA4 website signals now feeding the CEO view.' : 'These correlations are generated before the interface renders them.' })}
           <div class="tile-grid">
             ${WORKSPACE_DATA.intelligence.correlations.map((item) => insightCard({ eyebrow: `${item.priority} · ${item.businessImpact}`, title: item.title, body: item.executiveSummary, tone: item.tone || toneFromPriority(item.priority) })).join('')}
           </div>

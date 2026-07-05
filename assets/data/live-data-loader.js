@@ -25,6 +25,12 @@ export async function loadGeneratedGa4Snapshot() {
     const raw = await readFile(SNAPSHOT_PATH, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
-    return fallbackSnapshot(error?.message || 'Unknown snapshot loading error.');
+    if (error?.code === 'ENOENT') {
+      return fallbackSnapshot('Generated GA4 snapshot not found. Demo fallback remains active.');
+    }
+    if (error instanceof SyntaxError) {
+      return fallbackSnapshot('Generated GA4 snapshot could not be parsed. Demo fallback remains active.');
+    }
+    return fallbackSnapshot('GA4 snapshot loading failed. Demo fallback remains active.');
   }
 }

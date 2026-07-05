@@ -65,3 +65,6 @@
 - Updated Integration Status, Demo Mode Configuration, and Provider Architecture views so the hybrid Sprint 8 runtime state is visible in-product.
 - Added local GA4 configuration guidance in `.env.example`, updated deployment/demo docs, and documented the new live-data path across the architecture references.
 - Captured Sprint 8 validation screenshots for Website Analytics, Integration Status, Demo Mode Configuration, and Provider Architecture.
+- Added Sprint 8C and surfaced GA4-backed website intelligence into the CEO Dashboard without changing the provider/service/intelligence architecture.
+- Added CEO-level website KPI cards for users, sessions, new users, returning users, bounce rate, and sessions vs prior period, with clear live-vs-fallback status messaging.
+- Fed live GA4 website signals into the CEO Executive Briefing and Cross-Department Intelligence so leadership can see live website momentum in the same shell as finance and approvals.
