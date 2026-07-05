@@ -1,25 +1,29 @@
-# START HERE — CFO Workspace Demo Handoff
+# START HERE — EP Intelligence Demo Handoff
 
 ## What this is
 
-The **CFO Workspace** is a polished, frontend-only executive prototype for **EP Golf Studios**.
+**EP Intelligence** is a frontend-only **Executive Operating System** prototype for **EP Golf Studios**.
 
-It is designed to show what a future AI-supported finance workspace could feel like for leadership:
+It has now moved from a CFO-first prototype into a broader **CEO shell** that can eventually support multiple executive modules across the business.
 
-- clearer business visibility
-- better decision framing
-- calmer weekly reviews
-- approval-first executive workflows
-
-It is a **demo product**, not a live finance system.
+Today it is a **demo product**, not a live operating platform.
 
 ## What it includes
 
-- executive dashboard-style homepage
-- Revenue, Profit, Expenses, Supplier Spend, Cash Flow, VAT, Forecasting, and KPI pages
-- Board Meeting mode for a leadership-style view
-- Decision Journal, Opportunity Register, Risk Register, and Approval Centre
-- interactive charts using realistic mock data
+- **CEO Dashboard** as the application home page
+- a complete **CFO module** inside the wider shell
+- placeholder module landing pages for:
+  - CMO
+  - COO
+  - Sales
+  - Customer Success
+  - Operations
+  - HR
+  - Projects
+- central **Approvals** section
+- central **Reports** section
+- dedicated **AI Assistant** section
+- interactive charts using realistic mock/demo data only
 
 ## What it does not include
 
@@ -34,9 +38,7 @@ It is a **demo product**, not a live finance system.
 
 This project is a static website.
 
-### Simple local run
-
-1. Open the project folder: `EP-Intelligence`
+1. Open the `EP-Intelligence` folder
 2. Open a terminal in that folder
 3. Run:
 
@@ -52,27 +54,28 @@ npm run serve
 http://127.0.0.1:3012
 ```
 
+The default home page is now the **CEO Dashboard**.
+
 ## What to demo first
 
 Start with these in order:
 
-1. **Workspace** — the best first impression
-2. **Board Meeting Mode** — shows the leadership-level version
-3. **Revenue** — demonstrates interactive charts and executive framing
-4. **Cash Flow** — strong example of decision-oriented financial visibility
-5. **Approval Centre** — shows approval-first workflow thinking
+1. **CEO Dashboard** — the new executive home page
+2. **CFO** — shows the most complete module in the system
+3. **Approvals** — shows business-wide approval thinking
+4. **Reports** — shows the reporting layer and board structure
+5. **AI Assistant** — shows the future executive AI direction
 
 ## Key pages to show
 
-- **Workspace** — overall CFO home view
-- **Board Meeting Mode** — concise leadership narrative
-- **Revenue** — performance and collection quality
-- **Supplier Spend** — cost concentration and supplier intelligence
-- **Cash Flow** — liquidity and forecast thinking
-- **Business KPIs** — score and weighting logic
-- **Decision Journal** — search, memory, and recommendation history
-- **Approval Centre** — governance and control
-- **Quarterly Review** — board-style summary view
+- **CEO Dashboard** — whole-business overview
+- **CFO Workspace** — complete finance module within the shell
+- **CFO Revenue / Cash Flow / Supplier Spend** — strongest decision-support examples
+- **Approvals** — centralised business-wide approval centre
+- **Reports** — shared reporting structure
+- **Board Meeting Mode** — leadership / board presentation view
+- **AI Assistant** — future AI reasoning and briefing area
+- **CMO placeholder** — example of how future modules slot into the shell
 
 ## Current limitations
 
@@ -80,24 +83,25 @@ This is intentionally still a prototype.
 
 - all data is mock/demo data
 - charts are illustrative, not connected to real systems
+- placeholder modules are not fully built yet
 - no save/sync between users or devices
 - no real approvals or workflow execution
-- no exports, reporting engine, or integrations yet
+- no live reporting engine or integrations yet
 
 ## Recommended next sprint
 
-**Sprint 5 — Demo-to-Product Readiness**
+**Sprint 5B — Module Expansion & Executive Depth**
 
 Recommended focus:
 
-- tighten copy and page content for stakeholder demos
-- add polished export views for board packs / PDF handoff
-- improve a few high-value interactions only
-- prepare a simple branded deployment for live review
-- define the first live integration layer without building full automation yet
+- deepen the CEO Dashboard narrative and executive cross-links
+- begin the first real non-finance module (likely CMO or Operations)
+- strengthen Approvals, Reports, and AI Assistant internal pages
+- improve shell-level module transitions and richer executive states
+- refine presentation quality for stakeholder demos
 
 ## Suggested positioning when presenting it
 
 Describe it as:
 
-> “A premium executive prototype showing what a future CFO operating system for EP Golf Studios could look and feel like — focused on decision support, visibility, and approval-first control.”
+> “A premium executive operating system prototype for EP Golf Studios — now structured around a CEO shell, with the CFO module already built and the wider business architecture in place for future expansion.”

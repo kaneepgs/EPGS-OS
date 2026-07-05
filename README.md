@@ -2,7 +2,7 @@
 
 EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios.
 
-This repo currently focuses on a **polished CFO Executive Workspace** built for demos, stakeholder presentations, and future live-integration planning — while staying entirely static and powered by realistic mock data.
+It has now moved beyond a CFO-first prototype into a broader **CEO shell** for a future multi-executive operating system — while remaining entirely static and powered by realistic mock data.
 
 ## Current Sprint State
 
@@ -43,6 +43,19 @@ Polished the prototype into a more deployment-ready executive application with:
 - richer AI executive commentary blocks with executive summary, evidence, confidence, impact, risks, alternatives, recommended action, missing information, and follow-up prompts
 - deployment-readiness assets including favicon, web manifest, metadata, package scripts, and cleaner static-project structure
 
+### Sprint 5A — CEO Shell & Executive Operating System Navigation
+
+Restructured EP Intelligence into a broader executive operating system shell with:
+
+- **CEO Dashboard** as the default application home page
+- permanent top-level navigation for CEO Dashboard, CFO, CMO, COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, Reports, and Settings
+- the full **CFO module** preserved inside the wider shell, with all core finance pages still accessible
+- a central **Approvals** section for business-wide approval routing
+- a central **Reports** section for weekly, monthly, quarterly, board, and functional report routes
+- a dedicated **AI Assistant** section for questions, briefings, assumptions, missing information, suggested actions, and context
+- polished placeholder module landing pages for CMO, COO, Sales, Customer Success, Operations, HR, and Projects
+- route support using static-friendly query routing such as `?route=/ceo`, `?route=/cfo`, and `?route=/reports/board-meeting`
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -50,7 +63,7 @@ This prototype intentionally remains:
 - **HTML + CSS + Vanilla JavaScript only**
 - **frontend-only**
 - **mock-data-only**
-- **without APIs, backend, auth, databases, external services, or automation**
+- **without APIs, backend, authentication, databases, live integrations, external services, or automation**
 
 ## Project Structure
 
@@ -60,7 +73,7 @@ This prototype intentionally remains:
 - `index.html` — main app shell and metadata
 - `assets/app.js` — application state, routing, rendering, and interactions
 - `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
-- `assets/data/mock-data.js` — structured mock executive/financial data
+- `assets/data/mock-data.js` — structured mock data for CEO, CFO, approvals, reports, AI Assistant, and placeholder modules
 - `assets/ui/components.js` — reusable UI render helpers
 - `assets/ui/charts.js` — Chart.js render/destroy helpers
 - `assets/vendor/chart.umd.js` — local Chart.js bundle for static hosting
@@ -85,12 +98,17 @@ Then open:
 
 - `http://127.0.0.1:3012`
 
+Optional examples:
+
+- `http://127.0.0.1:3012/?route=/ceo`
+- `http://127.0.0.1:3012/?route=/cfo`
+- `http://127.0.0.1:3012/?route=/reports/board-meeting`
+
 ## Deployment Targets
 
 The project is structured to be easy to host on:
 
 - Replit
-- Vercel
 - Hostinger static hosting / web hosting
 - any simple static web host
 
@@ -98,17 +116,21 @@ No server runtime is required.
 
 ## Validation
 
-Sprint 4 validation included:
+Sprint 5A validation included:
 
 - `node --check assets/app.js`
+- `node --check assets/data/mock-data.js`
 - local static serving via `python3 -m http.server`
+- route rendering checks for CEO Dashboard, CFO, all key CFO child pages, CMO placeholder, Approvals, Reports, AI Assistant, and Settings
+- source check confirming no app-side `console.*` usage
 - rendered screenshot captures for:
-  - dashboard
-  - board meeting mode
-  - revenue page
-  - cash flow
-  - executive AI commentary
-  - mobile layout
+  - CEO Dashboard
+  - CFO module inside the new shell
+  - CMO placeholder
+  - Approvals
+  - Reports
+  - AI Assistant
+  - mobile navigation
 
 Validation artifacts are stored in `/data/.openclaw/workspace/.artifacts/`.
 
@@ -120,7 +142,8 @@ Validation artifacts are stored in `/data/.openclaw/workspace/.artifacts/`.
 4. Historical learning over one-off analysis
 5. Executive collaboration over siloed advice
 6. Decision support over accounting-software aesthetics
+7. One shared shell for all future executive modules
 
 ## Near-Term Outcome
 
-The immediate goal is a premium static executive prototype that feels production-ready, gives EP Golf Studios a credible executive workspace for review/demo use, and creates a clean foundation for future live CFO, CMO, COO, and CEO workspaces.
+The immediate goal is a premium static executive prototype that now feels like a real **Executive Operating System shell**, giving EP Golf Studios a credible CEO-level home page, a preserved CFO module, and clear expansion paths for future CMO, COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, and Reports work.

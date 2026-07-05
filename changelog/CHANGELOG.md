@@ -21,3 +21,13 @@
 - Added deployment-readiness assets including favicon, manifest, metadata, package scripts, and static-host-friendly local vendor assets.
 - Captured Sprint 4 validation screenshots for dashboard, board mode, revenue, cash flow, executive AI commentary, and mobile layout.
 - Added a clean demo handoff pack with `START_HERE.md`, `DEPLOYMENT_NOTE.md`, and `EXECUTIVE_DEMO_SCRIPT.md` for non-technical review and presentation use.
+- Added Sprint 5A and restructured EP Intelligence from a CFO-first prototype into a broader CEO shell.
+- Made `CEO Dashboard` the default application home page.
+- Added permanent top-level navigation for CEO Dashboard, CFO, CMO, COO, Sales, Customer Success, Operations, HR, Projects, AI Assistant, Approvals, Reports, and Settings.
+- Preserved the CFO Workspace as a complete module inside the new shell and kept all key CFO child pages rendering.
+- Moved approvals into a central business-wide `Approvals` section and reporting outputs into a shared `Reports` section.
+- Added a dedicated `AI Assistant` section plus placeholder routes for questions, briefings, assumptions, missing information, suggested actions, and context.
+- Added polished placeholder landing pages for CMO, COO, Sales, Customer Success, Operations, HR, and Projects.
+- Refactored the mock data structure around CEO overview data, CFO data, approvals, reports, AI Assistant, module placeholders, and route metadata.
+- Added static-friendly query route support such as `?route=/ceo`, `?route=/cfo`, and `?route=/reports/board-meeting`.
+- Captured Sprint 5A validation screenshots for CEO Dashboard, CFO inside the new shell, CMO placeholder, Approvals, Reports, AI Assistant, and mobile navigation.

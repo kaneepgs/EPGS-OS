@@ -2,66 +2,84 @@
 
 ## 1) Open with the purpose
 
-> “This is a prototype of a future CFO Workspace for EP Golf Studios. It is designed to help leadership see the business more clearly, make better decisions, and review priorities in a calmer, more executive way.”
+> “This is a prototype of EP Intelligence — a future Executive Operating System for EP Golf Studios. It is designed to help leadership see the business more clearly, make better decisions, and work from one calmer executive shell.”
 
-## 2) Start on the Workspace page
+## 2) Start on the CEO Dashboard
 
 Show:
 
-- the overall visual quality
-- Financial Health Score
+- Business Health Score
+- today’s priorities
+- revenue / profit / cash snapshots
+- cross-business snapshots
+- AI Executive Briefing
+
+Say:
+
+> “The application now opens at a CEO-level dashboard, not a finance-only view. The point is to give leadership one whole-business home page.”
+
+## 3) Open the CFO module
+
+Say:
+
+> “The CFO Workspace still works in full, but now lives inside the wider executive operating system.”
+
+Show:
+
+- CFO home view
+- executive cards
 - priorities
-- summary cards
-- executive commentary
+- commentary
+
+## 4) Open one or two strong CFO pages
+
+Recommended:
+
+- **Revenue**
+- **Cash Flow** or **Supplier Spend**
 
 Say:
 
-> “The homepage is designed to feel like an executive operating system rather than accounting software.”
+> “Each module is structured around four executive questions: what happened, why it happened, whether it matters, and what to do next.”
 
-## 3) Switch to Board Meeting Mode
+## 5) Open Approvals
 
 Say:
 
-> “This view reframes the same environment into a leadership and board-style briefing.”
+> “Approvals are now centralised across the business, not just finance. The long-term design remains approval-first, with no automated actions executing on their own.”
+
+## 6) Open Reports
 
 Show:
 
-- the simplified narrative view
-- top opportunities
-- top risks
-- questions worth asking
-
-## 4) Open Revenue
+- Reports overview
+- Weekly Briefings
+- Board Meeting Mode
 
 Say:
 
-> “Each page is meant to answer four executive questions: what happened, why it happened, whether it matters, and what to do next.”
+> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function.”
 
-Show:
-
-- revenue trend chart
-- payment mix
-- invoice status
-- commentary block
-
-## 5) Open Cash Flow or Supplier Spend
-
-Use one of these as the stronger finance example.
+## 7) Open AI Assistant
 
 Say:
 
-> “The goal is not just reporting. It is decision support — showing where attention should go next.”
+> “The AI Assistant section is where briefing, assumptions, missing information, follow-up questions, and suggested actions will eventually live.”
 
-## 6) Show Approval Centre
+## 8) Show one placeholder module
+
+Recommended:
+
+- **CMO**
 
 Say:
 
-> “The long-term idea is approval-first control. Even future AI recommendations would still be staged for human review.”
+> “This shows how future modules will slot into the same shell using the same executive design language.”
 
-## 7) Close with the positioning
+## 9) Close with the positioning
 
-> “Today this is a polished static prototype using realistic mock data only. The value right now is the product direction, executive experience, and structure for future live integrations.”
+> “Today this is a polished static prototype using realistic mock data only. The value right now is the executive structure, the CEO shell, the working CFO module, and the platform direction for the rest of the business.”
 
 ## Short closing line
 
-> “This is not the finished finance platform — it is the executive-grade prototype that defines what the platform should become.”
+> “This is not the final operating platform — it is the executive-grade shell that defines what the platform should become.”
