@@ -14,7 +14,10 @@ Sprint 11 packages those into **EP Intelligence v1.1 — Marketing Intelligence*
 
 - **Current release:** EP Intelligence v1.1 — Marketing Intelligence
 - **Current roadmap:** `Roadmap.md`
-- **Completed sprint history:** `changelog/CHANGELOG.md`
+- **Formal release changelog:** `CHANGELOG.md`
+- **Detailed sprint history:** `changelog/CHANGELOG.md`
+
+Release metadata is now centralised in `assets/config/release-config.js`, so the displayed version and release references should stay consistent across the product.
 
 ## What it includes
 
@@ -142,4 +145,4 @@ Describe it as:
 
 You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube** provider paths, with the rest of the business architecture prepared for future module builds.
 
-After each completed release, update `Roadmap.md` first, then move finished work into `changelog/CHANGELOG.md`.
+After each completed release, update `CHANGELOG.md` for the formal release summary, then advance `Roadmap.md`, then move detailed sprint notes into `changelog/CHANGELOG.md`.

@@ -23,7 +23,7 @@ import {
 } from './ui/components.js';
 import { renderCharts, destroyCharts } from './ui/charts.js';
 
-const STORAGE_KEY = 'ep-intelligence.workspace.v0.9';
+const STORAGE_KEY = `ep-intelligence.workspace.${APP_RUNTIME.release.version}`;
 const VALID_ROUTES = new Set(Object.keys(ROUTE_META));
 
 const appShell = document.getElementById('app-shell');
@@ -31,6 +31,7 @@ const primaryNav = document.getElementById('primary-nav');
 const secondaryNav = document.getElementById('secondary-nav');
 const sidebarFavourites = document.getElementById('sidebar-favourites');
 const sidebarRecent = document.getElementById('sidebar-recent');
+const sidebarFooter = document.getElementById('sidebar-footer');
 const navSearch = document.getElementById('nav-search');
 const breadcrumbNode = document.getElementById('breadcrumb');
 const pageTitle = document.getElementById('page-title');
@@ -246,6 +247,13 @@ function renderSidebarMeta() {
     .join('');
 }
 
+function renderSidebarFooter() {
+  if (!sidebarFooter) return;
+  const release = APP_RUNTIME.release;
+  const overlayText = release.activeOverlays.length ? `Live overlays: ${release.activeOverlays.join(' + ')}.` : 'No live overlays active.';
+  sidebarFooter.innerHTML = `${icon('check-circle')}<span><strong>${escapeHtml(release.displayName)}</strong> · Build ${escapeHtml(release.buildNumber)} · ${escapeHtml(release.environment)}.<br />${escapeHtml(overlayText)}</span>`;
+}
+
 function renderSidebar() {
   const visible = visibleTopLevelRoutes();
   primaryNav.innerHTML = visible
@@ -272,6 +280,7 @@ function renderSidebar() {
     .join('');
 
   renderSidebarMeta();
+  renderSidebarFooter();
 
   document.querySelectorAll('[data-page], [data-route]').forEach((node) => {
     const route = node.dataset.page || node.dataset.route;
@@ -2771,21 +2780,30 @@ function aiAssistantPlaceholderView(route) {
 function settingsView() {
   const config = WORKSPACE_DATA.settings.configuration;
   const memory = WORKSPACE_DATA.settings.memory;
+  const release = WORKSPACE_DATA.settings.release;
   return {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Settings', title: 'Architecture and memory overview', body: 'EP Intelligence now combines the provider/service/config architecture with a provider-independent Executive Memory layer.' })}
+          ${sectionHeader({ eyebrow: 'Settings', title: 'Architecture, release, and memory overview', body: 'EP Intelligence now combines provider/service/config architecture, provider-independent Executive Memory, and a formal release-management layer.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
-            ${statCard({ iconName: 'settings', label: 'Active Mode', value: config.activeMode.label, body: config.activeMode.description })}
-            ${statCard({ iconName: 'grid', label: 'Provider Strategy', value: APP_RUNTIME.config.providerStrategy, body: 'Provider + service + contract layers are now in place.' })}
-            ${statCard({ iconName: 'check-circle', label: 'Domain Bindings', value: String(config.domainBindings.length), body: 'Every service domain currently resolves to Demo Mode mock providers.' })}
+            ${statCard({ iconName: 'check-circle', label: 'Current Release', value: release.displayName, body: `${release.codename} is the current formal platform release.` })}
+            ${statCard({ iconName: 'grid', label: 'Semantic Version', value: release.version, body: `Released ${release.releaseDate} in ${release.currentSprint}.` })}
+            ${statCard({ iconName: 'settings', label: 'Environment', value: release.environment, body: release.environmentDetail, meta: release.overlayStatus })}
             ${statCard({ iconName: 'sparkles', label: 'Memory Relationships', value: String(memory.graph.edgeCount), body: 'Executive memory is now linked through a structured knowledge graph.' })}
           </div>
         </section>
 
         <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'About', title: 'Release metadata and governance', body: 'Versioning, changelog discipline, and planning references now sit alongside the core platform settings.' })}
+            <div class="snapshot-panel">
+              <h3>${escapeHtml(release.fullName)}</h3>
+              <p>${escapeHtml(`Build ${release.buildNumber}. ${release.overlayStatus}.`)}</p>
+              <button type="button" class="quick-action-button" data-route="/settings/about">Open About ${icon('arrowRight')}</button>
+            </div>
+          </section>
           <section class="panel">
             ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring view', body: 'See the placeholder status for every future integration target.' })}
             <div class="snapshot-panel">
@@ -3006,6 +3024,48 @@ function settingsProviderArchitectureView() {
   };
 }
 
+function settingsAboutView() {
+  const release = WORKSPACE_DATA.settings.release;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'About', title: release.fullName, body: 'Formal release metadata now comes from one central release configuration so the product, docs, and governance stay aligned.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: 'Version', value: release.displayName, body: 'User-facing release label used throughout the product.' })}
+            ${statCard({ iconName: 'grid', label: 'Semantic Version', value: release.version, body: 'Canonical semver for package and release management.' })}
+            ${statCard({ iconName: 'calendar', label: 'Release Date', value: release.releaseDate, body: `Current release sprint: ${release.currentSprint}.` })}
+            ${statCard({ iconName: 'settings', label: 'Build / Environment', value: release.buildNumber, body: release.environmentDetail, meta: release.overlayStatus })}
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Release governance', title: 'Permanent release process', body: 'Each release should now update the formal changelog, roadmap, demo script, and version metadata from a single source.' })}
+            <div class="section-stack">
+              ${insightCard({ eyebrow: 'Changelog', title: release.docs.changelog, body: 'Formal release history lives at the project root using semantic versioning.', tone: 'good' })}
+              ${insightCard({ eyebrow: 'Roadmap', title: release.docs.roadmap, body: 'Active planning is managed separately from shipped release history.', tone: 'info' })}
+              ${insightCard({ eyebrow: 'Sprint history', title: release.docs.sprintHistory, body: 'Detailed sprint-by-sprint build notes remain available for deeper auditability.', tone: 'neutral' })}
+              ${insightCard({ eyebrow: 'Principles', title: release.docs.principles, body: 'New roadmap items should be screened against the project principles before acceptance.', tone: 'warn' })}
+            </div>
+          </section>
+
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Current release scope', title: release.codename, body: 'This release formalises the first usable executive marketing layer on top of the stable platform foundation.' })}
+            <div class="section-stack">
+              ${registerRow({ kicker: `${pill('v1.0 foundation', 'neutral')}`, title: 'Platform foundation is now codified as a release baseline', body: 'Executive shell, CEO/CFO/CMO workspaces, provider architecture, intelligence engine, executive memory, knowledge graph, GA4 provider, and YouTube provider all roll into the formal platform foundation.', meta: 'See CHANGELOG.md for the formal release summary.' })}
+              ${registerRow({ kicker: `${pill('v1.1 current', 'good')}`, title: 'Marketing Intelligence is the active platform release', body: 'Live GA4, live YouTube, Marketing Health Score, cross-channel intelligence, the Marketing Intelligence Report, and marketing milestones now define the current public release.', meta: `Release build ${release.buildNumber}.` })}
+              ${registerRow({ kicker: `${pill(release.environment, 'info')}`, title: release.overlayStatus, body: 'The product remains demo-first overall, but selective generated snapshot overlays can enrich the live marketing surfaces without changing the frontend-only deployment model.', meta: 'This status is derived from the release configuration plus current provider availability.' })}
+            </div>
+          </section>
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
 const routeRenderers = {
   '/ceo': ceoDashboardView,
   '/cfo': cfoHomeView,
@@ -3066,7 +3126,8 @@ const routeRenderers = {
   '/settings': settingsView,
   '/settings/integrations': settingsIntegrationStatusView,
   '/settings/configuration': settingsConfigurationView,
-  '/settings/provider-architecture': settingsProviderArchitectureView
+  '/settings/provider-architecture': settingsProviderArchitectureView,
+  '/settings/about': settingsAboutView
 };
 
 function renderView() {

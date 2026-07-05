@@ -1,6 +1,6 @@
 {
   "name": "ep-intelligence",
-  "version": "0.8.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "EP Intelligence executive operating system prototype with CEO, CFO, CMO, provider architecture, deterministic intelligence engine, executive memory, and Marketing Intelligence built from GA4 website analytics plus YouTube live channel overlays for EP Golf Studios.",

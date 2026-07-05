@@ -2,7 +2,8 @@
 
 **Current release:** EP Intelligence v1.1 — Marketing Intelligence  
 **Current roadmap:** `Roadmap.md`  
-**Completed sprint history:** `changelog/CHANGELOG.md`
+**Formal release changelog:** `CHANGELOG.md`  
+**Detailed sprint history:** `changelog/CHANGELOG.md`
 
 ## 1) Open with the purpose
 
@@ -121,7 +122,7 @@ Say:
 
 Then add:
 
-> “That means the platform now has a clear separation between what has shipped, what is being built now, what is next, and what is deliberately deferred.”
+> “That means the platform now has a clear separation between what has shipped, what is being built now, what is next, and what is deliberately deferred. Formal release history lives in CHANGELOG.md.”
 
 ## Short closing line
 

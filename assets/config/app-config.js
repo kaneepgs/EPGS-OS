@@ -1,3 +1,5 @@
+import { RELEASE_CONFIG } from './release-config.js';
+
 export const APP_MODES = Object.freeze({
   demo: {
     key: 'demo',
@@ -18,10 +20,13 @@ export const APP_MODES = Object.freeze({
 export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
-  shellName: 'EP Intelligence',
+  shellName: RELEASE_CONFIG.productName,
   architectureVersion: 'v0.6',
   providerStrategy: 'provider-service-intelligence-contract',
-  notes: 'Sprint 11 packages GA4 and YouTube into a clearer Marketing Intelligence layer with hybrid live/demo source status, a proper marketing health score, executive reporting, and provider-independent memory milestones while the wider product stays Demo Mode.'
+  releaseVersion: RELEASE_CONFIG.version,
+  releaseLabel: RELEASE_CONFIG.releaseLabel,
+  releaseCodename: RELEASE_CONFIG.codename,
+  notes: 'Sprint 11 packages GA4 and YouTube into a clearer Marketing Intelligence layer with hybrid live/demo source status, a proper marketing health score, executive reporting, provider-independent memory milestones, and formal release management while the wider product stays Demo Mode.'
 });
 
 export function currentModeConfig() {

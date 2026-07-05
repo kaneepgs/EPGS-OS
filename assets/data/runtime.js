@@ -1,4 +1,5 @@
 import { APP_CONFIG, currentModeConfig } from '../config/app-config.js';
+import { buildReleaseWorkspace } from '../config/release-config.js';
 import { RAW_MOCK_DATA } from './mock-data.js';
 import { loadGeneratedGa4Snapshot, loadGeneratedYouTubeSnapshot } from './live-data-loader.js';
 import { createProviderRegistry } from '../providers/provider-registry.js';
@@ -15,6 +16,7 @@ import { createMemoryService } from '../memory/memory-service.js';
 const GA4_SNAPSHOT = await loadGeneratedGa4Snapshot();
 const YOUTUBE_SNAPSHOT = await loadGeneratedYouTubeSnapshot();
 const providerRegistry = createProviderRegistry({ source: RAW_MOCK_DATA, mode: APP_CONFIG.mode, ga4Snapshot: GA4_SNAPSHOT, youtubeSnapshot: YOUTUBE_SNAPSHOT });
+const LIVE_DATA_SUMMARY = providerRegistry.getLiveDataSummary();
 const timelineService = createTimelineService(providerRegistry);
 const approvalService = createApprovalService(providerRegistry);
 const financeService = createFinanceService(providerRegistry);
@@ -42,6 +44,7 @@ const integrationService = createIntegrationService(providerRegistry, {
   memoryService
 });
 const INTELLIGENCE = intelligenceService.getWorkspace();
+const RELEASE_DATA = buildReleaseWorkspace({ liveData: LIVE_DATA_SUMMARY });
 
 export const SERVICES = Object.freeze({
   executive: executiveService,
@@ -517,7 +520,10 @@ export const WORKSPACE_DATA = Object.freeze({
   memory: MEMORY_DATA,
   intelligence: INTELLIGENCE,
   placeholders: executiveService.getPlaceholderModules(),
-  settings: integrationService.getSettingsWorkspace(providerRegistry.getDomainProvider('settings').getSettingsWorkspace(), MEMORY_DATA),
+  settings: {
+    ...integrationService.getSettingsWorkspace(providerRegistry.getDomainProvider('settings').getSettingsWorkspace(), MEMORY_DATA),
+    release: RELEASE_DATA
+  },
   shortcuts: executiveService.getShortcuts()
 });
 
@@ -525,8 +531,9 @@ export const APP_RUNTIME = Object.freeze({
   config: {
     ...APP_CONFIG,
     activeMode: currentModeConfig(),
-    liveData: providerRegistry.getLiveDataSummary()
+    liveData: LIVE_DATA_SUMMARY
   },
+  release: RELEASE_DATA,
   providers: providerRegistry.listProviders(),
   bindings: providerRegistry.describeBindings(),
   integrations: integrationService.getIntegrationStatus(),

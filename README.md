@@ -10,10 +10,13 @@ Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intellige
 
 - **Current release:** EP Intelligence v1.1 — Marketing Intelligence
 - **Active roadmap:** `Roadmap.md`
-- **Completed sprint history:** `changelog/CHANGELOG.md`
+- **Formal release changelog:** `CHANGELOG.md`
+- **Detailed sprint history:** `changelog/CHANGELOG.md`
 - **Project principles:** `PROJECT_PRINCIPLES.md`
 
-Use `Roadmap.md` for active planning, `changelog/CHANGELOG.md` for completed sprint history, and the project principles as the filter for what should or should not be built next.
+Release metadata is now centralised in `assets/config/release-config.js`, so the app, docs, and release process can all read from one source of truth.
+
+Use `Roadmap.md` for active planning, `CHANGELOG.md` for formal release history, `changelog/CHANGELOG.md` for detailed sprint history, and the project principles as the filter for what should or should not be built next.
 
 ## Current Sprint State
 
@@ -182,6 +185,7 @@ This prototype intentionally remains:
 ## Project Structure
 
 - `START_HERE.md` — non-technical demo handoff guide
+- `CHANGELOG.md` — formal semver release history for the platform
 - `Roadmap.md` — active product roadmap and current planning source of truth
 - `DEPLOYMENT_NOTE.md` — simple deployment notes for Replit and Hostinger static hosting
 - `EXECUTIVE_DEMO_SCRIPT.md` — short demo script for live walkthroughs
@@ -189,6 +193,7 @@ This prototype intentionally remains:
 - `assets/app.js` — application state, routing, rendering, and interactions
 - `assets/styles.css` — visual system, layout, responsive styling, transitions, and accessibility states
 - `assets/config/app-config.js` — central runtime mode and framework configuration
+- `assets/config/release-config.js` — single source of truth for current release metadata and version display
 - `assets/config/integration-registry.js` — placeholder registration points for future integrations
 - `assets/config/shell-config.js` — route, navigation, and page-question metadata
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
@@ -413,9 +418,10 @@ Sprint 10 validation includes:
 From this point forward:
 
 1. update `Roadmap.md` when priorities change or a release completes
-2. move completed work into `changelog/CHANGELOG.md`
-3. keep the demo script aligned to the latest release positioning
-4. evaluate new feature requests against `PROJECT_PRINCIPLES.md` before accepting them into the roadmap
+2. document formal releases in `CHANGELOG.md`
+3. move detailed completed sprint notes into `changelog/CHANGELOG.md`
+4. keep the demo script aligned to the latest release positioning
+5. evaluate new feature requests against `PROJECT_PRINCIPLES.md` before accepting them into the roadmap
 
 ## Near-Term Outcome
 

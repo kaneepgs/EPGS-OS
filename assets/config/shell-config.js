@@ -75,7 +75,8 @@ export const SUBNAV = {
     ['/settings', 'Overview'],
     ['/settings/integrations', 'Integration Status'],
     ['/settings/configuration', 'Demo Mode Configuration'],
-    ['/settings/provider-architecture', 'Provider Architecture']
+    ['/settings/provider-architecture', 'Provider Architecture'],
+    ['/settings/about', 'About']
   ]
 };
 
@@ -151,7 +152,8 @@ export const ROUTE_META = {
   '/settings': { title: 'Settings', subtitle: 'Prototype controls for shell behaviour, preferences, and future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/integrations': { title: 'Integration Status', subtitle: 'Placeholder health and registration view for future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/configuration': { title: 'Demo Mode Configuration', subtitle: 'Runtime mode, provider bindings, and service activation overview.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
-  '/settings/provider-architecture': { title: 'Provider Architecture', subtitle: 'Presentation, service, and provider layer overview for future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' }
+  '/settings/provider-architecture': { title: 'Provider Architecture', subtitle: 'Presentation, service, and provider layer overview for future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
+  '/settings/about': { title: 'About EP Intelligence', subtitle: 'Release metadata, governance references, and platform positioning.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' }
 };
 
 export const QUESTION_SETS = {
