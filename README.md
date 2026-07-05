@@ -23,6 +23,16 @@ The project now includes the first working CFO Workspace prototype homepage.
 - Sunday weekly briefing preview
 - natural-language “Ask My CFO” experience with placeholder responses
 
+### Sprint 3 — CFO Executive Workspace v0.2
+
+The project now expands into a broader executive operating system prototype.
+
+- full pages for Revenue, Profit, Expenses, Supplier Spend, Cash Flow, VAT, Forecasting, Business KPIs, Decision Journal, Weekly Briefings, Approval Centre, and Settings
+- dedicated Financial Health Score, Opportunity Register, Risk Register, and Quarterly Review pages
+- Board Meeting mode for a Sunday executive briefing experience
+- breadcrumb navigation, calmer transitions, richer charts, and more premium executive framing
+- searchable Decision Journal timeline and supplier drill-down placeholders
+
 Still excluded from this sprint:
 
 - no live API integrations
