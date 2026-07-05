@@ -81,3 +81,11 @@
 - Updated the marketing workspace so the CMO Dashboard, Social Overview, YouTube page, and Content Library now replace demo YouTube content with live snapshot data while other social platforms remain in Demo Mode.
 - Updated the CEO Dashboard and deterministic intelligence layer so leadership now sees YouTube subscribers, total views, tracked recent views, subscriber movement, publishing activity, YouTube-aware correlations, recommendations, and timeline events.
 - Documented the provider lifecycle, configuration, fallback model, and troubleshooting in `README.md`, `docs/integration-framework.md`, and new `docs/youtube-provider.md`.
+- Added Sprint 11 and released **EP Intelligence v1.1 — Marketing Intelligence**.
+- Added a proper Marketing Health Score using website sessions, session growth, YouTube subscribers, recent views, publishing cadence, content performance, and conversion capture.
+- Added clearer hybrid live/demo source coverage across the CEO Dashboard, CMO Dashboard, Social Overview, Website Analytics, Content Library, Marketing Reports, and the packaged Marketing Intelligence Report.
+- Added a reusable Marketing Intelligence Report at `/reports/cmo-reports` covering GA4 summary, YouTube summary, cross-channel findings, opportunities, risks, recommended actions, and marketing memory milestones.
+- Expanded deterministic marketing correlations so the intelligence layer now links YouTube visibility to website demand, publishing cadence to growth support, website traffic to enquiry capture, and high-performing content to next marketing opportunities.
+- Added provider-independent Executive Memory milestones for live website demand, YouTube subscriber growth thresholds, high-performing video context, campaign-performance notes, and conversion watchpoints without duplicating existing seeded events.
+- Updated runtime assembly so marketing intelligence, report packaging, source status, and memory milestone writing all happen on top of the existing provider/service/intelligence architecture rather than through new providers or backend code.
+- Updated `README.md`, `START_HERE.md`, `EXECUTIVE_DEMO_SCRIPT.md`, and `docs/integration-framework.md` for the new v1.1 release positioning.

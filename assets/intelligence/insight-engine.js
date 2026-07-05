@@ -49,11 +49,12 @@ export function createInsightEngine() {
 
       const cmoInsights = [
         insightFromCorrelation(correlations.find((item) => item.id === 'youtube-live-momentum') || correlations.find((item) => item.id === 'marketing-revenue-growth') || correlations[0], [recommendationLookup['video-proof-expansion']?.recommendation, recommendationLookup['youtube-cadence-protect']?.recommendation].filter(Boolean)),
-        insightFromCorrelation(correlations.find((item) => item.id === 'website-conversion-gap') || correlations[0], [recommendationLookup['website-conversion-sprint']?.recommendation].filter(Boolean)),
+        insightFromCorrelation(correlations.find((item) => item.id === 'youtube-website-demand-loop') || correlations.find((item) => item.id === 'content-opportunity-proof-loop') || correlations[0], [recommendationLookup['video-proof-expansion']?.recommendation, recommendationLookup['website-conversion-sprint']?.recommendation].filter(Boolean)),
+        insightFromCorrelation(correlations.find((item) => item.id === 'website-enquiry-conversion-link') || correlations.find((item) => item.id === 'website-conversion-gap') || correlations[0], [recommendationLookup['website-conversion-sprint']?.recommendation].filter(Boolean)),
         normalizeExecutiveInsight({
           title: 'Marketing health is improving with clearer channel winners',
-          executiveSummary: `CMO health scores ${health.cmo.score}/100 because YouTube is now visible through the live provider path and Instagram continues to support momentum, but value capture will improve faster if conversion pathways tighten alongside disciplined content output.`,
-          supportingEvidence: [marketing.dashboard?.bestPlatform, marketing.dashboard?.worstPlatform, marketing.dashboard?.metrics?.visitors, marketing.dashboard?.metrics?.enquiries].filter(Boolean),
+          executiveSummary: `CMO health scores ${health.cmo.score}/100 because live GA4 and live YouTube now make marketing momentum clearer, but value capture will improve fastest if the strongest proof-led content is reused more deliberately inside website conversion paths.`,
+          supportingEvidence: [marketing.dashboard?.bestPlatform, marketing.dashboard?.worstPlatform, marketing.dashboard?.metrics?.visitors, marketing.dashboard?.metrics?.enquiries, marketing.websiteAnalytics?.dataSource?.label, marketing.platforms?.youtube?.dataSource?.label].filter(Boolean),
           confidenceScore: 82,
           confidence: 'High',
           businessImpact: 'Marketing → Revenue Quality',

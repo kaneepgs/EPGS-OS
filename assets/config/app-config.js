@@ -19,9 +19,9 @@ export const APP_CONFIG = Object.freeze({
   mode: APP_MODES.demo.key,
   defaultProviderKey: 'mock',
   shellName: 'EP Intelligence',
-  architectureVersion: 'v0.5',
+  architectureVersion: 'v0.6',
   providerStrategy: 'provider-service-intelligence-contract',
-  notes: 'Sprint 10 adds a YouTube provider snapshot path on top of the existing GA4 website analytics overlay, while keeping Executive Memory provider-independent and the wider product in Demo Mode.'
+  notes: 'Sprint 11 packages GA4 and YouTube into a clearer Marketing Intelligence layer with hybrid live/demo source status, a proper marketing health score, executive reporting, and provider-independent memory milestones while the wider product stays Demo Mode.'
 });
 
 export function currentModeConfig() {

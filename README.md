@@ -4,7 +4,7 @@ EP Intelligence is a frontend-only AI Executive Operating System prototype for E
 
 It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer that synthesises Finance and Marketing into one daily executive briefing.
 
-Sprint 10 adds a live **YouTube Provider** on top of the existing architecture, so the business can now consume generated local channel snapshots for subscribers, visibility, uploads, content library items, and deterministic executive insight — while still falling back safely to demo data.
+Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intelligence** release, so the business can now read live website demand and live YouTube authority together through a clearer executive marketing layer, a proper Marketing Health Score, a packaged Marketing Intelligence Report, and provider-independent memory milestones — while still falling back safely to demo data.
 
 ## Current Sprint State
 
@@ -145,6 +145,21 @@ Added the second live provider path without changing the wider architecture:
 - updated Content Library and the YouTube platform page so recent uploads and top-performing tracked videos replace the old demo entries automatically
 - kept Executive Memory fully provider-independent and left the rest of the product in **Demo Mode** except for the selective GA4 + YouTube overlays
 
+### Sprint 11 — Marketing Intelligence v1.1
+
+Packaged the first usable executive marketing release on top of the existing provider architecture:
+
+- added a proper **Marketing Health Score** using website sessions, session growth, YouTube subscribers, recent views, publishing cadence, content performance, and conversion capture
+- added clearer **hybrid live/demo source coverage** across the CEO Dashboard, CMO Dashboard, Social Overview, Website Analytics, YouTube, Content Library, Reports, and Settings
+- added a reusable **Marketing Intelligence Report** at `/reports/cmo-reports` covering GA4 summary, YouTube summary, cross-channel findings, opportunities, risks, recommended actions, and marketing memory milestones
+- expanded deterministic intelligence so the system now links:
+  - YouTube visibility → website demand
+  - publishing cadence → growth support
+  - website traffic → enquiry capture
+  - high-performing content → next marketing opportunities
+- wrote new **marketing milestones into Executive Memory** without duplicating seeded events, including website demand milestones, YouTube subscriber milestones, campaign notes, and high-performing content context
+- kept the wider product **frontend-only** and **Demo Mode** by default, with selective live overlays only where GA4 and YouTube snapshots exist
+
 ## Constraints
 
 This prototype intentionally remains:
@@ -169,7 +184,7 @@ This prototype intentionally remains:
 - `assets/contracts/data-contracts.js` — shared schema helpers for normalized workspace data
 - `assets/data/mock-data.js` — raw structured demo datasets
 - `assets/data/live-data-loader.js` — safe loader for the optional generated GA4 and YouTube snapshots
-- `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, and runtime workspace data
+- `assets/data/runtime.js` — composition root that assembles providers, services, intelligence, marketing-health/reporting state, and runtime workspace data
 - `assets/memory/` — provider-independent executive memory stores, seed data, knowledge graph generation, and memory service
 - `assets/providers/` — active mock provider, live-capable analytics and YouTube providers, future provider placeholders, and provider registry
 - `assets/services/` — business logic layer for executive, finance, marketing, approvals, reports, timeline, integration status, and intelligence assembly
@@ -223,6 +238,7 @@ Optional examples:
 - `http://127.0.0.1:3012/?route=/ceo`
 - `http://127.0.0.1:3012/?route=/cfo`
 - `http://127.0.0.1:3012/?route=/cmo`
+- `http://127.0.0.1:3012/?route=/reports/cmo-reports`
 - `http://127.0.0.1:3012/?route=/reports/board-meeting`
 
 ## Deployment Targets

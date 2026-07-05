@@ -56,6 +56,7 @@ Current state:
 - `MockProvider` remains the baseline provider
 - `AnalyticsProvider` is now the first live-capable provider and selectively overrides only Website Analytics when a generated GA4 snapshot exists
 - `YouTubeProvider` now composes on top of `AnalyticsProvider` and selectively overrides the YouTube portions of the marketing workspace when a generated local YouTube snapshot exists
+- Sprint 11 now packages those two live-capable paths into a reusable **Marketing Intelligence** layer without adding any new providers
 - placeholder providers remain registered for Finance, Marketing, CRM, Calendar, and AI
 
 Rules:
@@ -74,6 +75,7 @@ It:
 - creates the provider registry
 - instantiates the services
 - instantiates the intelligence layer through `IntelligenceService`
+- assembles marketing-health, source-status, reporting, and memory-milestone outputs from the provider-backed marketing workspace
 - exports `WORKSPACE_DATA` for the current runtime
 - exports `APP_RUNTIME` for configuration and architecture inspection
 
@@ -107,6 +109,13 @@ In Sprint 6 and Sprint 7, each of these bound to `MockProvider`.
 In Sprint 8, `marketing` moved to `AnalyticsProvider`, which internally decides whether to return demo marketing data or a selective GA4 Website Analytics overlay.
 
 In Sprint 10, `marketing` now binds to `YouTubeProvider`, which composes on top of `AnalyticsProvider` so GA4 Website Analytics and live YouTube channel data can both flow through the same domain without any route-level rewrites.
+
+In Sprint 11, that same single `marketing` domain is used to generate:
+
+- the Marketing Health Score
+- clearer hybrid live/demo source coverage cards
+- the packaged Marketing Intelligence Report
+- derived marketing milestones written into provider-independent Executive Memory
 
 In future live work, the binding should change before any dashboard code changes are considered.
 
@@ -229,6 +238,8 @@ This pattern now exists for:
 - `scripts/sync-ga4-snapshot.mjs` → `AnalyticsProvider`
 - `scripts/sync-youtube-snapshot.mjs` → `YouTubeProvider`
 
+Sprint 11 proves that new executive value can be added by composing on top of those snapshots and providers, rather than by adding new APIs or bypassing the architecture.
+
 ## YouTube Provider Lifecycle
 
 `YouTubeProvider` is the first provider in EP Intelligence that composes on top of another active provider.
@@ -247,6 +258,27 @@ Its lifecycle is:
 5. the intelligence layer receives the updated marketing workspace and generates deterministic YouTube-aware insights
 
 This composition approach is the template for future platform integrations that need to enrich only part of an existing domain.
+
+## Sprint 11 Marketing Intelligence Pattern
+
+Sprint 11 adds a new architectural pattern on top of the existing provider setup:
+
+1. providers still return one shaped `marketing` workspace
+2. `assets/data/runtime.js` reads that workspace once
+3. runtime-derived helpers build:
+   - Marketing Health Score
+   - hybrid live/demo source coverage
+   - Marketing Intelligence Report
+   - marketing milestones for Executive Memory
+4. the presentation layer reads those pre-shaped executive objects directly
+
+This is important because it keeps:
+
+- providers focused on source overlays
+- services focused on domain shaping
+- intelligence focused on reasoning
+- runtime focused on cross-cutting assembly
+- memory provider-independent
 
 ## Relationship to the Intelligence Engine
 

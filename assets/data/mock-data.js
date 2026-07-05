@@ -584,8 +584,8 @@ export const RAW_MOCK_DATA = {
       suggestedActions: ['Approve the proof-led video content series', 'Refresh fitting CTA messaging', 'Reduce X cadence and redeploy effort into YouTube / Instagram']
     },
     reports: {
-      summary: 'Marketing reports should package platform movement, content performance, website impact, campaign results, risks, and the next recommended actions into a leadership-ready narrative.',
-      sections: ['Weekly marketing briefing', 'Platform ranking summary', 'Campaign wins and misses', 'Content performance highlights', 'Website and lead generation movement', 'Executive actions and approvals']
+      summary: 'Marketing reports should package platform movement, content performance, website impact, campaign results, source coverage, risks, and the next recommended actions into a leadership-ready narrative.',
+      sections: ['Weekly marketing briefing', 'GA4 website summary', 'YouTube summary', 'Cross-channel findings', 'Content performance highlights', 'Website and lead generation movement', 'Executive actions and approvals']
     },
     settings: {
       placeholders: ['Platform weighting', 'Default reporting views', 'Approval preferences', 'Weekly briefing cadence', 'Content scoring logic', 'Future API connections'],
@@ -627,7 +627,7 @@ export const RAW_MOCK_DATA = {
       { route: '/reports/quarterly-reviews', title: 'Quarterly Reviews', body: 'Board-style quarterly review output.' },
       { route: '/reports/board-meeting', title: 'Board Meeting Mode', body: 'A cleaner board-facing presentation mode.' },
       { route: '/reports/cfo-reports', title: 'CFO Reports', body: 'Finance-specific reporting pack placeholder.' },
-      { route: '/reports/cmo-reports', title: 'CMO Reports', body: 'Marketing-specific report placeholder.' },
+      { route: '/reports/cmo-reports', title: 'Marketing Intelligence Report', body: 'Packaged GA4 + YouTube marketing intelligence report.' },
       { route: '/reports/ceo-reports', title: 'CEO Reports', body: 'CEO-level summary and decision pack placeholder.' }
     ],
     monthly: {
@@ -635,7 +635,7 @@ export const RAW_MOCK_DATA = {
       sections: ['Month-on-month business movement', 'Cross-functional KPI highlights', 'Key approvals accepted / rejected', 'Leadership narrative and next-step recommendations']
     },
     cfoReports: ['Financial performance pack', 'Working capital summary', 'Cash and forecast note', 'Risk and approvals appendix'],
-    cmoReports: ['Platform ranking summary', 'Traffic and conversion movement', 'Campaign performance pack', 'Content and approval recommendations'],
+    cmoReports: ['GA4 summary', 'YouTube summary', 'Cross-channel findings', 'Traffic and conversion movement', 'Campaign performance pack', 'Content and approval recommendations'],
     ceoReports: ['Business health summary', 'Cross-functional risk view', 'Executive actions and approvals', 'Board-ready narrative']
   },
   aiAssistant: {

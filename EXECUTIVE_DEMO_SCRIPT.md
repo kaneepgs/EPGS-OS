@@ -19,6 +19,10 @@ Say:
 
 > “The application now opens at a true CEO Intelligence Dashboard, not just a shell home page. It should feel like sitting down with an AI Chief of Staff who explains what happened, why it happened, what matters, and what deserves a decision today.”
 
+Then add:
+
+> “In v1.1, the CEO can also see a proper Marketing Intelligence layer — not just separate pages for website and YouTube, but a combined executive marketing readout with score, source status, and cross-channel findings.”
+
 ## 3) Open the CFO module
 
 Say:
@@ -54,6 +58,8 @@ Show:
 - Marketing Dashboard
 - Social Media Overview
 - Website Analytics
+- YouTube
+- Marketing Intelligence Report
 - AI Marketing Advisor
 
 Say:
@@ -62,7 +68,7 @@ Say:
 
 Then add:
 
-> “Sprint 8 introduces the first live-capable provider path. Website Analytics can now read from a locally generated GA4 snapshot, but the rest of the product stays in safe Demo Mode.”
+> “Website Analytics can now read from a locally generated GA4 snapshot, and YouTube can now read from a locally generated channel snapshot. Sprint 11 packages those into a proper Marketing Intelligence release while keeping the rest of the product in safe Demo Mode.”
 
 ## 6) Open Approvals
 
@@ -76,11 +82,12 @@ Show:
 
 - Reports overview
 - Weekly Briefings
+- Marketing Intelligence Report
 - Board Meeting Mode
 
 Say:
 
-> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. Board Meeting Mode is now a presentation-style executive briefing rather than a dashboard page.”
+> “Reporting now sits in its own shared layer so it can serve the whole leadership team, not just a single function. The Marketing Intelligence Report is the first example of a proper packaged functional report, and Board Meeting Mode remains the presentation-style executive briefing.”
 
 ## 8) Open AI Assistant
 
@@ -100,7 +107,7 @@ Say:
 
 ## 10) Close with the positioning
 
-> “Today this is a polished static prototype with one controlled live-data path. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, the first GA4-backed Website Analytics route, and the platform direction for the rest of the business.”
+> “Today this is a polished static prototype with selective live-data overlays. The value right now is the AI-Chief-of-Staff-style CEO Dashboard, the integrated executive intelligence across Finance and Marketing, the working CFO and CMO modules, the GA4 + YouTube-backed Marketing Intelligence release, and the platform direction for the rest of the business.”
 
 ## Short closing line
 

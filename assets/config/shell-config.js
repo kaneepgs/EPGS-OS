@@ -115,7 +115,7 @@ export const ROUTE_META = {
   '/cmo/competitor-analysis': { title: 'Competitor Analysis', subtitle: 'Placeholder competitor rankings, growth comparisons, and strategic watchpoints.', module: 'CMO', sidebarKey: '/cmo', parentLabel: 'CMO' },
   '/cmo/marketing-calendar': { title: 'Marketing Calendar', subtitle: 'A visual planning layer for campaigns, content, launches, and events.', module: 'CMO', sidebarKey: '/cmo', parentLabel: 'CMO' },
   '/cmo/ai-marketing-advisor': { title: 'AI Marketing Advisor', subtitle: 'The AI strategy and recommendation workspace for marketing leadership.', module: 'CMO', sidebarKey: '/cmo', parentLabel: 'CMO' },
-  '/cmo/reports': { title: 'Marketing Reports', subtitle: 'The marketing reporting surface for weekly briefings and channel summaries.', module: 'CMO', sidebarKey: '/cmo', parentLabel: 'CMO' },
+  '/cmo/reports': { title: 'Marketing Reports', subtitle: 'The marketing reporting surface for weekly briefings, source clarity, and marketing intelligence packs.', module: 'CMO', sidebarKey: '/cmo', parentLabel: 'CMO' },
   '/cmo/settings': { title: 'CMO Settings', subtitle: 'Preferences, placeholders, and future marketing integration settings.', module: 'CMO', sidebarKey: '/cmo', parentLabel: 'CMO' },
 
   '/coo': { title: 'COO Module', subtitle: 'Future operating execution, delivery capacity, and process performance.', module: 'COO', sidebarKey: '/coo', parentLabel: 'COO' },
@@ -145,7 +145,7 @@ export const ROUTE_META = {
   '/reports/quarterly-reviews': { title: 'Quarterly Reviews', subtitle: 'Prepared board paper for the quarter just gone.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/board-meeting': { title: 'Board Meeting Mode', subtitle: 'A presentation-ready board view with keyboard navigation and executive slides.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/cfo-reports': { title: 'CFO Reports', subtitle: 'A placeholder hub for finance-specific reports.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
-  '/reports/cmo-reports': { title: 'CMO Reports', subtitle: 'A placeholder hub for marketing-specific reports.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
+  '/reports/cmo-reports': { title: 'Marketing Intelligence Report', subtitle: 'A packaged v1.1 marketing report spanning GA4, YouTube, cross-channel findings, risks, and actions.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
   '/reports/ceo-reports': { title: 'CEO Reports', subtitle: 'A placeholder hub for CEO-level reports and summaries.', module: 'Reports', sidebarKey: '/reports', parentLabel: 'Reports' },
 
   '/settings': { title: 'Settings', subtitle: 'Prototype controls for shell behaviour, preferences, and future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
@@ -198,9 +198,9 @@ export const QUESTION_SETS = {
     next: ['Use it to stage actions for approval', 'The best next move is to convert recommendations into clear, reviewable marketing actions.']
   },
   '/cmo/reports': {
-    what: ['Marketing reporting now has its own executive layer', 'Channel summaries, weekly briefings, and campaign views are now grouped as a proper module output.'],
+    what: ['Marketing reporting now has a proper intelligence pack', 'GA4, YouTube, source coverage, risks, and recommended actions are now packaged as a reusable executive report.'],
     why: ['Marketing needs packaging, not just dashboards', 'Leadership often needs a clean narrative pack rather than raw platform metrics.'],
-    matters: ['Yes, because reporting quality shapes confidence', 'A strong marketing report should explain performance, risks, and the next best actions clearly.'],
+    matters: ['Yes, because reporting quality shapes confidence', 'A strong marketing report should explain what is live, what is still demo, and what leadership should do next.'],
     next: ['Use reports to support approvals and weekly review', 'Treat these outputs as the narrative layer that supports broader executive decision-making.']
   },
   '/approvals': {
@@ -232,5 +232,11 @@ export const QUESTION_SETS = {
     why: ['A dashboard needs a destination, not just a status readout', 'Goals turn activity and decisions into a longer-term executive direction.'],
     matters: ['Yes, because progress without strategic context can be misleading', 'Leadership needs to know whether the most important goals are actually moving.'],
     next: ['Use goals to decide where to focus leadership time next', 'Review what is on track, what needs intervention, and which decisions unblock the biggest outcomes.']
+  },
+  '/reports/cmo-reports': {
+    what: ['This is now the Marketing Intelligence Report', 'It packages live GA4, live YouTube, deterministic cross-channel findings, risks, actions, and memory milestones into one executive marketing readout.'],
+    why: ['Leadership needs one clear marketing narrative', 'The point is to explain what is happening, why it matters, and what should be approved next without forcing the CEO or CMO to stitch pages together manually.'],
+    matters: ['Yes, because hybrid live/demo reporting needs clarity', 'Decision quality improves when the report makes source coverage, confidence, and the conversion gap explicit.'],
+    next: ['Use the report to sequence action', 'Review source coverage, challenge the risks, and move the strongest recommended actions into the approval flow.']
   }
 };

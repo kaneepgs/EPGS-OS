@@ -660,6 +660,7 @@ function ceoDashboardView() {
   const intelligence = WORKSPACE_DATA.intelligence;
   const website = data.websiteIntelligence;
   const youtube = data.youtubeIntelligence;
+  const marketing = data.marketingIntelligence;
   return {
     html: `
       <div class="page-grid">
@@ -728,6 +729,23 @@ function ceoDashboardView() {
           <div class="grid-2">
             ${insightCard({ eyebrow: 'Executive readout', title: youtube.isLive ? 'Live channel visibility is now active' : 'Demo fallback remains active', body: youtube.summary, tone: youtube.source.tone || 'info' })}
             ${insightCard({ eyebrow: 'Fallback behaviour', title: youtube.isLive ? 'Live YouTube is isolated to one provider path' : 'YouTube metrics are safely falling back', body: youtube.isLive ? 'If the generated YouTube snapshot disappears, the CMO and CEO views automatically revert to demo YouTube data without breaking the rest of the workspace.' : 'A missing YouTube snapshot does not break the dashboard. It simply returns YouTube to the structured demo baseline.', tone: youtube.isLive ? 'good' : 'warn' })}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Marketing Intelligence', title: `Marketing Health Score ${marketing.health.score}`, body: marketing.report.summary })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'sparkles', label: 'Score', value: String(marketing.health.score), body: marketing.health.label, meta: marketing.health.sourceStatus })}
+            ${statCard({ iconName: 'trending-up', label: 'Trend', value: marketing.health.trend.split(' ')[0], body: marketing.health.trend, meta: marketing.health.confidence })}
+            ${statCard({ iconName: 'check-circle', label: 'Confidence', value: marketing.health.confidence, body: 'Confidence reflects how much of the score is supported by live provider paths versus demo fallback.', meta: marketing.sourceStatus.label })}
+            ${statCard({ iconName: 'grid', label: 'Source status', value: marketing.health.sourceStatus, body: marketing.sourceStatus.body, meta: marketing.sourceStatus.label })}
+          </div>
+          <div class="grid-2">
+            ${insightCard({ eyebrow: 'GA4 summary', title: marketing.report.ga4Summary.title, body: marketing.report.ga4Summary.body, tone: website.source.tone || 'info' })}
+            ${insightCard({ eyebrow: 'YouTube summary', title: marketing.report.youtubeSummary.title, body: marketing.report.youtubeSummary.body, tone: youtube.source.tone || 'info' })}
+          </div>
+          <div class="tile-grid">
+            ${marketing.report.crossChannelFindings.slice(0, 4).map((item) => insightCard({ eyebrow: `${item.priority} · ${item.businessImpact}`, title: item.title, body: item.executiveSummary, tone: item.tone || toneFromPriority(item.priority) })).join('')}
           </div>
         </section>
 
@@ -1423,6 +1441,10 @@ function cmoToneFromRating(rating) {
   return 'info';
 }
 
+function marketingSourceCards(sourceStatus = {}) {
+  return (sourceStatus.cards || sourceStatus.sourceCards || []).map((item) => insightCard({ eyebrow: item.label, title: item.status, body: item.body, tone: item.tone || 'neutral' })).join('');
+}
+
 function cmoPlatformCommentary(platform) {
   const name = platform.label;
   const growth = platform.stats.find(([label]) => label === 'Audience Growth')?.[1] || 'Growth placeholder';
@@ -1447,6 +1469,9 @@ function cmoPlatformCommentary(platform) {
 
 function cmoDashboardView() {
   const data = WORKSPACE_DATA.cmo.dashboard;
+  const marketingHealth = data.marketingHealth;
+  const marketingSourceLabel = WORKSPACE_DATA.cmo.reports?.marketingIntelligence?.sourceStatus?.label || marketingHealth.sourceStatus;
+  const marketingSourceBody = WORKSPACE_DATA.cmo.reports?.marketingIntelligence?.sourceStatus?.body || 'This score blends live and demo marketing coverage depending on which provider paths are active.';
   return {
     html: `
       <div class="page-grid">
@@ -1476,15 +1501,31 @@ function cmoDashboardView() {
             <section class="score-panel">
               <div class="score-tile">
                 <div class="label">Marketing Health Score</div>
-                <strong class="score-value">${data.healthScore}</strong>
-                <div class="score-note">${escapeHtml(data.trend)}</div>
+                <strong class="score-value">${marketingHealth.score}</strong>
+                <div class="score-note">${escapeHtml(marketingHealth.trend)}</div>
               </div>
               <div class="snapshot-panel">
-                <div class="label">Channel spread</div>
-                <h3>Best: ${escapeHtml(data.bestPlatform)}</h3>
-                <p>Worst performing platform right now is ${escapeHtml(data.worstPlatform)}. The executive job is to keep focus on the channels creating the clearest commercial momentum.</p>
+                <div class="label">Source status</div>
+                <h3>${escapeHtml(marketingHealth.sourceStatus)}</h3>
+                <p>${escapeHtml(marketingSourceLabel)}. ${escapeHtml(marketingHealth.summary)}</p>
               </div>
             </section>
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Marketing Intelligence', title: marketingSourceLabel, body: `${marketingSourceBody} The score now blends live website demand, live YouTube authority, publishing cadence, content performance, and conversion capture into one executive marketing readout.` })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'sparkles', label: 'Score', value: String(marketingHealth.score), body: marketingHealth.label, meta: marketingHealth.confidence })}
+            ${statCard({ iconName: 'trending-up', label: 'Trend', value: marketingHealth.trend.startsWith('Up') ? 'Up' : 'Mixed', body: marketingHealth.trend, meta: marketingHealth.sourceStatus })}
+            ${statCard({ iconName: 'check-circle', label: 'Confidence', value: marketingHealth.confidence, body: 'Confidence rises when more of the marketing stack is backed by live provider paths.', meta: data.bestPlatform })}
+            ${statCard({ iconName: 'grid', label: 'Best platform', value: data.bestPlatform, body: `Weakest current platform is ${data.worstPlatform}.`, meta: marketingHealth.sourceStatus })}
+          </div>
+          <div class="tile-grid">
+            ${marketingHealth.components.map((item) => insightCard({ eyebrow: item.label, title: `${Math.round(item.score)} / 100 · ${item.value}`, body: item.body, tone: toneFromScore(item.score) })).join('')}
+          </div>
+          <div class="tile-grid">
+            ${marketingSourceCards(marketingHealth)}
           </div>
         </section>
 
@@ -1585,8 +1626,10 @@ function cmoSocialOverviewView() {
 
         ${data.dataSource ? `
           <section class="panel">
-            ${sectionHeader({ eyebrow: 'Live social overlay', title: data.dataSource.label, body: data.dataSource.body })}
-            ${insightCard({ eyebrow: 'What changed', title: 'YouTube now uses the live provider path', body: 'Cross-platform combined follower, view, and engagement totals now incorporate the generated YouTube snapshot while Instagram, Facebook, LinkedIn, and X remain in Demo Mode.', tone: data.dataSource.tone || 'good' })}
+            ${sectionHeader({ eyebrow: 'Hybrid source coverage', title: data.sourceStatus?.label || data.dataSource.label, body: data.sourceStatus?.body || data.dataSource.body })}
+            <div class="tile-grid">
+              ${marketingSourceCards(data.sourceStatus || data.dataSource)}
+            </div>
           </section>
         ` : ''}
 
@@ -1626,7 +1669,7 @@ function cmoPlatformView(key, route) {
         ${data.dataSource ? `
           <section class="panel">
             ${sectionHeader({ eyebrow: `${data.label} data source`, title: data.dataSource.label, body: data.dataSource.body })}
-            ${insightCard({ eyebrow: data.dataSource.state === 'live-youtube' ? 'Live provider path' : 'Demo fallback path', title: data.dataSource.channelId ? `Channel ${data.dataSource.channelId}` : `${data.label} demo data`, body: data.dataSource.syncedAt ? `Last synced ${data.dataSource.syncedAt}.` : 'No live sync timestamp is currently available.', tone: data.dataSource.tone || 'info' })}
+            ${insightCard({ eyebrow: data.dataSource.state === 'live-youtube' ? 'Live provider path' : 'Demo fallback path', title: data.dataSource.channelId ? `Channel ${data.dataSource.channelId}` : `${data.label} demo data`, body: data.dataSource.state === 'live-youtube' ? `This platform card is now live. Last synced ${data.dataSource.syncedAt || 'recently'}, while the rest of the social estate may still be demo-backed.` : 'This platform remains demo-backed until a live provider path exists for it.', tone: data.dataSource.tone || 'info' })}
           </section>
         ` : ''}
 
@@ -1683,8 +1726,11 @@ function cmoWebsiteAnalyticsView() {
           ${sectionHeader({ eyebrow: 'Data source', title: data.dataSource?.label || 'Demo fallback active', body: data.dataSource?.body || 'Website Analytics is still using demo data until a local GA4 snapshot is synced.' })}
           <div class="grid-3">
             ${insightCard({ eyebrow: 'Summary', title: 'Traffic quality is improving', body: data.summary, tone: 'info' })}
-            ${insightCard({ eyebrow: 'Commercial relevance', title: 'Bookings and enquiries matter most', body: 'This page keeps attention on the conversion signals most likely to matter commercially for EP Golf Studios.', tone: data.dataSource?.tone === 'good' ? 'good' : 'neutral' })}
+            ${insightCard({ eyebrow: 'Commercial relevance', title: 'Bookings and enquiries matter most', body: 'These cards are live only when the GA4 snapshot is active. The wider marketing context may still be hybrid or demo-led elsewhere.', tone: data.dataSource?.tone === 'good' ? 'good' : 'neutral' })}
             ${insightCard({ eyebrow: 'Next step', title: 'Optimise conversion before chasing more traffic', body: 'The clearest next action is to improve booking and enquiry pathways around already-healthy attention.', tone: 'warn' })}
+          </div>
+          <div class="tile-grid">
+            ${marketingSourceCards(data.sourceStatus)}
           </div>
         </section>
       </div>
@@ -1791,8 +1837,10 @@ function cmoCampaignPerformanceView() {
 }
 
 function cmoContentLibraryView() {
+  const data = WORKSPACE_DATA.cmo.contentLibrary;
   const query = state.contentQuery.trim().toLowerCase();
-  const items = WORKSPACE_DATA.cmo.contentLibrary.items.filter((item) => {
+  const youtubeLive = (data.sourceStatus?.cards || []).some((item) => item.label === 'YouTube' && /live/i.test(item.status));
+  const items = data.items.filter((item) => {
     if (!query) return true;
     return [item.title, item.type, item.platform, item.rating, item.publishDate].join(' ').toLowerCase().includes(query);
   });
@@ -1809,13 +1857,20 @@ function cmoContentLibraryView() {
         ${pageQuestions('/cmo/content-library')}
 
         <section class="panel">
+          ${sectionHeader({ eyebrow: 'Content source coverage', title: data.sourceStatus?.label || 'Content library source status', body: data.sourceStatus?.body || 'This library can blend live and demo content depending on which provider paths are active.' })}
+          <div class="tile-grid">
+            ${marketingSourceCards(data.sourceStatus)}
+          </div>
+        </section>
+
+        <section class="panel">
           ${sectionHeader({ eyebrow: 'Library results', title: `${items.length} content item${items.length === 1 ? '' : 's'}`, body: 'This page is intentionally searchable so future live content feeds can slot into the same structure cleanly.' })}
           <div class="tile-grid">
             ${items
               .map((item) => insightCard({
                 eyebrow: `${item.type} · ${item.platform}`,
                 title: item.title,
-                body: `Published ${item.publishDate}. ${item.views} views and ${item.engagement} engagement. Performance rating ${item.rating}.`,
+                body: `Published ${item.publishDate}. ${item.views} views and ${item.engagement} engagement. Performance rating ${item.rating}. Source: ${item.platform === 'YouTube' && youtubeLive ? 'Live YouTube snapshot' : item.platform === 'YouTube' ? 'Demo YouTube baseline' : 'Demo or static content layer'}.`,
                 tone: cmoToneFromRating(item.rating)
               }))
               .join('')}
@@ -2003,23 +2058,38 @@ function cmoAiAdvisorView() {
 
 function cmoReportsView() {
   const data = WORKSPACE_DATA.cmo.reports;
+  const report = data.marketingIntelligence;
   return {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Marketing reports', body: 'A dedicated reporting surface for channel summaries, weekly briefings, and campaign-level executive packs.' })}
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'Marketing reports', body: 'A dedicated reporting surface for channel summaries, weekly briefings, and the new Marketing Intelligence Report.' })}
           ${renderRoutePillbar(SUBNAV.cmo)}
           <div class="snapshot-panel">
-            <h3>Marketing reporting should package a narrative, not just numbers.</h3>
-            <p>${escapeHtml(data.summary)}</p>
+            <h3>${escapeHtml(report.title)}</h3>
+            <p>${escapeHtml(report.summary)}</p>
           </div>
         </section>
 
         ${pageQuestions('/cmo/reports')}
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Reporting sections', title: 'What the marketing report pack contains', body: 'This keeps the marketing narrative structured and easy to present.' })}
-          <div class="tile-grid">${data.sections.map((item) => insightCard({ eyebrow: 'Report section', title: item, body: 'This section is ready to evolve into a reusable reporting component.', tone: 'neutral' })).join('')}</div>
+          ${sectionHeader({ eyebrow: 'Reporting sections', title: 'What the v1.1 marketing pack now contains', body: 'The reporting layer now combines live summaries, deterministic findings, risks, and recommended actions.' })}
+          <div class="tile-grid">
+            ${data.sections.map((item) => insightCard({ eyebrow: 'Report section', title: item, body: 'This section is now part of the reusable marketing reporting pack.', tone: 'neutral' })).join('')}
+            ${insightCard({ eyebrow: 'New in v1.1', title: 'Marketing Intelligence Report', body: 'A proper executive marketing report now packages GA4, YouTube, cross-channel findings, risks, and recommended actions together.', tone: 'good' })}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Source coverage', title: report.health.sourceStatus, body: report.sourceStatus.body })}
+          <div class="grid-4">
+            ${statCard({ iconName: 'sparkles', label: 'Health score', value: String(report.health.score), body: report.health.label, meta: report.health.confidence })}
+            ${statCard({ iconName: 'trending-up', label: 'Trend', value: report.health.trend.startsWith('Up') ? 'Up' : 'Mixed', body: report.health.trend, meta: report.health.sourceStatus })}
+            ${statCard({ iconName: 'check-circle', label: 'Confidence', value: report.health.confidence, body: 'Confidence rises when both GA4 and YouTube are live.', meta: report.sourceStatus.label })}
+            ${statCard({ iconName: 'grid', label: 'Live paths', value: report.health.sourceStatus, body: report.sourceStatus.body, meta: report.sourceStatus.label })}
+          </div>
+          <div class="tile-grid">${marketingSourceCards(report.sourceStatus)}</div>
         </section>
 
         <div class="grid-2">
@@ -2028,7 +2098,7 @@ function cmoReportsView() {
             <div class="section-stack">
               ${insightCard({ eyebrow: 'Shared reports', title: 'Weekly Briefings', body: 'Open the shared Sunday briefing view when leadership wants the cross-functional version.', tone: 'info' })}
               <button type="button" class="quick-action-button" data-route="/reports/weekly-briefings">Open Weekly Briefings ${icon('arrowRight')}</button>
-              <button type="button" class="quick-action-button" data-route="/reports/cmo-reports">Open Shared CMO Reports ${icon('arrowRight')}</button>
+              <button type="button" class="quick-action-button" data-route="/reports/cmo-reports">Open Marketing Intelligence Report ${icon('arrowRight')}</button>
             </div>
           </section>
           <section class="panel">
@@ -2145,7 +2215,8 @@ function reportsOverviewView() {
   const memoryRoutes = [
     { title: 'Executive Timeline', body: 'Permanent business chronology of launches, milestones, and structural changes.', route: '/reports/executive-timeline' },
     { title: 'Decision Journal', body: 'Structured executive decision memory with reasons, outcomes, and linked KPIs.', route: '/reports/decision-journal' },
-    { title: 'Strategic Goals', body: 'Persistent goals linked to metrics, decisions, and owners.', route: '/reports/strategic-goals' }
+    { title: 'Strategic Goals', body: 'Persistent goals linked to metrics, decisions, and owners.', route: '/reports/strategic-goals' },
+    { title: 'Marketing Intelligence Report', body: 'Packaged GA4 + YouTube intelligence with source clarity, cross-channel findings, risks, and actions.', route: '/reports/cmo-reports' }
   ];
   return {
     html: `
@@ -2433,6 +2504,86 @@ function boardMeetingView() {
             <ul class="board-question-list">${WORKSPACE_DATA.aiAssistant.askWorkspace.prompts.map((item) => `<li><strong>${escapeHtml(item.question)}</strong> — ${escapeHtml(item.answer)}</li>`).join('')}</ul>
           </section>
         </section>
+      </div>
+    `,
+    charts: []
+  };
+}
+
+function marketingIntelligenceReportView() {
+  const data = WORKSPACE_DATA.reports.marketingIntelligence;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="board-shell">
+          ${sectionHeader({ eyebrow: 'Reports', title: data.title, body: data.subtitle })}
+          ${renderRoutePillbar(SUBNAV.reports)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'sparkles', label: 'Marketing health score', value: String(data.health.score), body: data.health.label, meta: data.health.confidence })}
+            ${statCard({ iconName: 'trending-up', label: 'Trend', value: data.health.trend.startsWith('Up') ? 'Up' : 'Mixed', body: data.health.trend, meta: data.health.sourceStatus })}
+            ${statCard({ iconName: 'check-circle', label: 'Confidence', value: data.health.confidence, body: 'Confidence reflects how much of the marketing stack is live-backed.', meta: data.sourceStatus.label })}
+            ${statCard({ iconName: 'grid', label: 'Source status', value: data.health.sourceStatus, body: data.sourceStatus.body, meta: data.sourceStatus.label })}
+          </div>
+          <div class="snapshot-panel">
+            <h3>Executive summary</h3>
+            <p>${escapeHtml(data.summary)}</p>
+          </div>
+        </section>
+
+        ${pageQuestions('/reports/cmo-reports')}
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Live and demo coverage', title: data.sourceStatus.label, body: data.sourceStatus.body })}
+          <div class="tile-grid">${marketingSourceCards(data.sourceStatus)}</div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'GA4 summary', title: data.ga4Summary.title, body: 'Website demand, traffic quality, and conversion visibility.' })}
+            ${insightCard({ eyebrow: 'Website intelligence', title: 'What GA4 is saying', body: data.ga4Summary.body, tone: 'info' })}
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'YouTube summary', title: data.youtubeSummary.title, body: 'Authority, visibility, and publishing momentum.' })}
+            ${insightCard({ eyebrow: 'Channel intelligence', title: 'What YouTube is saying', body: data.youtubeSummary.body, tone: 'good' })}
+          </section>
+        </div>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Cross-channel findings', title: 'How website and YouTube now work together', body: 'These are deterministic findings generated from the current provider-backed marketing state.' })}
+          <div class="tile-grid">
+            ${data.crossChannelFindings.map((item) => insightCard({ eyebrow: `${item.priority} · ${item.businessImpact}`, title: item.title, body: item.executiveSummary, tone: item.tone || toneFromPriority(item.priority) })).join('')}
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Opportunities', title: 'Where the leverage is', body: 'These actions should improve value capture without adding new providers or complexity.' })}
+            <div class="section-stack">
+              ${data.opportunities.map((item) => registerRow({ kicker: `${pill(item.priority, toneFromPriority(item.priority))}${pill(item.owner, 'neutral')}`, title: item.title, body: item.body })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Risks', title: 'What could limit return', body: 'The report should be honest about where marketing confidence is still capped.' })}
+            <div class="section-stack">
+              ${data.risks.map((item) => insightCard({ eyebrow: 'Risk', title: item.title, body: item.body, tone: item.tone || 'warn' })).join('')}
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Recommended actions', title: 'What to do next', body: 'These stay approval-first and deterministic.' })}
+            <div class="section-stack">
+              ${data.recommendedActions.map((item) => registerRow({ kicker: `${pill(item.priority, toneFromPriority(item.priority))}${pill(item.suggestedOwner, 'neutral')}`, title: item.recommendation, body: item.why })).join('')}
+            </div>
+          </section>
+          <section class="panel">
+            ${sectionHeader({ eyebrow: 'Memory milestones', title: 'What crossed into executive memory', body: 'Marketing milestones are now written into the provider-independent executive memory layer without duplicating events.' })}
+            <div class="section-stack">
+              ${data.memoryMilestones.map((item) => registerRow({ kicker: `${pill(item.date, 'info')}${pill(item.category, 'neutral')}`, title: item.title, body: item.body })).join('')}
+            </div>
+          </section>
+        </div>
       </div>
     `,
     charts: []
@@ -2902,7 +3053,7 @@ const routeRenderers = {
   '/reports/quarterly-reviews': quarterlyReviewsView,
   '/reports/board-meeting': boardMeetingView,
   '/reports/cfo-reports': () => reportPlaceholderView('/reports/cfo-reports', 'CFO Reports', WORKSPACE_DATA.reports.cfoReports),
-  '/reports/cmo-reports': () => reportPlaceholderView('/reports/cmo-reports', 'CMO Reports', WORKSPACE_DATA.reports.cmoReports),
+  '/reports/cmo-reports': marketingIntelligenceReportView,
   '/reports/ceo-reports': () => reportPlaceholderView('/reports/ceo-reports', 'CEO Reports', WORKSPACE_DATA.reports.ceoReports),
   '/ai-assistant': aiAssistantOverviewView,
   '/ai-assistant/ask': aiAssistantAskView,

@@ -1,5 +1,13 @@
 import { average, clamp, healthLabel, parseCurrency, parsePercent, weightedScore } from './engine-utils.js';
 
+function metricLookup(metrics = []) {
+  return Object.fromEntries(
+    metrics
+      .filter((entry) => Array.isArray(entry) && entry.length >= 2)
+      .map(([label, value]) => [String(label), value])
+  );
+}
+
 function scoreFromGrowth(percent) {
   return clamp(70 + percent * 1.4);
 }
@@ -46,13 +54,56 @@ export function createHealthEngine(config) {
       const topPlatform = platformRankings[0]?.score || 86;
       const bottomPlatform = platformRankings[platformRankings.length - 1]?.score || 58;
       const campaignRoi = parsePercent(marketing.campaignPerformance?.roi);
+      const websiteMetrics = metricLookup(marketing.websiteAnalytics?.metrics || []);
+      const websiteDataSource = marketing.websiteAnalytics?.dataSource || {};
+      const websiteSnapshotMeta = marketing.websiteAnalytics?.snapshotMeta || {};
+      const youtubeMetrics = metricLookup(marketing.platforms?.youtube?.stats || []);
+      const youtubeDataSource = marketing.platforms?.youtube?.dataSource || {};
+      const youtubeSnapshotMeta = marketing.platforms?.youtube?.snapshotMeta || {};
+      const websiteSessions = parseCurrency(websiteMetrics.Sessions || marketing.dashboard?.metrics?.visitors);
+      const websiteSessionGrowth = Number(websiteSnapshotMeta.sessionsDeltaPct ?? healthDelta * 2 ?? 0);
+      const websiteConversionRate = parsePercent(websiteMetrics['Conversion Rate']);
+      const websiteBookings = parseCurrency(websiteMetrics['Fitting Bookings']);
+      const websiteEnquiries = parseCurrency(websiteMetrics['Contact Form Enquiries'] || marketing.dashboard?.metrics?.enquiries);
+      const websiteSignups = parseCurrency(websiteMetrics['Email Sign-ups'] || marketing.dashboard?.metrics?.signups);
+      const youtubeSubscribers = parseCurrency(youtubeMetrics.Subscribers);
+      const youtubeViews28Days = parseCurrency(youtubeMetrics['Views (28 days)'] || youtubeMetrics.Views);
+      const youtubeAverageViews = parseCurrency(youtubeMetrics['Average Views / Video']);
+      const youtubeUploads = Number(youtubeSnapshotMeta.uploadsLast28Days || 0);
+      const youtubeGrowthPct = parsePercent(youtubeMetrics['Audience Growth']);
+      const liveSourceCount = Number(websiteDataSource.state === 'live-ga4') + Number(youtubeDataSource.state === 'live-youtube');
 
       const cmoComponents = {
-        audienceMomentum: clamp(72 + healthDelta * 4 + Math.min(visitors / 1500, 12)),
-        engagementQuality: clamp(64 + Math.min(parseCurrency(marketing.dashboard?.metrics?.engagement) / 2000, 18) + Math.min(topPlatform / 8, 10)),
-        conversionStrength: clamp(62 + Math.min(leads / 4, 18) + Math.min(enquiries / 2.5, 12) + Math.min(signups / 30, 8)),
-        channelFocus: clamp(70 + (topPlatform - bottomPlatform) * 0.35),
-        executionCadence: clamp(60 + campaignRoi * 6 + (marketing.campaignPerformance?.activeCampaigns || 0) * 4)
+        audienceMomentum: clamp(
+          58
+          + Math.min((websiteSessions || visitors) / 180, 18)
+          + Math.min(youtubeSubscribers / 5000, 14)
+          + liveSourceCount * 4
+        ),
+        engagementQuality: clamp(
+          56
+          + Math.min(parseCurrency(marketing.dashboard?.metrics?.engagement) / 2200, 12)
+          + Math.min(youtubeViews28Days / 12000, 16)
+          + Math.min(youtubeAverageViews / 2500, 10)
+          + Math.min(topPlatform / 10, 8)
+        ),
+        conversionStrength: clamp(
+          40
+          + Math.min(leads / 5, 10)
+          + Math.min((websiteEnquiries || enquiries) / 2.5, 16)
+          + Math.min((websiteSignups || signups) / 45, 10)
+          + Math.min(websiteBookings * 2, 12)
+          + Math.min(websiteConversionRate * 8, 12)
+        ),
+        channelFocus: clamp(66 + (topPlatform - bottomPlatform) * 0.35 + liveSourceCount * 5),
+        executionCadence: clamp(
+          52
+          + Math.max(websiteSessionGrowth, 0) * 0.9
+          + Math.min(youtubeUploads * 2.6, 18)
+          + Math.min(Math.max(youtubeGrowthPct, 0) * 4, 10)
+          + campaignRoi * 4
+          + (marketing.campaignPerformance?.activeCampaigns || 0) * 2
+        )
       };
       const cmoScore = weightedScore(Object.entries(cmoComponents), weights.cmo);
 

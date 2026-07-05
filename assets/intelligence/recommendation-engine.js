@@ -20,7 +20,7 @@ export function createRecommendationEngine({ priorityEngine }) {
         {
           id: 'website-conversion-sprint',
           recommendation: 'Tighten the website path from content traffic into fitting enquiries',
-          why: lookup['website-conversion-gap']?.executiveSummary || 'Traffic quality is outrunning booking conversion.',
+          why: lookup['website-enquiry-conversion-link']?.executiveSummary || lookup['website-conversion-gap']?.executiveSummary || 'Traffic quality is outrunning booking conversion.',
           expectedBenefit: 'Converts more existing demand into commercially meaningful enquiries without needing more reach.',
           risk: 'Low–Medium',
           confidence: lookup['website-conversion-gap']?.confidence?.label || 'Medium',
@@ -32,7 +32,7 @@ export function createRecommendationEngine({ priorityEngine }) {
         {
           id: 'video-proof-expansion',
           recommendation: 'Extend the strongest proof-led YouTube content into website and email journeys',
-          why: lookup['youtube-live-momentum']?.executiveSummary || lookup['marketing-revenue-growth']?.executiveSummary || 'The strongest-performing marketing assets are already shaping demand quality.',
+          why: lookup['content-opportunity-proof-loop']?.executiveSummary || lookup['youtube-website-demand-loop']?.executiveSummary || lookup['youtube-live-momentum']?.executiveSummary || lookup['marketing-revenue-growth']?.executiveSummary || 'The strongest-performing marketing assets are already shaping demand quality.',
           expectedBenefit: 'Builds authority, supports lead quality, and compounds current revenue momentum across owned channels.',
           risk: 'Low',
           confidence: lookup['youtube-live-momentum']?.confidence?.label || lookup['marketing-revenue-growth']?.confidence?.label || 'High',

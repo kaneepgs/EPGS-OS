@@ -116,24 +116,91 @@ export function createCorrelationEngine({ confidenceEngine }) {
         });
       }
 
-      if (isLiveYouTube && youtubeViews28Days > 0 && youtubeVideosPublished <= 2) {
-        const confidence = confidenceEngine.score({ evidenceCount: 4, metricCoverage: 0.88, crossFunctional: 1, consistency: 0.81 });
+      if (isLiveGa4 && isLiveYouTube && youtubeViews28Days > 0 && websiteSessions > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 6, metricCoverage: 0.97, crossFunctional: 1, consistency: 0.9 });
+        correlations.push({
+          id: 'youtube-website-demand-loop',
+          title: 'YouTube visibility is reinforcing website demand',
+          executiveSummary: `Live YouTube visibility is running at ${youtubeMetrics['Views (28 days)'] || '—'} while GA4 sessions are ${websiteMetrics.Sessions || '—'} and ${sessionsDeltaPct >= 0 ? 'up' : 'down'} ${Math.abs(sessionsDeltaPct).toFixed(1)}% versus the prior period. The strongest current evidence suggests video-led authority is helping sustain website demand rather than acting as an isolated awareness channel.`,
+          supportingEvidence: [
+            `YouTube tracked views: ${youtubeMetrics['Views (28 days)'] || '—'}.`,
+            `Website sessions: ${websiteMetrics.Sessions || '—'}.`,
+            `Session change versus prior period: ${sessionsDeltaPct >= 0 ? '+' : '-'}${Math.abs(sessionsDeltaPct).toFixed(1)}%.`,
+            `Top tracked YouTube video: ${topYoutubeVideo}.`
+          ],
+          businessImpact: 'YouTube → Website demand → Executive confidence',
+          financialImpact: 'The business can invest with more confidence in proof-led content when the strongest visibility channel is also lining up with healthier website demand.',
+          responsibleDepartment: 'CEO / CMO',
+          prioritySignal: { financialImpact: 86, customerImpact: 78, strategicImportance: 92, timeSensitivity: 74, confidence: confidence.score },
+          confidence,
+          tone: sessionsDeltaPct >= 0 ? 'good' : 'warn'
+        });
+      }
+
+      if (isLiveYouTube && isLiveGa4 && youtubeViews28Days > 0 && youtubeSnapshotMeta.uploadsLast28Days > 0 && websiteSessions > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.92, crossFunctional: 1, consistency: 0.85 });
         correlations.push({
           id: 'youtube-publishing-consistency',
-          title: 'YouTube performance is strong enough to justify publishing discipline',
-          executiveSummary: `Tracked YouTube visibility remains meaningful, but only ${youtubeMetrics['Publishing Activity'] || `${youtubeVideosPublished} upload${youtubeVideosPublished === 1 ? '' : 's'} in the last 28 days`} is currently visible. The risk is not weak content quality — it is allowing the strongest authority channel to run below its compounding potential.`,
+          title: 'Publishing consistency is helping sustain growth across YouTube and the website',
+          executiveSummary: `${youtubeMetrics['Publishing Activity'] || `${youtubeVideosPublished} upload${youtubeVideosPublished === 1 ? '' : 's'} in the last 28 days`} is now visible alongside ${websiteMetrics.Sessions || '—'} website sessions. The opportunity is to protect cadence while live traffic is compounding, so the content engine keeps feeding both authority growth and website demand.`,
           supportingEvidence: [
+            `Uploads in the active window: ${youtubeMetrics['Publishing Activity'] || youtubeSnapshotMeta.uploadsLast28Days || '—'}.`,
             `Views over the active window: ${youtubeMetrics['Views (28 days)'] || '—'}.`,
+            `Website sessions over the current GA4 period: ${websiteMetrics.Sessions || '—'}.`,
             `Subscribers gained: ${youtubeMetrics['Subscribers Gained'] || '—'}.`,
             `Average views per video: ${youtubeMetrics['Average Views / Video'] || '—'}.`,
             `Top tracked video: ${topYoutubeVideo}.`
           ],
-          businessImpact: 'Content cadence → Authority growth → Website demand',
-          financialImpact: 'A steadier publishing rhythm could convert current YouTube momentum into more consistent traffic and enquiry support without broadening channel complexity.',
+          businessImpact: 'Publishing cadence → Authority growth → Website demand',
+          financialImpact: 'A steadier publishing rhythm should make current website traffic and video momentum more repeatable without adding channel complexity.',
           responsibleDepartment: 'CMO',
-          prioritySignal: { financialImpact: 77, customerImpact: 71, strategicImportance: 86, timeSensitivity: 82, confidence: confidence.score },
+          prioritySignal: { financialImpact: 79, customerImpact: 74, strategicImportance: 88, timeSensitivity: 82, confidence: confidence.score },
+          confidence,
+          tone: 'good'
+        });
+      }
+
+      if (isLiveGa4 && websiteSessions > 0) {
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.94, crossFunctional: 1, consistency: 0.86 });
+        correlations.push({
+          id: 'website-enquiry-conversion-link',
+          title: 'Website traffic is outpacing enquiry capture',
+          executiveSummary: `GA4 sessions are ${websiteMetrics.Sessions || '—'} in the current live window, but enquiries are ${websiteMetrics['Contact Form Enquiries'] || '0'} and bookings are ${websiteMetrics['Fitting Bookings'] || '0'}. The signal is strong enough to say the next marketing gain likely comes from turning existing traffic into clearer booking intent, not from chasing more attention first.`,
+          supportingEvidence: [
+            `Sessions: ${websiteMetrics.Sessions || '—'}.`,
+            `Users: ${websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—'}.`,
+            `Bookings: ${websiteMetrics['Fitting Bookings'] || '0'}.`,
+            `Enquiries: ${websiteMetrics['Contact Form Enquiries'] || '0'}.`,
+            `Conversion rate: ${websiteMetrics['Conversion Rate'] || '0.0%'}.`
+          ],
+          businessImpact: 'Website traffic → Enquiries → Revenue quality',
+          financialImpact: 'The fastest commercial upside is probably conversion work on the current website path rather than additional top-of-funnel expansion.',
+          responsibleDepartment: 'CMO / Sales / Website',
+          prioritySignal: { financialImpact: 85, customerImpact: 83, strategicImportance: 87, timeSensitivity: 80, confidence: confidence.score },
           confidence,
           tone: 'warn'
+        });
+      }
+
+      if (isLiveYouTube && youtubeAverageViews > 0) {
+        const topVideo = marketing.platforms?.youtube?.snapshotMeta?.topVideo || marketing.platforms?.youtube?.topContent?.[0] || topYoutubeVideo;
+        const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.9, crossFunctional: 0.9, consistency: 0.84 });
+        correlations.push({
+          id: 'content-opportunity-proof-loop',
+          title: 'High-performing video content should be reused as the next conversion asset',
+          executiveSummary: `The current YouTube benchmark is ${topYoutubeVideo}, with ${youtubeMetrics['Average Views / Video'] || '—'} average views per video and ${youtubeMetrics['Views (28 days)'] || '—'} tracked visibility overall. The most obvious marketing opportunity is to reuse the strongest proof-led video themes inside website CTAs, email follow-up, and short-form cutdowns instead of treating the win as platform-specific.`,
+          supportingEvidence: [
+            `Top tracked video: ${topVideo}.`,
+            `Average views per video: ${youtubeMetrics['Average Views / Video'] || '—'}.`,
+            `Tracked views across the current window: ${youtubeMetrics['Views (28 days)'] || '—'}.`,
+            `Website sessions currently: ${websiteMetrics.Sessions || marketing.dashboard?.metrics?.visitors || '—'}.`
+          ],
+          businessImpact: 'Content performance → Website conversion → Marketing leverage',
+          financialImpact: 'Repurposing the strongest proof-led content should improve conversion quality faster than creating more low-signal content across weaker channels.',
+          responsibleDepartment: 'CMO',
+          prioritySignal: { financialImpact: 81, customerImpact: 79, strategicImportance: 84, timeSensitivity: 75, confidence: confidence.score },
+          confidence,
+          tone: 'good'
         });
       }
 

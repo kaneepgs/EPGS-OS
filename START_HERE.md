@@ -6,7 +6,9 @@
 
 It has now moved from a CFO-first prototype into a broader **Executive Operating System** with a true **CEO Intelligence Dashboard** at the centre.
 
-Today it is still primarily a **demo product**, but Sprint 8 adds one controlled live-data path: **Website Analytics** can optionally use a locally generated GA4 snapshot.
+Today it is still primarily a **demo product**, but it now has two controlled live-data paths: **Website Analytics** can hydrate from a locally generated GA4 snapshot and **YouTube** can hydrate from a locally generated channel snapshot.
+
+Sprint 11 packages those into **EP Intelligence v1.1 — Marketing Intelligence**.
 
 ## What it includes
 
@@ -17,6 +19,10 @@ Today it is still primarily a **demo product**, but Sprint 8 adds one controlled
 - a new **Integration Framework** beneath the UI so future live data can be added through providers rather than dashboard rewrites
 - a deterministic **Executive Intelligence Engine** that turns structured business data into scored health views, correlations, recommendations, narratives, and executive Q&A outputs before any external AI is introduced
 - the first **Google Analytics 4 live-provider path** for CMO Website Analytics, using a local sync script and generated snapshot file
+- a live-capable **YouTube provider path** for channel totals, recent uploads, visibility, and content-library items
+- a reusable **Marketing Intelligence Report** that packages GA4 + YouTube into one executive report
+- a proper **Marketing Health Score** with score, trend, confidence, and source status
+- provider-independent **Executive Memory** that now stores marketing milestones as part of the business timeline
 - placeholder module landing pages for:
   - COO
   - Sales
@@ -38,7 +44,7 @@ Today it is still primarily a **demo product**, but Sprint 8 adds one controlled
 - no automation
 - no live financial or operational data
 
-The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional GA4 hydration for Website Analytics only when local credentials are added and a snapshot is synced.
+The app now includes architecture for future integrations plus an internal intelligence engine. By default it still runs in **Demo Mode**, with optional local snapshot hydration for **GA4 Website Analytics** and **YouTube** when credentials are added and snapshots are synced.
 
 ## How to open it locally
 
@@ -72,9 +78,11 @@ Start with these in order:
 4. **CMO** — shows the first full executive marketing workspace
 5. **Approvals** — shows business-wide approval thinking
 6. **AI Assistant** — shows the conversational executive AI direction
-7. **CMO → Website Analytics** — shows the first live-capable provider path and clearly indicates whether GA4 is active or demo fallback is active
-8. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
-9. **CEO Dashboard health / recommendations / cross-department intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
+7. **CMO → Website Analytics** — shows the live GA4 path and conversion visibility clearly
+8. **CMO → YouTube** — shows the live YouTube path, recent uploads, and authority-channel momentum
+9. **Reports → Marketing Intelligence Report** — shows the packaged v1.1 marketing narrative across GA4, YouTube, risks, and actions
+10. **Settings → Integration Status / Demo Mode Configuration / Provider Architecture** — shows how the hybrid demo/live data framework is now structured under the product
+11. **CEO Dashboard marketing intelligence / cross-department intelligence** — shows the deterministic reasoning layer still working on top of the provider/service architecture
 
 ## Key pages to show
 
@@ -83,6 +91,7 @@ Start with these in order:
 - **CFO Revenue / Cash Flow / Supplier Spend** — strongest decision-support examples
 - **CMO Marketing Dashboard** — executive marketing command centre
 - **CMO Social Media Overview / YouTube / Website Analytics / AI Marketing Advisor** — strongest marketing examples
+- **Reports → Marketing Intelligence Report** — packaged v1.1 marketing output
 - **Approvals** — centralised business-wide approval centre
 - **Reports** — shared reporting structure
 - **Board Meeting Mode** — leadership / board presentation view
@@ -97,24 +106,24 @@ This is intentionally still a prototype.
 - most non-finance / non-marketing modules are still placeholders
 - no save/sync between users or devices
 - no real approvals or workflow execution
-- only Website Analytics is live-capable today, and only through a manual local GA4 snapshot sync
+- only Website Analytics and YouTube are live-capable today, both through manual local snapshot sync
 - no external AI or LLM reasoning yet; the current intelligence layer is deterministic and rule-based by design
 
 ## Recommended next sprint
 
-**Sprint 9 — Expand the first live-data layer carefully**
+**Sprint 12 — deepen marketing usefulness before adding breadth**
 
 Recommended focus:
 
 - validate the final GA4 conversion event names with Kane so booking/enquiry/sign-up mapping becomes production-credible
-- decide whether YouTube should become the next live provider or whether Website Analytics needs a richer acquisition/source breakdown first
-- keep the UI and intelligence engine stable while proving more than one real provider can coexist safely with Demo Mode fallback
-- deepen Approvals, Reports, and AI Assistant only where the live provider path adds real executive value
+- improve YouTube history coverage so subscriber movement and growth rates become stronger than first-sync placeholders
+- decide whether Instagram or Facebook should become the next selective live provider
+- keep the UI and intelligence engine stable while deepening report quality, source clarity, and memory usefulness
 
 ## Suggested positioning when presenting it
 
 Describe it as:
 
-> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance and Marketing.”
+> “A premium executive operating system prototype for EP Golf Studios — now centred on a CEO Intelligence Dashboard that acts like an AI Chief of Staff, with integrated executive intelligence across Finance and Marketing, plus a first usable Marketing Intelligence release.”
 
-You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, and the first **GA4-backed Website Analytics path**, with the rest of the business architecture prepared for future module builds.
+You can now more accurately say it includes a real **CEO intelligence layer**, a deterministic **Executive Intelligence Engine**, both **CFO** and **CMO** executive workspaces, a packaged **Marketing Intelligence Report**, and live-capable **GA4 Website Analytics + YouTube** provider paths, with the rest of the business architecture prepared for future module builds.
