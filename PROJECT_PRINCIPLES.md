@@ -1,5 +1,9 @@
 # EP Intelligence Project Principles
 
+`PRODUCT_VISION.md` defines the business and product strategy for EP Intelligence.
+
+This document defines the engineering, architecture and delivery principles that support that vision.
+
 ## Vision
 
 EP Intelligence is not a collection of dashboards.
@@ -273,10 +277,13 @@ The permanent implementation checklist for this standard now lives in `DEFINITIO
 
 Every future AI agent working on EP Intelligence should read:
 
-1. `PROJECT_PRINCIPLES.md`
-2. `CHANGELOG.md`
+1. `PRODUCT_VISION.md`
+2. `PROJECT_PRINCIPLES.md`
 3. `DEFINITION_OF_DONE.md`
-4. `Architecture Manual`
+4. `CHANGELOG.md`
+5. `docs/architecture-manual.md`
+6. `docs/integration-framework.md`
+7. sprint specification
 
 before proposing or implementing changes.
 

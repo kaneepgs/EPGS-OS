@@ -10,6 +10,7 @@ Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intellige
 
 - **Current release:** EP Intelligence v1.1 — Marketing Intelligence
 - **Active roadmap:** `Roadmap.md`
+- **Product vision:** `PRODUCT_VISION.md`
 - **Formal release changelog:** `CHANGELOG.md`
 - **Detailed sprint history:** `changelog/CHANGELOG.md`
 - **Project principles:** `PROJECT_PRINCIPLES.md`
@@ -17,7 +18,7 @@ Sprint 11 packages **GA4 + YouTube** into the first usable **Marketing Intellige
 
 Release metadata is now centralised in `assets/config/release-config.js`, so the app, docs, and release process can all read from one source of truth.
 
-Use `Roadmap.md` for active planning, `CHANGELOG.md` for formal release history, `changelog/CHANGELOG.md` for detailed sprint history, `PROJECT_PRINCIPLES.md` for architectural and product judgment, and `DEFINITION_OF_DONE.md` for sprint completion standards.
+Use `PRODUCT_VISION.md` for long-term product direction, `Roadmap.md` for active planning, `CHANGELOG.md` for formal release history, `changelog/CHANGELOG.md` for detailed sprint history, `PROJECT_PRINCIPLES.md` for engineering and architecture judgment, and `DEFINITION_OF_DONE.md` for sprint completion standards.
 
 ## Current Sprint State
 

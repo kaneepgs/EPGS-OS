@@ -219,3 +219,5 @@ Use this structure at the end of every sprint:
 No sprint, provider, module or release is considered complete until every Definition of Done requirement has been satisfied.
 
 This document is the permanent engineering standard for EP Intelligence.
+
+It should be applied after `PRODUCT_VISION.md` and `PROJECT_PRINCIPLES.md` have established why a feature should exist and how it should fit the platform.

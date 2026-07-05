@@ -38,6 +38,7 @@ Included milestones:
 - Formal release management framework
 - Permanent product roadmap management
 - Permanent Definition of Done standard
+- Permanent product vision document
 
 ## v1.2 — Business Operations
 

@@ -4,6 +4,10 @@
 
 The roadmap exists to keep development focused on delivering business value.
 
+`PRODUCT_VISION.md` defines the long-term destination.
+
+`Roadmap.md` defines the current path toward it.
+
 It should prevent feature creep while providing clear visibility into the direction of the platform.
 
 The roadmap should be reviewed and updated after every completed release.
@@ -133,7 +137,7 @@ Features that save significant executive time should be prioritised over cosmeti
 - **Later** should remain high level.
 - **Icebox** should preserve ideas without creating development pressure.
 - Every completed release should move the roadmap forward.
-- Every new feature request should first be evaluated against the Product Vision and Project Principles before being added.
+- Every new feature request should first be evaluated against `PRODUCT_VISION.md` and `PROJECT_PRINCIPLES.md` before being added.
 
 ## Documentation Updates
 
@@ -143,7 +147,7 @@ Reference the current roadmap from:
 - `START_HERE.md`
 - `EXECUTIVE_DEMO_SCRIPT.md`
 
-Every roadmap change should also continue to respect `PROJECT_PRINCIPLES.md` and `DEFINITION_OF_DONE.md`.
+Every roadmap change should also continue to respect `PRODUCT_VISION.md`, `PROJECT_PRINCIPLES.md` and `DEFINITION_OF_DONE.md`.
 
 Where appropriate, include references to the current release and roadmap.
 

@@ -4,7 +4,11 @@
 
 EP Intelligence is intended to become an AI Executive Operating System for EP Golf Studios.
 
-`DEFINITION_OF_DONE.md` now acts as the permanent delivery standard for any architecture changes described in this manual.
+`PRODUCT_VISION.md` now defines why the platform exists and where it is going.
+
+`PROJECT_PRINCIPLES.md` defines the engineering and architecture philosophy.
+
+`DEFINITION_OF_DONE.md` acts as the permanent delivery standard for any architecture changes described in this manual.
 
 The system will eventually coordinate executive agents, connected business data, decision memory, approval workflows, and recurring briefings.
 

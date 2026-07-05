@@ -14,6 +14,7 @@ Sprint 11 packages those into **EP Intelligence v1.1 — Marketing Intelligence*
 
 - **Current release:** EP Intelligence v1.1 — Marketing Intelligence
 - **Current roadmap:** `Roadmap.md`
+- **Product vision:** `PRODUCT_VISION.md`
 - **Formal release changelog:** `CHANGELOG.md`
 - **Detailed sprint history:** `changelog/CHANGELOG.md`
 - **Definition of Done:** `DEFINITION_OF_DONE.md`
