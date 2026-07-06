@@ -1,6 +1,49 @@
+# Dependencies
 node_modules/
-.DS_Store
+
+# Local environment and secrets
 .env
 .env.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+client_secret*.json
+service-account*.json
+*-service-account.json
+secrets/
+.secret/
+
+# OAuth / API token material
+.oauth/
+.oauth*
+oauth*.json
+*oauth-token*
+*oauth_tokens*
+*token*.json
+*tokens*.json
+
+# Generated local provider snapshots / live data
 assets/data/generated/*
 !assets/data/generated/.gitkeep
+
+# Build artifacts and caches
+.next/
+out/
+dist/
+build/
+coverage/
+.cache/
+.turbo/
+.vercel/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
