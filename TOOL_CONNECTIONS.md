@@ -16,7 +16,7 @@ EP Hub is a static frontend with provider-based live overlays. Real credentials 
 | --- | --- | --- | --- |
 | Google Analytics 4 | `AnalyticsProvider` | `npm run ga4:sync` | Website Analytics, CMO reports, CEO demand signals |
 | YouTube | `YouTubeProvider` | `npm run youtube:sync` | YouTube page, CMO social, CEO marketing momentum |
-| Unified Social | `UnifiedSocialProvider` | `npm run social:sync` | Instagram, Facebook, LinkedIn, X, social score, attribution |
+| Unified Social | `UnifiedSocialProvider` | `npm run social:sync` | Confirmed Instagram, Facebook, LinkedIn, X, and TikTok accounts; social score, attribution, platform rankings |
 | Gmail | `GmailProvider` | `npm run gmail:sync` | Executive Inbox, triage, approval-first communications |
 | Google Calendar | `CalendarProvider` | `npm run calendar:sync` | Operations Calendar, capacity, timeline, schedule pressure |
 
@@ -36,6 +36,8 @@ EP Hub is a static frontend with provider-based live overlays. Real credentials 
 - `.env`, `.env.local`, OAuth tokens, and secrets are ignored by Git.
 - Browser assets should contain only sanitized data.
 - Execution adapters intentionally return approval-required responses.
+- Kane has confirmed EP Hub must not send emails, publish social posts, or edit calendar events automatically.
+- Every external action requires explicit approval before execution.
 
 ## Recommended activation order
 
@@ -52,3 +54,5 @@ EP Hub is a static frontend with provider-based live overlays. Real credentials 
 - Communications: EP Golf Studios Gmail
 - Accounting: QuickBooks
 - Email marketing: Mailchimp
+- Social accounts: Instagram, Facebook, LinkedIn, X/Twitter, TikTok
+- LinkedIn API key: supplied by Kane outside this checklist

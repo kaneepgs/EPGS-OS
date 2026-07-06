@@ -263,22 +263,21 @@ Do not paste the API key casually. Add it to Replit Secrets when we build the pr
 
 Status: Unified Social provider exists, but currently needs a snapshot source or future API bridge.
 
-Known public accounts:
+Confirmed public accounts:
 
-- Facebook: `https://www.facebook.com/epgolfstudios/`
 - Instagram: `https://www.instagram.com/epgolfstudios`
+- Facebook: `https://www.facebook.com/epgolfstudios/`
+- LinkedIn: `https://uk.linkedin.com/company/ep-golf-studios`
+- X/Twitter: `https://x.com/epgolfstudios`
+- TikTok: `https://www.tiktok.com/@epgolfstudios`
 
-Please confirm/add:
+Confirmed credential status:
 
 ```text
-Instagram URL:
-Facebook URL:
-LinkedIn company page URL:
-X/Twitter URL, if used:
-TikTok URL, if used:
+LinkedIn API key: Provided by Kane outside this checklist
 ```
 
-Also confirm preferred approach:
+Still to confirm preferred approach:
 
 ```text
 Start with manual/exported weekly social snapshots? Yes/No
@@ -296,31 +295,33 @@ Current competitor set:
 - Precision Golf
 - My Golf Matters
 
-Please confirm:
+Confirmed by Kane:
 
 ```text
-Keep these competitors? Yes/No
-Add/remove competitors:
-Any local competitors to track:
+Keep these competitors? Yes
+Add/remove competitors: None for now
+Any local competitors to track: None provided yet
 ```
 
 ---
 
 ## 11. Approval-first rules
 
-Please confirm defaults:
+Confirmed by Kane:
 
 ```text
-Should EP Hub ever send emails automatically? Recommended: No
-Should EP Hub ever publish social posts automatically? Recommended: No
-Should EP Hub ever edit calendar events automatically? Recommended: No
-Should EP Hub require approval before every external action? Recommended: Yes
+Should EP Hub ever send emails automatically? No
+Should EP Hub ever publish social posts automatically? No
+Should EP Hub ever edit calendar events automatically? No
+Should EP Hub require approval before every external action? Yes
 ```
 
-Current default:
+Permanent default:
 
 ```text
 Approval-first for everything external.
+No external email, social, calendar, finance, booking, or publishing action should execute automatically.
+EP Hub may draft, recommend, preview, queue, and explain actions, but Kane must approve before anything leaves the system or changes an external service.
 ```
 
 ---

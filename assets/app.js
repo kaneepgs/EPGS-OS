@@ -3679,12 +3679,12 @@ function getToolConnectionPlan() {
         },
         {
           name: 'Instagram / Facebook / LinkedIn / X',
-          status: liveData.social?.available ? 'Active snapshot' : 'Live-capable · snapshot source required',
+          status: liveData.social?.available ? 'Active snapshot' : 'Accounts confirmed · LinkedIn API key supplied',
           provider: 'UnifiedSocialProvider',
-          feeds: 'Unified social score, platform rankings, social attribution, competitor benchmarking',
-          needs: 'SOCIAL_SNAPSHOT_SOURCE or approved platform export/API bridge',
+          feeds: 'Unified social score, platform rankings, social attribution, competitor benchmarking. Confirmed accounts: Instagram, Facebook, LinkedIn, X, TikTok.',
+          needs: 'SOCIAL_SNAPSHOT_SOURCE or approved platform export/API bridge; LinkedIn API key has been supplied outside the checklist',
           command: 'npm run social:sync',
-          action: 'Choose whether to use manual exports first or official platform APIs later.'
+          action: 'Confirm whether to start with weekly exports or official APIs, then extend UnifiedSocialProvider to include LinkedIn and TikTok where available.'
         },
         {
           name: 'Mailchimp',
