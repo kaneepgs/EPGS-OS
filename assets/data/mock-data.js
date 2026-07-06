@@ -475,7 +475,7 @@ export const RAW_MOCK_DATA = {
       emailGrowth: { type: 'line', labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], values: [5.8, 6.0, 6.3, 6.7, 7.1, 7.4, 7.9], suffix: 'k' },
       emailPerformance: { type: 'bar', labels: ['Open Rate', 'Click Rate', 'Unsubscribe Rate'], values: [42.4, 5.8, 0.6], suffix: '%' },
       campaignROI: { type: 'bar', labels: ['Fitting Proof Series', 'Summer Driver Push', 'Lead Magnet Email', 'Studio Launch Reel'], values: [4.8, 3.9, 3.2, 2.6], suffix: 'x' },
-      websiteConversions: { type: 'bar', labels: ['Bookings', 'Contact Forms', 'Email Sign-ups'], values: [73, 58, 462], suffix: '' }
+      websiteConversions: { type: 'bar', labels: ['Book Fitting', 'Click Phone Number'], values: [73, 58], suffix: '' }
     },
     websiteAnalytics: {
       metrics: [
@@ -488,8 +488,7 @@ export const RAW_MOCK_DATA = {
         ['Bounce Rate', '38.6%'],
         ['Conversion Rate', '3.2%'],
         ['Fitting Bookings', '73'],
-        ['Contact Form Enquiries', '58'],
-        ['Email Sign-ups', '462']
+        ['Click Phone Number', '58']
       ],
       summary: 'Website performance is healthy. Traffic quality is improving, and the strongest upside now comes from improving conversion paths rather than simply chasing more visits.'
     },

@@ -152,10 +152,19 @@ function buildFallback(reason) {
   };
 }
 
-function buildSummary({ sessions, users, newUsers, returningUsers, bookings, enquiries, signups, bounceRate, sessionsDeltaPct, bookingsDeltaPct }) {
+function humanizeEventName(name = '') {
+  return String(name || '')
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
+    .join(' ') || 'Conversion';
+}
+
+function buildSummary({ sessions, users, secondaryTotal, sessionsDeltaPct, bookingsDeltaPct }) {
   const trafficDirection = sessionsDeltaPct >= 0 ? 'up' : 'down';
   const bookingDirection = bookingsDeltaPct >= 0 ? 'improving' : 'softening';
-  return `Live GA4 data is active. Sessions are ${trafficDirection} ${Math.abs(sessionsDeltaPct).toFixed(1)}% versus the prior period, total users are ${formatCount(users)}, and booking conversion is ${bookingDirection}. The clearest next step is to keep improving traffic-to-enquiry pathways rather than treating attention alone as the win.`;
+  const secondaryText = secondaryTotal > 0 ? `, with ${formatCount(secondaryTotal)} secondary conversion actions tracked` : '';
+  return `Live GA4 data is active. Sessions are ${trafficDirection} ${Math.abs(sessionsDeltaPct).toFixed(1)}% versus the prior period, total users are ${formatCount(users)}, and fitting booking conversion is ${bookingDirection}${secondaryText}. The clearest next step is to keep improving traffic-to-fitting pathways rather than treating attention alone as the win.`;
 }
 
 async function main() {
@@ -199,8 +208,8 @@ async function main() {
       orderBys: [{ dimension: { dimensionName: 'date' } }]
     });
 
-    const primaryConversion = getEnv('PRIMARY_CONVERSION', 'fitting_booking').trim();
-    const secondaryConversions = getEnv('SECONDARY_CONVERSIONS', 'enquiry_form,email_signup')
+    const primaryConversion = getEnv('PRIMARY_CONVERSION', 'book_fitting').trim();
+    const secondaryConversions = getEnv('SECONDARY_CONVERSIONS', 'click_phone_number,contact_us,email_address_click')
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean);
@@ -249,8 +258,12 @@ async function main() {
     const previousUsers = Math.max(1, toNumber(priorValues[1]?.value));
     const returningUsers = Math.max(users - newUsers, 0);
     const bookings = currentEventCounts[primaryConversion] || 0;
-    const enquiries = currentEventCounts.enquiry_form || 0;
-    const signups = currentEventCounts.email_signup || 0;
+    const secondaryRows = secondaryConversions.map((eventName) => ({
+      eventName,
+      label: humanizeEventName(eventName),
+      count: currentEventCounts[eventName] || 0
+    }));
+    const secondaryTotal = secondaryRows.reduce((sum, item) => sum + item.count, 0);
     const priorBookings = Math.max(1, priorEventCounts[primaryConversion] || 1);
     const sessionsDeltaPct = ((sessions - previousSessions) / previousSessions) * 100;
     const usersDeltaPct = ((users - previousUsers) / previousUsers) * 100;
@@ -283,8 +296,8 @@ async function main() {
         bounceRate,
         conversionRate,
         bookings,
-        enquiries,
-        signups,
+        secondaryTotal,
+        secondaryRows,
         sessionsDeltaPct,
         usersDeltaPct,
         bookingsDeltaPct,
@@ -302,10 +315,9 @@ async function main() {
           ['Bounce Rate', formatPercent(bounceRate)],
           ['Conversion Rate', formatPercent(conversionRate)],
           ['Fitting Bookings', formatCount(bookings)],
-          ['Contact Form Enquiries', formatCount(enquiries)],
-          ['Email Sign-ups', formatCount(signups)]
+          ...secondaryRows.map((item) => [item.label, formatCount(item.count)])
         ],
-        summary: buildSummary({ sessions, users, newUsers, returningUsers, bookings, enquiries, signups, bounceRate, sessionsDeltaPct, bookingsDeltaPct })
+        summary: buildSummary({ sessions, users, secondaryTotal, sessionsDeltaPct, bookingsDeltaPct })
       },
       charts: {
         websiteTraffic: {
@@ -316,8 +328,8 @@ async function main() {
         },
         websiteConversions: {
           type: 'bar',
-          labels: ['Bookings', 'Contact Forms', 'Email Sign-ups'],
-          values: [bookings, enquiries, signups],
+          labels: ['Book Fitting', ...secondaryRows.map((item) => item.label)],
+          values: [bookings, ...secondaryRows.map((item) => item.count)],
           suffix: ''
         },
         websiteVisitorMix: {

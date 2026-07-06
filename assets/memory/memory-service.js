@@ -107,13 +107,15 @@ function marketingMilestones(runtime = {}) {
     }));
   }
 
-  if (websiteSource.state === 'live-ga4' && users >= 5000 && Number(websiteMeta.enquiries || 0) === 0) {
+  const conversionActions = Number(websiteMeta.bookings || 0) + Number(websiteMeta.secondaryTotal || 0) + Number(websiteMeta.enquiries || 0) + Number(websiteMeta.signups || 0);
+
+  if (websiteSource.state === 'live-ga4' && users >= 5000 && conversionActions === 0) {
     events.push(normalizeMemoryEvent({
       id: 'mem-marketing-conversion-visibility-gap',
       date: ga4Date,
       time: 'Live sync',
       title: 'Conversion capture is lagging behind visible website demand',
-      body: `Live GA4 now confirms ${websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—'} users, but the current booking, enquiry, and sign-up events remain flat. This should stay visible in executive memory so leadership does not mistake traffic visibility for value capture.`,
+      body: `Live GA4 now confirms ${websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—'} users, but the current fitting-booking and secondary action events remain flat. This should stay visible in executive memory so leadership does not mistake traffic visibility for value capture.`,
       category: 'Conversion watchpoint',
       department: 'Marketing / Website',
       impact: 'Medium',

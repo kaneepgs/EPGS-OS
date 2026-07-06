@@ -73,15 +73,16 @@ Still needed:
 
 Current conversion assumptions:
 
-- Primary conversion: `fitting_booking`
-- Secondary conversions: `enquiry_form`, `email_signup`
+- Primary conversion: `book_fitting`
+- Secondary conversions: `click_phone_number`, `contact_us`, `email_address_click`
 
 Please provide final GA4 event names if different:
 
 ```text
-Primary fitting booking event name:
-Enquiry form event name:
-Email signup event name:
+Primary fitting booking event name: book_fitting
+Secondary phone click event name: click_phone_number
+Secondary contact event name: contact_us
+Secondary email click event name: email_address_click
 ```
 
 ---

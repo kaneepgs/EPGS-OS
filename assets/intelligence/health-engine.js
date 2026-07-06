@@ -77,8 +77,10 @@ export function createHealthEngine(config) {
       const websiteSessionGrowth = Number(websiteSnapshotMeta.sessionsDeltaPct ?? healthDelta * 2 ?? 0);
       const websiteConversionRate = parsePercent(websiteMetrics['Conversion Rate']);
       const websiteBookings = parseCurrency(websiteMetrics['Fitting Bookings']);
+      const websiteSecondaryActions = Number(websiteSnapshotMeta.secondaryTotal ?? parseCurrency(websiteMetrics['Click Phone Number']));
       const websiteEnquiries = parseCurrency(websiteMetrics['Contact Form Enquiries'] || marketing.dashboard?.metrics?.enquiries);
       const websiteSignups = parseCurrency(websiteMetrics['Email Sign-ups'] || marketing.dashboard?.metrics?.signups);
+      const websiteConversionActions = websiteBookings + websiteSecondaryActions + websiteEnquiries + websiteSignups;
       const youtubeSubscribers = parseCurrency(youtubeMetrics.Subscribers);
       const youtubeViews28Days = parseCurrency(youtubeMetrics['Views (28 days)'] || youtubeMetrics.Views);
       const youtubeAverageViews = parseCurrency(youtubeMetrics['Average Views / Video']);
@@ -113,8 +115,7 @@ export function createHealthEngine(config) {
         conversionStrength: clamp(
           40
           + Math.min(leads / 5, 10)
-          + Math.min((websiteEnquiries || enquiries) / 2.5, 16)
-          + Math.min((websiteSignups || signups) / 45, 10)
+          + Math.min((websiteConversionActions || enquiries) / 2.5, 20)
           + Math.min(websiteBookings * 2, 12)
           + Math.min(websiteConversionRate * 8, 12)
           + Math.min(parseCurrency(marketing.campaignPerformance?.leads) / 12, 10)

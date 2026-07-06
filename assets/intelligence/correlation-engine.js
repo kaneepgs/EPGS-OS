@@ -42,8 +42,10 @@ export function createCorrelationEngine({ confidenceEngine }) {
       const websiteBounceRate = parsePercent(websiteMetrics['Bounce Rate']);
       const websiteConversionRate = parsePercent(websiteMetrics['Conversion Rate']);
       const websiteBookings = parseCurrency(websiteMetrics['Fitting Bookings']);
+      const websiteSecondaryActions = Number(websiteSnapshotMeta.secondaryTotal ?? parseCurrency(websiteMetrics['Click Phone Number']));
       const websiteEnquiries = parseCurrency(websiteMetrics['Contact Form Enquiries']);
       const websiteSignups = parseCurrency(websiteMetrics['Email Sign-ups']);
+      const websiteConversionActions = websiteBookings + websiteSecondaryActions + websiteEnquiries + websiteSignups;
       const sessionsDeltaPct = Number(websiteSnapshotMeta.sessionsDeltaPct ?? 0);
       const isLiveGa4 = websiteDataSource.state === 'live-ga4';
       const youtubeMetrics = metricLookup(marketing.platforms?.youtube?.stats || []);
@@ -100,11 +102,11 @@ export function createCorrelationEngine({ confidenceEngine }) {
         correlations.push({
           id: 'ga4-conversion-visibility-gap',
           title: 'Live traffic is visible, but conversion capture remains weak',
-          executiveSummary: 'GA4 now confirms live website demand, but the synced booking, enquiry, and signup events are currently flat, so leadership has stronger traffic visibility than conversion visibility right now.',
+          executiveSummary: 'GA4 now confirms live website demand, but the synced fitting-booking and secondary action events are currently flat, so leadership has stronger traffic visibility than conversion visibility right now.',
           supportingEvidence: [
             `Sessions total ${websiteMetrics.Sessions || '—'} with ${websiteMetrics['New Users'] || '—'} new users.`,
             `Bounce rate is ${websiteMetrics['Bounce Rate'] || '—'}.`,
-            `Bookings ${websiteMetrics['Fitting Bookings'] || '0'}, enquiries ${websiteMetrics['Contact Form Enquiries'] || '0'}, sign-ups ${websiteMetrics['Email Sign-ups'] || '0'}.`,
+            `Fitting bookings ${websiteMetrics['Fitting Bookings'] || '0'}, secondary actions ${websiteSnapshotMeta.secondaryTotal ?? websiteMetrics['Click Phone Number'] ?? '0'}.`,
             `Conversion rate is ${websiteMetrics['Conversion Rate'] || '0.0%'}.`
           ],
           businessImpact: 'Website → Conversion visibility → Revenue quality',
@@ -185,14 +187,14 @@ export function createCorrelationEngine({ confidenceEngine }) {
       if (isLiveGa4 && websiteSessions > 0) {
         const confidence = confidenceEngine.score({ evidenceCount: 5, metricCoverage: 0.94, crossFunctional: 1, consistency: 0.86 });
         correlations.push({
-          id: 'website-enquiry-conversion-link',
-          title: 'Website traffic is outpacing enquiry capture',
-          executiveSummary: `GA4 sessions are ${websiteMetrics.Sessions || '—'} in the current live window, but enquiries are ${websiteMetrics['Contact Form Enquiries'] || '0'} and bookings are ${websiteMetrics['Fitting Bookings'] || '0'}. The signal is strong enough to say the next marketing gain likely comes from turning existing traffic into clearer booking intent, not from chasing more attention first.`,
+          id: 'website-fitting-conversion-link',
+          title: 'Website traffic is outpacing fitting conversion capture',
+          executiveSummary: `GA4 sessions are ${websiteMetrics.Sessions || '—'} in the current live window, with fitting bookings at ${websiteMetrics['Fitting Bookings'] || '0'} and secondary actions at ${websiteSnapshotMeta.secondaryTotal ?? websiteMetrics['Click Phone Number'] ?? '0'}. The signal is strong enough to say the next marketing gain likely comes from turning existing traffic into clearer booking intent, not from chasing more attention first.`,
           supportingEvidence: [
             `Sessions: ${websiteMetrics.Sessions || '—'}.`,
             `Users: ${websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—'}.`,
             `Bookings: ${websiteMetrics['Fitting Bookings'] || '0'}.`,
-            `Enquiries: ${websiteMetrics['Contact Form Enquiries'] || '0'}.`,
+            `Secondary actions: ${websiteSnapshotMeta.secondaryTotal ?? websiteMetrics['Click Phone Number'] ?? '0'}.`,
             `Conversion rate: ${websiteMetrics['Conversion Rate'] || '0.0%'}.`
           ],
           businessImpact: 'Website traffic → Enquiries → Revenue quality',
@@ -391,7 +393,7 @@ export function createCorrelationEngine({ confidenceEngine }) {
           supportingEvidence: [
             `${bookingRequests} booking requests are currently visible.`,
             `${needsReply} total conversations need a reply or follow-up.`,
-            `Website bookings currently show ${websiteMetrics['Fitting Bookings'] || marketing.dashboard?.metrics?.enquiries || '—'} visible conversion actions.`
+            `Website bookings currently show ${websiteMetrics['Fitting Bookings'] || marketing.dashboard?.metrics?.enquiries || '—'} fitting-booking actions.`
           ],
           businessImpact: 'Inbox demand → Booking conversion → Revenue quality',
           financialImpact: 'Responding faster to existing booking demand should improve near-term revenue capture without adding new acquisition cost.',
@@ -408,7 +410,7 @@ export function createCorrelationEngine({ confidenceEngine }) {
           id: 'marketing-revenue-growth',
           title: 'Marketing momentum is translating into top-line demand',
           executiveSummary: 'Marketing health improved while revenue also moved higher, which suggests awareness and trust-building activity are feeding commercial demand rather than just vanity reach.',
-          supportingEvidence: [`Marketing health moved from ${marketing.dashboard?.previousScore} to ${marketing.dashboard?.healthScore}.`, `Revenue trend is ${finance.metrics?.find((item) => item.key === 'revenue')?.trend}.`, `Website visitors are ${marketing.dashboard?.metrics?.visitors}.`, `Booking enquiries total ${marketing.dashboard?.metrics?.enquiries}.`],
+          supportingEvidence: [`Marketing health moved from ${marketing.dashboard?.previousScore} to ${marketing.dashboard?.healthScore}.`, `Revenue trend is ${finance.metrics?.find((item) => item.key === 'revenue')?.trend}.`, `Website visitors are ${marketing.dashboard?.metrics?.visitors}.`, `Booking demand total ${marketing.dashboard?.metrics?.enquiries}.`],
           businessImpact: 'Marketing → Website → Revenue',
           financialImpact: `Supports current revenue momentum and protects approximately ${finance.metrics?.find((item) => item.key === 'revenue')?.value} of monthly demand quality.`,
           responsibleDepartment: 'CEO / CMO',
@@ -439,15 +441,15 @@ export function createCorrelationEngine({ confidenceEngine }) {
         correlations.push({
           id: 'website-conversion-gap',
           title: 'Traffic is improving faster than booking conversion',
-          executiveSummary: 'Website attention is strong, but conversion into booking enquiries is not rising at the same speed, which points to a commercial friction point rather than an awareness problem.',
+          executiveSummary: 'Website attention is strong, but conversion into fitting bookings and secondary actions is not rising at the same speed, which points to a commercial friction point rather than an awareness problem.',
           supportingEvidence: [
             `Website visitors total ${isLiveGa4 ? (websiteMetrics.Users || websiteMetrics['Website Visitors'] || '—') : marketing.dashboard?.metrics?.visitors}.`,
             `Leads total ${marketing.dashboard?.metrics?.leads}.`,
-            `Booking enquiries total ${isLiveGa4 ? (websiteMetrics['Contact Form Enquiries'] || '0') : marketing.dashboard?.metrics?.enquiries}.`,
+            `Secondary conversion actions total ${isLiveGa4 ? (websiteSnapshotMeta.secondaryTotal ?? websiteMetrics['Click Phone Number'] ?? '0') : marketing.dashboard?.metrics?.enquiries}.`,
             `Best-performing channel remains ${marketing.dashboard?.bestPlatform}.`
           ],
           businessImpact: 'Marketing → Website → Sales / Customer Journey',
-          financialImpact: 'Improving the website path could convert more of the current traffic into higher-value enquiries without requiring more media effort.',
+          financialImpact: 'Improving the website path could convert more of the current traffic into higher-value fitting enquiries without requiring more media effort.',
           responsibleDepartment: 'CMO / Sales',
           prioritySignal: { financialImpact: 76, customerImpact: 82, strategicImportance: 78, timeSensitivity: 72, confidence: confidence.score },
           confidence,

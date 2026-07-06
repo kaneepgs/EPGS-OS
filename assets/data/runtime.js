@@ -350,8 +350,11 @@ function buildMarketingHealthScore(marketing = {}, intelligence = {}, sourceStat
   const uploadsLast28Days = Number(youtubeMeta.uploadsLast28Days || 0);
   const averageViews = Number(youtubeMeta.averageViewsPerVideo || parseMetricNumber(youtubeMetrics['Average Views / Video']));
   const bookings = Number(websiteMeta.bookings || parseMetricNumber(websiteMetrics['Fitting Bookings']));
+  const secondaryRows = Array.isArray(websiteMeta.secondaryRows) ? websiteMeta.secondaryRows : [];
+  const secondaryTotal = Number(websiteMeta.secondaryTotal ?? secondaryRows.reduce((sum, item) => sum + Number(item.count || 0), 0));
   const enquiries = Number(websiteMeta.enquiries || parseMetricNumber(websiteMetrics['Contact Form Enquiries']));
   const signups = Number(websiteMeta.signups || parseMetricNumber(websiteMetrics['Email Sign-ups']));
+  const conversionActions = bookings + secondaryTotal + enquiries + signups;
   const conversionRate = Number(websiteMeta.conversionRate ?? parseMetricNumber(websiteMetrics['Conversion Rate']));
   const topVideoViews = parseMetricNumber(topYoutubeItem?.views);
   const contentPerformance = clamp(54 + Math.min(averageViews / 1800, 24) + Math.min(topVideoViews / 4500, 18));
@@ -389,9 +392,9 @@ function buildMarketingHealthScore(marketing = {}, intelligence = {}, sourceStat
     },
     {
       label: 'Conversion capture',
-      value: conversionRate > 0 ? `${conversionRate.toFixed(1)}%` : `${bookings + enquiries} key actions`,
-      score: clamp(38 + Math.min(conversionRate * 10, 24) + Math.min((bookings + enquiries) * 1.5, 20) + Math.min(signups / 40, 12)),
-      body: 'Bookings, enquiries, sign-ups, and conversion quality.'
+      value: conversionRate > 0 ? `${conversionRate.toFixed(1)}%` : `${conversionActions} key actions`,
+      score: clamp(38 + Math.min(conversionRate * 10, 24) + Math.min(conversionActions * 1.5, 24)),
+      body: secondaryRows.length ? 'Fitting bookings, phone clicks, and conversion quality.' : 'Bookings, enquiries, sign-ups, and conversion quality.'
     },
     {
       label: 'Publishing cadence',
