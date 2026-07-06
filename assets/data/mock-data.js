@@ -1,6 +1,6 @@
 export const RAW_MOCK_DATA = {
   brand: {
-    name: 'EP Intelligence',
+    name: 'EP Hub',
     shell: 'Executive Operating System',
     description: 'A calm, premium executive operating system prototype for EP Golf Studios.'
   },
@@ -9,7 +9,7 @@ export const RAW_MOCK_DATA = {
     previousScore: 84,
     trend: '+4 points vs yesterday',
     label: 'Strong overall, with a few decisions that deserve immediate attention',
-    summary: 'EP Intelligence should now feel like an AI Chief of Staff. The business is healthy overall, but cash timing, conversion quality, approval speed, and cross-functional focus will determine whether that health strengthens or drifts.',
+    summary: 'EP Hub should now feel like an AI Chief of Staff. The business is healthy overall, but cash timing, conversion quality, approval speed, and cross-functional focus will determine whether that health strengthens or drifts.',
     executiveBriefing: {
       headline: 'Daily Executive Briefing',
       overallHealth: 'The business is in good shape overall. Demand remains healthy, marketing is creating useful momentum, and delivery capacity is stable enough to support growth without obvious strain.',
@@ -833,13 +833,13 @@ export const RAW_MOCK_DATA = {
       summary: 'The AI Assistant section is now the conversational executive layer for questions, briefings, assumptions, follow-up prompts, missing information, and staged actions.',
       status: 'Frontend-only executive conversation prototype',
       cards: [
-        { route: '/ai-assistant/ask', title: 'Ask EP Intelligence', body: 'A conversational workspace for the most important executive questions.' },
+        { route: '/ai-assistant/ask', title: 'Ask EP Hub', body: 'A conversational workspace for the most important executive questions.' },
         { route: '/ai-assistant/executive-briefing', title: 'Executive Briefing', body: 'A generated leadership briefing surface spanning finance, marketing, approvals, and priorities.' },
         { route: '/ai-assistant/follow-up-questions', title: 'Follow-up Questions', body: 'A curated next-question layer for deeper reasoning and challenge.' },
         { route: '/ai-assistant/suggested-actions', title: 'Suggested Actions', body: 'A staged list of AI-suggested actions awaiting explicit human review.' },
         { route: '/ai-assistant/assumptions', title: 'Assumptions', body: 'The assumptions behind every recommendation and briefing.' },
         { route: '/ai-assistant/missing-information', title: 'Missing Information', body: 'What the AI layer still needs surfaced before confidence increases.' },
-        { route: '/ai-assistant/memory-context', title: 'AI Memory / Context', body: 'How EP Intelligence will preserve executive context over time.' }
+        { route: '/ai-assistant/memory-context', title: 'AI Memory / Context', body: 'How EP Hub will preserve executive context over time.' }
       ]
     },
     askWorkspace: {

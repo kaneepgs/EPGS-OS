@@ -1,6 +1,6 @@
 {
-  "name": "EP Intelligence",
-  "short_name": "EP Intel",
+  "name": "EP Hub",
+  "short_name": "EP Hub",
   "description": "Executive-grade CFO workspace prototype for EP Golf Studios.",
   "start_url": "./index.html",
   "display": "standalone",

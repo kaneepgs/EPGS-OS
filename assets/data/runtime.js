@@ -452,7 +452,7 @@ function buildMarketingIntelligenceReport({ marketing = {}, intelligence = {}, m
 
   return {
     title: 'Marketing Intelligence Report',
-    subtitle: 'EP Intelligence v1.1 — Social Providers v1.0',
+    subtitle: 'EP Hub v1.1 — Social Providers v1.0',
     summary: `Marketing health is ${health.score || '—'}/100 (${health.label || 'Stable'}) with ${health.sourceStatus || sourceStatus.label || 'hybrid source coverage'}. ${socialHealth.topPlatform} leads the social estate at ${socialHealth.score}/100 social health, while the clearest unresolved issue remains turning current attention into more booking intent and cleaner attribution confidence.`,
     sourceStatus,
     health,
@@ -558,7 +558,7 @@ function buildCeoYoutubeIntelligence(youtubePlatform = {}) {
   return {
     source,
     summary: source.state === 'live-youtube'
-      ? `Live YouTube channel data is now active for ${source.channelId || 'the configured channel'}. The CEO can now see subscriber movement, tracked view momentum, publishing cadence, and top-video performance without leaving EP Intelligence.`
+      ? `Live YouTube channel data is now active for ${source.channelId || 'the configured channel'}. The CEO can now see subscriber movement, tracked view momentum, publishing cadence, and top-video performance without leaving EP Hub.`
       : 'YouTube intelligence is currently using demo data until a local live snapshot is available.',
     channelId: source.channelId || '',
     syncedAt: source.syncedAt || null,

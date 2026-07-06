@@ -34,7 +34,7 @@ function sortActions(actions = []) {
   });
 }
 
-function buildHistory(status, summary, owner = 'EP Intelligence', timestamp = `${TODAY}T08:00:00Z`, type = 'Action staged') {
+function buildHistory(status, summary, owner = 'EP Hub', timestamp = `${TODAY}T08:00:00Z`, type = 'Action staged') {
   return [{ id: `${type}-${status}-${summary}`.toLowerCase(), type, status, timestamp, summary, owner }];
 }
 

@@ -110,7 +110,7 @@ function buildDemoSource(platformName, providerReason, syncedAt = null) {
 function buildLiveSource(platformName, syncedAt = null) {
   return {
     label: 'Live social snapshot active',
-    body: `${platformName} is now hydrating from the Unified Social Provider snapshot path while the rest of EP Intelligence remains safely demo-first where needed.`,
+    body: `${platformName} is now hydrating from the Unified Social Provider snapshot path while the rest of EP Hub remains safely demo-first where needed.`,
     tone: 'good',
     state: `live-${platformName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
     syncedAt

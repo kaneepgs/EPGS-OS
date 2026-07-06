@@ -20,7 +20,7 @@ function createAdapter({ key, label, provider, supports }) {
       });
     },
     preview(action = {}) {
-      return result(key, action.id, 'Preview Ready', `${label} can preview ${action.actionType || 'action'} payloads for executive review without leaving EP Intelligence.`, {
+      return result(key, action.id, 'Preview Ready', `${label} can preview ${action.actionType || 'action'} payloads for executive review without leaving EP Hub.`, {
         preview: {
           title: action.title,
           owner: action.owner,

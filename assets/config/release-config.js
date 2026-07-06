@@ -1,5 +1,5 @@
 export const RELEASE_CONFIG = Object.freeze({
-  productName: 'EP Intelligence',
+  productName: 'EP Hub',
   version: '2.0.0',
   releaseLabel: 'v2.0',
   codename: 'Executive Action Centre & Executive Copilot',

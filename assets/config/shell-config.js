@@ -28,7 +28,7 @@ export const SUBNAV = {
   ],
   executiveCopilot: [
     ['/executive-copilot', 'Overview'],
-    ['/executive-copilot/ask', 'Ask EP Intelligence'],
+    ['/executive-copilot/ask', 'Ask EP Hub'],
     ['/executive-copilot/executive-briefing', 'Executive Briefing'],
     ['/executive-copilot/memory-context', 'Memory Context']
   ],
@@ -86,7 +86,7 @@ export const SUBNAV = {
   ],
   aiAssistant: [
     ['/ai-assistant', 'Overview'],
-    ['/ai-assistant/ask', 'Ask EP Intelligence'],
+    ['/ai-assistant/ask', 'Ask EP Hub'],
     ['/ai-assistant/executive-briefing', 'Executive Briefing'],
     ['/ai-assistant/follow-up-questions', 'Follow-up Questions'],
     ['/ai-assistant/suggested-actions', 'Suggested Actions'],
@@ -116,12 +116,12 @@ export const ROUTE_META = {
   '/executive-action-centre/action-detail': { title: 'Action Detail', subtitle: 'The full decision workspace for one executive action, including evidence, memory, recommendations, and linked providers.', module: 'Executive Action Centre', sidebarKey: '/executive-action-centre', parentLabel: 'Executive Action Centre' },
   '/executive-action-centre/approval-workflow': { title: 'Approval Workflow', subtitle: 'How actions move through approval-first review without automatic execution.', module: 'Executive Action Centre', sidebarKey: '/executive-action-centre', parentLabel: 'Executive Action Centre' },
   '/executive-copilot': { title: 'Executive Copilot', subtitle: 'The action-oriented conversational layer sitting on top of providers, services, intelligence, memory, and the knowledge graph.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
-  '/executive-copilot/ask': { title: 'Ask EP Intelligence', subtitle: 'A conversational executive workspace for action-ready business questions and explainable answers.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/executive-copilot/ask': { title: 'Ask EP Hub', subtitle: 'A conversational executive workspace for action-ready business questions and explainable answers.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/executive-copilot/executive-briefing': { title: 'Executive Briefing', subtitle: 'A compiled leadership briefing spanning queue pressure, finance, marketing, inbox, and operations.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/executive-copilot/memory-context': { title: 'Memory Context', subtitle: 'Searchable memory, action history, and knowledge graph context for Executive Copilot.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/executive-inbox': { title: 'Executive Inbox', subtitle: 'Deterministic executive communications intelligence built from Gmail-style inbox triage.', module: 'Executive Inbox', sidebarKey: '/executive-inbox', parentLabel: 'Executive Inbox' },
 
-  '/cfo': { title: 'CFO Workspace', subtitle: 'A complete finance module inside the wider EP Intelligence shell.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
+  '/cfo': { title: 'CFO Workspace', subtitle: 'A complete finance module inside the wider EP Hub shell.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
   '/cfo/revenue': { title: 'Revenue', subtitle: 'Demand quality, collections, mix, and forecast confidence.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
   '/cfo/profit': { title: 'Profit', subtitle: 'Margin strength, cost pressure, and profitability action.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
   '/cfo/expenses': { title: 'Expenses', subtitle: 'Operating cost discipline with strategic context.', module: 'CFO', sidebarKey: '/cfo', parentLabel: 'CFO' },
@@ -160,7 +160,7 @@ export const ROUTE_META = {
   '/projects': { title: 'Projects Module', subtitle: 'Future roadmap, ownership, and execution tracking.', module: 'Projects', sidebarKey: '/projects', parentLabel: 'Projects' },
 
   '/ai-assistant': { title: 'Executive Copilot', subtitle: 'Legacy alias for the executive AI layer, now superseded by Executive Copilot.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
-  '/ai-assistant/ask': { title: 'Ask EP Intelligence', subtitle: 'Legacy alias for the conversational executive workspace.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
+  '/ai-assistant/ask': { title: 'Ask EP Hub', subtitle: 'Legacy alias for the conversational executive workspace.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/ai-assistant/executive-briefing': { title: 'Executive Briefing', subtitle: 'Legacy alias for the compiled leadership briefing.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/ai-assistant/follow-up-questions': { title: 'Follow-up Questions', subtitle: 'Legacy placeholder route retained for compatibility.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
   '/ai-assistant/suggested-actions': { title: 'Suggested Actions', subtitle: 'Legacy placeholder route retained for compatibility.', module: 'Executive Copilot', sidebarKey: '/executive-copilot', parentLabel: 'Executive Copilot' },
@@ -193,7 +193,7 @@ export const ROUTE_META = {
   '/settings/configuration': { title: 'Demo Mode Configuration', subtitle: 'Runtime mode, provider bindings, and service activation overview.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/action-centre': { title: 'Action Centre Settings', subtitle: 'Priority rules, confidence thresholds, approval defaults, routing, and retention for the executive operating system.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/provider-architecture': { title: 'Provider Architecture', subtitle: 'Presentation, service, and provider layer overview for future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
-  '/settings/about': { title: 'About EP Intelligence', subtitle: 'Release metadata, governance references, and platform positioning.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' }
+  '/settings/about': { title: 'About EP Hub', subtitle: 'Release metadata, governance references, and platform positioning.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' }
 };
 
 export const QUESTION_SETS = {
@@ -234,7 +234,7 @@ export const QUESTION_SETS = {
     next: ['Ask what to focus on next', 'Use the Copilot to move from understanding into action, approvals, and follow-through.']
   },
   '/executive-copilot/ask': {
-    what: ['Executive questions now resolve into actions', 'Ask EP Intelligence now answers with operating guidance, not just commentary.'],
+    what: ['Executive questions now resolve into actions', 'Ask EP Hub now answers with operating guidance, not just commentary.'],
     why: ['The question layer now sees the queue and memory', 'Copilot can reason across provider data, historical context, and approval-stage work together.'],
     matters: ['Yes, because questions should shorten the path to action', 'A strong answer should make the next decision clearer, not just summarise the problem.'],
     next: ['Use the prompt library to pressure-test priorities', 'Ask what deserves approval now, what is creating drag, and what can wait.']

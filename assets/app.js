@@ -180,7 +180,7 @@ function visibleTopLevelRoutes() {
 
 function breadcrumbParts(route = state.route) {
   const meta = metaFor(route);
-  const parts = ['EP Intelligence'];
+  const parts = ['EP Hub'];
   if (meta.parentLabel && meta.parentLabel !== meta.title) parts.push(meta.parentLabel);
   parts.push(meta.title);
   return parts;
@@ -248,7 +248,7 @@ function renderTopbar() {
   breadcrumbNode.innerHTML = breadcrumb(breadcrumbParts());
   pageTitle.textContent = meta.title;
   pageSubtitle.textContent = meta.subtitle;
-  document.title = `EP Intelligence — ${meta.title}`;
+  document.title = `EP Hub — ${meta.title}`;
   sidebarToggle.innerHTML = icon('menu');
   commandLauncher.innerHTML = `${icon('command')}<span class="command-hint">Ctrl/Cmd + K</span>`;
   paletteClose.innerHTML = icon('chevronLeft');
@@ -1060,12 +1060,12 @@ function ceoDashboardView() {
         ${commentaryCard({ title: intelligence.ceo.commentary.title, data: intelligence.ceo.commentary })}
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Ask EP Intelligence', title: 'A conversational executive workspace', body: 'The CEO should be able to ask direct business questions and get concise, decision-ready responses.' })}
+          ${sectionHeader({ eyebrow: 'Ask EP Hub', title: 'A conversational executive workspace', body: 'The CEO should be able to ask direct business questions and get concise, decision-ready responses.' })}
           <div class="tile-grid">
             ${WORKSPACE_DATA.aiAssistant.askWorkspace.prompts.map((item) => insightCard({ eyebrow: item.question, title: `${item.confidence} confidence`, body: item.answer, tone: 'neutral' })).join('')}
           </div>
           <div class="page-pillbar">
-            <button type="button" class="chip-button" data-route="/ai-assistant/ask">${icon('sparkles')}Open Ask EP Intelligence</button>
+            <button type="button" class="chip-button" data-route="/ai-assistant/ask">${icon('sparkles')}Open Ask EP Hub</button>
             <button type="button" class="chip-button" data-route="/reports/board-meeting">${icon('presentation')}Open Board Meeting Mode</button>
             <button type="button" class="chip-button" data-route="/reports/weekly-briefings">${icon('arrowRight')}Open Weekly Briefings</button>
           </div>
@@ -1166,7 +1166,7 @@ function cfoHomeView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'CFO Module', title: 'Finance now lives as one module inside EP Intelligence', body: 'The CFO Workspace remains fully functional, but now sits inside the wider CEO-led operating system.' })}
+          ${sectionHeader({ eyebrow: 'CFO Module', title: 'Finance now lives as one module inside EP Hub', body: 'The CFO Workspace remains fully functional, but now sits inside the wider CEO-led operating system.' })}
           ${renderRoutePillbar(SUBNAV.cfo)}
         </section>
 
@@ -1672,7 +1672,7 @@ function cmoDashboardView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'CMO Module', title: 'The executive marketing command centre', body: 'The CMO Workspace now sits inside the wider EP Intelligence shell as the first complete non-finance executive module.' })}
+          ${sectionHeader({ eyebrow: 'CMO Module', title: 'The executive marketing command centre', body: 'The CMO Workspace now sits inside the wider EP Hub shell as the first complete non-finance executive module.' })}
           ${renderRoutePillbar(SUBNAV.cmo)}
         </section>
 
@@ -2870,7 +2870,7 @@ function operationsCalendarView() {
         </section>
 
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Operations summary', title: data.summary.headline, body: 'The goal is to make schedule quality, workload, and capacity visible without turning EP Intelligence into a calendar client.' })}
+          ${sectionHeader({ eyebrow: 'Operations summary', title: data.summary.headline, body: 'The goal is to make schedule quality, workload, and capacity visible without turning EP Hub into a calendar client.' })}
           ${renderRoutePillbar([['/operations', 'Operations Calendar']])}
           <div class="grid-3">
             ${data.widgets.map((item) => statCard({ iconName: item.iconName, label: item.label, value: item.value, body: item.body, meta: item.meta })).join('')}
@@ -2949,7 +2949,7 @@ function reportPlaceholderView(route, title, items) {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Reports', title, body: 'This route exists to show the permanent structure of executive reporting inside EP Intelligence.' })}
+          ${sectionHeader({ eyebrow: 'Reports', title, body: 'This route exists to show the permanent structure of executive reporting inside EP Hub.' })}
           ${renderRoutePillbar(SUBNAV.reports)}
           <div class="snapshot-panel"><h3>Mock placeholder only</h3><p>No APIs, backend, or report engine are connected in this sprint. This is a static route and presentation placeholder.</p></div>
         </section>
@@ -2972,7 +2972,7 @@ function aiAssistantOverviewView() {
           <div class="hero-block">
             <section class="summary-banner">
               <div class="eyebrow">AI Assistant</div>
-              <div class="hero-title">A dedicated executive AI layer inside EP Intelligence.</div>
+              <div class="hero-title">A dedicated executive AI layer inside EP Hub.</div>
               <p class="hero-summary">${escapeHtml(data.summary)}</p>
             </section>
           </div>
@@ -3003,7 +3003,7 @@ function aiAssistantOverviewView() {
           </div>
         </section>
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Ask EP Intelligence', title: 'Example executive conversations', body: WORKSPACE_DATA.aiAssistant.askWorkspace.intro })}
+          ${sectionHeader({ eyebrow: 'Ask EP Hub', title: 'Example executive conversations', body: WORKSPACE_DATA.aiAssistant.askWorkspace.intro })}
           <div class="tile-grid">
             ${WORKSPACE_DATA.aiAssistant.askWorkspace.prompts.map((item) => insightCard({ eyebrow: item.question, title: 'AI response', body: item.answer, tone: 'neutral' })).join('')}
           </div>
@@ -3023,7 +3023,7 @@ function aiAssistantAskView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'AI Assistant', title: 'Ask EP Intelligence', body: data.intro })}
+          ${sectionHeader({ eyebrow: 'AI Assistant', title: 'Ask EP Hub', body: data.intro })}
           ${renderRoutePillbar(SUBNAV.aiAssistant)}
           <div class="snapshot-panel">
             <h3>Executive questioning workspace</h3>
@@ -3384,7 +3384,7 @@ function executiveCopilotAskView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Executive Copilot', title: 'Ask EP Intelligence', body: 'Answers are action-oriented, explainable, and approval-first.' })}
+          ${sectionHeader({ eyebrow: 'Executive Copilot', title: 'Ask EP Hub', body: 'Answers are action-oriented, explainable, and approval-first.' })}
           ${renderRoutePillbar(SUBNAV.executiveCopilot)}
         </section>
         <div class="section-stack">${data.prompts.map((item) => registerRow({ kicker: `${pill('Executive question', 'info')}${pill(item.supportingRoutes.join(' · '), 'neutral')}`, title: item.question, body: `${item.answer} ${item.rationale}`, extra: `<div class="chip-list">${item.supportingRoutes.map((route) => `<button type="button" class="sidebar-chip" data-route="${route}">${escapeHtml(routeLabel(route))}</button>`).join('')}</div>` })).join('')}</div>
@@ -3520,7 +3520,7 @@ function settingsView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Settings', title: 'Architecture, release, and memory overview', body: 'EP Intelligence now combines provider/service/config architecture, provider-independent Executive Memory, and a formal release-management layer.' })}
+          ${sectionHeader({ eyebrow: 'Settings', title: 'Architecture, release, and memory overview', body: 'EP Hub now combines provider/service/config architecture, provider-independent Executive Memory, and a formal release-management layer.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'check-circle', label: 'Current Release', value: release.displayName, body: `${release.codename} is the current formal platform release.` })}
@@ -3603,7 +3603,7 @@ function settingsIntegrationStatusView() {
     html: `
       <div class="page-grid">
         <section class="panel">
-          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Intelligence stays mostly in Demo Mode, but Website Analytics, YouTube, Executive Inbox, and Operations Calendar can now hydrate from generated local snapshots when configured.' })}
+          ${sectionHeader({ eyebrow: 'Integration Status', title: 'Health monitoring', body: 'EP Hub stays mostly in Demo Mode, but Website Analytics, YouTube, Executive Inbox, and Operations Calendar can now hydrate from generated local snapshots when configured.' })}
           ${renderRoutePillbar(SUBNAV.settings)}
           <div class="grid-4">
             ${statCard({ iconName: 'check-circle', label: 'GA4 state', value: ga4.status, body: ga4.detail })}
@@ -3915,7 +3915,7 @@ function renderWithSkeleton() {
 function validateStartup() {
   const required = [primaryNav, secondaryNav, pageContent, modeSwitcher, navSearch, breadcrumbNode];
   if (required.some((node) => !node)) {
-    throw new Error('EP Intelligence failed to initialise required DOM nodes.');
+    throw new Error('EP Hub failed to initialise required DOM nodes.');
   }
 }
 
