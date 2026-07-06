@@ -43,7 +43,7 @@ For a Reserved VM / Autoscale-style deployment:
 After the Replit deployment is live, add this custom domain in Replit:
 
 ```text
-dashboard.epgolfstudios.co.uk
+os.epgolfstudios.co.uk
 ```
 
 Then copy the exact DNS records Replit provides into the DNS manager for `epgolfstudios.co.uk`.
