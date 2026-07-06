@@ -3690,10 +3690,10 @@ function getToolConnectionPlan() {
           name: 'Mailchimp',
           status: 'Confirmed future provider · not connected',
           provider: 'MarketingProvider',
-          feeds: 'Email Marketing, campaign performance, audience health, weekly marketing reports',
-          needs: 'MAILCHIMP_API_KEY and audience/campaign mapping once provider is built',
+          feeds: 'Email distribution lists, future regular follow-ups, nurture campaigns, audience health, weekly marketing reports. Not currently linked to fitting bookings.',
+          needs: 'Mailchimp account accounts@epgolfstudios.co.uk, audience/list name or ID, tag/segment plan, API key and server prefix when provider is built',
           command: 'Not built yet',
-          action: 'Build MailchimpProvider once Gmail and Calendar snapshots are activated.'
+          action: 'Build MailchimpProvider v1.0 as distribution-list and follow-up intelligence first, with booking journey links added later if needed.'
         }
       ]
     },
@@ -3702,12 +3702,12 @@ function getToolConnectionPlan() {
       tools: [
         {
           name: 'Gmail',
-          status: liveData.gmail.available ? 'Active snapshot' : 'Live-capable · OAuth required',
+          status: liveData.gmail.available ? 'Active snapshot' : 'Confirmed · read-only OAuth required',
           provider: 'GmailProvider',
-          feeds: 'Executive Inbox, customer/supplier/finance triage, approval-first reply actions',
-          needs: 'GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_ACCOUNT',
+          feeds: 'Read-only EP Golf Studios Gmail intelligence for INBOX, IMPORTANT, STARRED, and SENT; Customers, Bookings, Finance, Suppliers, Marketing, Reviews, Internal, Partners, Other; suggested replies only',
+          needs: 'GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_ACCOUNT=info@epgolfstudios.co.uk',
           command: 'npm run gmail:sync',
-          action: 'Connect the EP Golf Studios Gmail account through server-side OAuth and sync a local inbox snapshot.'
+          action: 'Connect info@epgolfstudios.co.uk through read-only server-side OAuth. Never send, reply, archive, delete, or label without explicit approval.'
         },
         {
           name: 'Google Calendar',
@@ -3727,28 +3727,28 @@ function getToolConnectionPlan() {
           name: 'QuickBooks',
           status: 'Confirmed future provider · not connected',
           provider: 'FinanceProvider',
-          feeds: 'CFO workspace, cash flow, VAT, supplier spend, profitability, board reporting',
-          needs: 'QuickBooks OAuth/API credentials, company ID, chart-of-accounts mapping',
+          feeds: 'CFO workspace, VAT, supplier bills, supplier spend, profitability, board reporting. Not used for invoices/payments.',
+          needs: 'QuickBooks account accounts@epgolfstudios.co.uk, legal business name Elite Performance Golf Studios Ltd, name EP Golf Studios Ltd, product/region, OAuth/API credentials, company/realm ID, chart-of-accounts and VAT/tax mapping',
           command: 'Not built yet',
-          action: 'Build QuickBooksProvider v1.0 after booking/fitting source is confirmed.'
+          action: 'Build QuickBooksProvider v1.0 around VAT and supplier-bill intelligence, not invoice/payment processing.'
         },
         {
           name: 'Stripe / payments',
-          status: 'Future provider · not connected',
+          status: 'Confirmed future provider · not connected',
           provider: 'FinanceProvider',
-          feeds: 'Payment timing, deposit visibility, revenue confidence, conversion quality',
-          needs: 'STRIPE_SECRET_KEY or approved payments export once provider is built',
+          feeds: 'Acuity deposit/payment visibility, payment timing, revenue confidence, conversion quality',
+          needs: 'Stripe account/API decision when FinanceProvider is built',
           command: 'Not built yet',
-          action: 'Connect after accounting/booking priorities are clear.'
+          action: 'Connect Stripe after the Acuity-derived booking provider and approval/audit boundaries are in place.'
         },
         {
-          name: 'Booking / fitting system',
-          status: 'Priority future provider · not connected',
+          name: 'Acuity / Squarespace Scheduling',
+          status: 'Confirmed future provider · not connected',
           provider: 'BookingProvider',
-          feeds: 'Primary conversion, fitting capacity, sales quality, marketing attribution',
-          needs: 'Booking platform/API/export format and final conversion event names',
+          feeds: 'Primary conversion, fitting capacity, sales quality, marketing attribution. Services: Club Fitting, Shaft-only fitting, Gapping & Analysis, Studio Hire, Gift Certificates.',
+          needs: 'Acuity API access confirmation; start with Gmail confirmations + Google Calendar booking events; Stripe is the deposit/payment provider',
           command: 'Not built yet',
-          action: 'This should be the next major connector because fittings are the primary conversion.'
+          action: 'Build BookingProvider v1.0 from Gmail and Calendar-derived Acuity booking intelligence first, then add direct Acuity API support if available.'
         },
         {
           name: 'OpenClaw / approval workflow',

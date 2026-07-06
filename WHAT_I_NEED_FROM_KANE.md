@@ -14,7 +14,7 @@ Already done:
 - GA4 + YouTube Replit Secret names added by Kane
 - Build-time snapshot sync added: `npm run live:sync`
 - Approval-first workflow confirmed
-- Confirmed future connectors: EP Golf Studios Gmail, QuickBooks, Mailchimp
+- Confirmed future connectors: EP Golf Studios Gmail, Acuity/Squarespace Scheduling, Stripe, QuickBooks, Mailchimp
 
 Still needed:
 
@@ -22,9 +22,9 @@ Still needed:
 - Replit redeploy from latest GitHub `main`
 - Gmail OAuth setup
 - Google Calendar OAuth setup
-- Booking/fitting platform choice
-- QuickBooks connection details
-- Mailchimp connection details
+- Acuity API access confirmation
+- QuickBooks product/region confirmation
+- Mailchimp account/audience/campaign/tag details
 
 ---
 
@@ -69,14 +69,13 @@ Already added to Replit Secrets, per Kane:
 Still needed:
 
 - [ ] Confirm GA4 property is the correct EP Golf Studios property
-- [ ] Confirm final conversion event names
 
-Current conversion assumptions:
+Confirmed conversion events:
 
 - Primary conversion: `book_fitting`
 - Secondary conversions: `click_phone_number`, `contact_us`, `email_address_click`
 
-Please provide final GA4 event names if different:
+Current GA4 event mapping:
 
 ```text
 Primary fitting booking event name: book_fitting
@@ -122,22 +121,51 @@ Needed for Replit Secrets:
 - [ ] `GMAIL_REFRESH_TOKEN`
 - [ ] `GMAIL_ACCOUNT`
 
-Please confirm:
+Confirmed by Kane:
 
 ```text
-Gmail account to connect:
-Should EP Hub read only, or later prepare draft replies too? Read-only is safest first.
-Important labels/folders to watch:
-Any senders/domains to treat as high priority:
+Gmail account to connect: info@epgolfstudios.co.uk
+Initial scope: Read-only inbox intelligence
+Watch folders: INBOX, IMPORTANT, STARRED, SENT
+Suggested replies: Yes, generate suggestions only
+Automatic sending: No
+Automatic replying: No
+Automatic archiving: No
+Automatic deleting: No
+Automatic labelling: No
+Approval-first: Mandatory for every outbound action
 ```
 
-Recommended first scope:
+Classification categories:
 
-```text
-Read-only inbox intelligence only.
-```
+- Customers
+- Bookings
+- Finance
+- Suppliers
+- Marketing
+- Reviews
+- Internal
+- Partners
+- Other
 
-No automatic sending. Replies/actions stay approval-first.
+Priority rules:
+
+- Customer enquiries over 24 hours old = High
+- Booking enquiries = High
+- Supplier issues = Medium
+- Finance actions = High
+- Marketing notifications = Low unless action required
+
+CEO Dashboard surfaces:
+
+- Unread high-priority emails
+- Customer replies due
+- Booking enquiries
+- Finance emails
+- Supplier emails
+- Daily email summary
+
+No automatic mailbox mutations. EP Hub may generate suggested replies, but must never send, reply, archive, delete, or label without explicit approval.
 
 ---
 
@@ -173,39 +201,41 @@ Current default assumptions:
 
 ## 6. Booking / fitting provider
 
-Status: not chosen yet. This is the most important missing connector because fittings are the primary conversion.
+Status: confirmed by Kane.
 
-Please answer:
+Confirmed booking setup:
 
 ```text
-What system handles fittings/bookings?
+Booking platform name: Acuity / Squarespace Scheduling
+Acuity scheduling URL: https://app.acuityscheduling.com/schedule/a21925b8
+Booking/admin URL provided: https://epgolfstudios.co.uk/book-now
+API access: Unsure / still to confirm
+Sends confirmation emails to Gmail: Yes
+Creates Google Calendar events: Yes
+Deposit/payment provider: Stripe
 ```
 
-Examples:
-
-- Calendly
-- Square Appointments
-- Acuity / Squarespace Scheduling
-- Booksy
-- Wix Bookings
-- Shopify app
-- Custom website form
-- Manual email/phone only
-- Other
-
-Needed details:
-
-```text
-Booking platform name:
-Booking admin URL:
-Does it have API access? Yes/No/Unsure
-Does it send confirmation emails to Gmail? Yes/No
-Does it create Google Calendar events? Yes/No
 Key booking types/services:
-Deposit/payment provider, if any:
-```
 
-If no direct API exists, EP Hub can start with Gmail/Calendar-derived booking intelligence.
+- Club Fitting Sessions
+- Shaft only fitting sessions
+- Gapping & Analysis Services
+- Studio Hire
+- Gift Certificates
+
+Provider plan:
+
+- Start Booking Provider v1.0 from Gmail + Google Calendar-derived booking intelligence because Acuity sends confirmation emails and creates calendar events.
+- Add direct Acuity API integration later if API credentials/access are confirmed.
+- Treat Stripe as the deposit/payment source for future finance/payment visibility.
+
+Still needed later:
+
+```text
+Acuity API access available? Yes/No
+Acuity API credentials or OAuth setup path, if available
+Stripe connection details, when Finance/Payments provider is built
+```
 
 ---
 
@@ -213,14 +243,21 @@ If no direct API exists, EP Hub can start with Gmail/Calendar-derived booking in
 
 Status: confirmed accounting platform; provider not built yet.
 
-Please confirm:
+Confirmed by Kane:
+
+```text
+QuickBooks account email: accounts@epgolfstudios.co.uk
+Legal business name in QuickBooks: Elite Performance Golf Studios Ltd
+Name in QuickBooks: EP Golf Studios Ltd
+Uses QuickBooks for VAT: Yes
+Uses QuickBooks for supplier bills: Yes
+Uses QuickBooks for invoices/payments: No
+```
+
+Still needed later:
 
 ```text
 QuickBooks product/region:
-Company name inside QuickBooks:
-Do you use QuickBooks for VAT? Yes/No
-Do you use QuickBooks for supplier bills? Yes/No
-Do you use QuickBooks for invoices/payments? Yes/No
 ```
 
 Future credentials/details likely needed:
@@ -240,15 +277,26 @@ Do not paste these secrets casually. We will handle them during the QuickBooks p
 
 Status: confirmed email marketing platform; provider not built yet.
 
-Please confirm:
+Confirmed by Kane:
 
 ```text
-Mailchimp account email:
+Mailchimp account email: accounts@epgolfstudios.co.uk
+Main campaign types: Email distribution lists
+Campaigns currently link to fitting bookings: Not at the moment
+Future use: Ability to run regular follow-ups later
+```
+
+Still needed later:
+
+```text
 Audience/list name:
-Main campaign types:
-Do campaigns link to fitting bookings? Yes/No/Unsure
 Important tags/segments:
 ```
+
+Provider plan:
+
+- Treat Mailchimp as future nurture/follow-up intelligence first, not current booking-attribution source.
+- Later connect campaigns and automations to fitting-booking journeys if Kane wants regular follow-up sequences.
 
 Future Replit Secret likely needed:
 
@@ -335,9 +383,8 @@ Recommended next work order:
 2. Confirm GA4 conversion event names
 3. Finish Gmail OAuth snapshot
 4. Finish Google Calendar OAuth snapshot
-5. Identify booking/fitting platform
-6. Build Booking Provider v1.0
-7. Build QuickBooks Provider v1.0
-8. Build Mailchimp Provider v1.0
-9. Improve Unified Social source
-10. Add optional execution gateway only after audit/approval rules are complete
+5. Build Acuity-derived Booking Provider v1.0
+6. Build QuickBooks Provider v1.0
+7. Build Mailchimp Provider v1.0
+8. Improve Unified Social source
+9. Add optional execution gateway only after audit/approval rules are complete

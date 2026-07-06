@@ -1,14 +1,22 @@
 import { deepClone } from '../contracts/data-contracts.js';
 
+function categoryIs(item = {}, ...names) {
+  const category = String(item.category || '').toLowerCase();
+  return names.map((name) => String(name).toLowerCase()).includes(category);
+}
+
 const SECTION_DEFINITIONS = Object.freeze([
   { key: 'priority', title: 'Priority', body: 'The conversations that most clearly deserve executive attention now.', matcher: (item) => item.priority === 'High' && item.status !== 'Completed' },
   { key: 'needsReply', title: 'Needs Reply', body: 'Messages where delay is now more dangerous than noise.', matcher: (item) => /reply/i.test(item.status) },
-  { key: 'customerEnquiries', title: 'Customer Enquiries', body: 'Customer conversations that shape trust, pipeline quality, and commercial follow-through.', matcher: (item) => item.category === 'Customer' },
-  { key: 'bookingRequests', title: 'Booking Requests', body: 'New fitting and appointment requests that should move quickly.', matcher: (item) => item.category === 'Booking' },
-  { key: 'supplierCommunications', title: 'Supplier Communications', body: 'Supplier issues, quotes, and invoice-related conversations that can affect margin or timing.', matcher: (item) => item.category === 'Supplier' },
-  { key: 'finance', title: 'Finance', body: 'Invoices, approvals, payment timing, and finance-sensitive conversations.', matcher: (item) => item.category === 'Finance' },
-  { key: 'marketing', title: 'Marketing', body: 'Campaigns, partnerships, newsletters, and brand-related conversations.', matcher: (item) => item.category === 'Marketing' || item.category === 'Newsletter' },
-  { key: 'internal', title: 'Internal', body: 'Internal operating coordination, team updates, and executive coordination.', matcher: (item) => item.category === 'Internal' || item.category === 'Operations' },
+  { key: 'customerEnquiries', title: 'Customer Enquiries', body: 'Customer conversations that shape trust, pipeline quality, and commercial follow-through.', matcher: (item) => categoryIs(item, 'Customers', 'Customer') },
+  { key: 'bookingRequests', title: 'Booking Requests', body: 'New fitting and appointment requests that should move quickly.', matcher: (item) => categoryIs(item, 'Bookings', 'Booking') },
+  { key: 'supplierCommunications', title: 'Supplier Communications', body: 'Supplier issues, quotes, and invoice-related conversations that can affect margin or timing.', matcher: (item) => categoryIs(item, 'Suppliers', 'Supplier') },
+  { key: 'finance', title: 'Finance', body: 'Invoices, approvals, payment timing, and finance-sensitive conversations.', matcher: (item) => categoryIs(item, 'Finance') },
+  { key: 'marketing', title: 'Marketing', body: 'Campaigns, partnerships, newsletters, and brand-related conversations.', matcher: (item) => categoryIs(item, 'Marketing', 'Newsletter') },
+  { key: 'reviews', title: 'Reviews', body: 'Review, testimonial, and feedback conversations that affect trust.', matcher: (item) => categoryIs(item, 'Reviews', 'Review') },
+  { key: 'partners', title: 'Partners', body: 'Partner, collaboration, and sponsorship conversations.', matcher: (item) => categoryIs(item, 'Partners', 'Partner') },
+  { key: 'internal', title: 'Internal', body: 'Internal operating coordination, team updates, and executive coordination.', matcher: (item) => categoryIs(item, 'Internal', 'Operations') },
+  { key: 'other', title: 'Other', body: 'Everything outside the main operating categories.', matcher: (item) => categoryIs(item, 'Other') },
   { key: 'recentlyCompleted', title: 'Recently Completed', body: 'Recent conversations that were handled and may still deserve context.', matcher: () => false }
 ]);
 
@@ -60,7 +68,7 @@ function normalizeEmail(item = {}) {
     receivedAt: text(item.receivedAt),
     receivedTime: text(item.receivedTime || item.ageLabel || item.receivedAt),
     ageLabel: text(item.ageLabel || item.receivedTime),
-    category: text(item.category, 'Customer'),
+    category: text(item.category, 'Customers'),
     priority: text(item.priority, 'Medium'),
     status: text(item.status, 'Review'),
     aiSummary: text(item.aiSummary || item.summary),
@@ -76,10 +84,10 @@ function normalizeEmail(item = {}) {
 
 function buildMetrics(items = [], completed = [], existing = {}) {
   if (existing && Object.keys(existing).length) return existing;
-  const waitingCustomerReplies = items.filter((item) => item.category === 'Customer' && /reply/i.test(item.status)).length;
-  const supplierIssues = items.filter((item) => item.category === 'Supplier' && item.priority === 'High').length;
-  const financeEmails = items.filter((item) => item.category === 'Finance').length;
-  const bookingRequests = items.filter((item) => item.category === 'Booking').length;
+  const waitingCustomerReplies = items.filter((item) => categoryIs(item, 'Customers', 'Customer') && /reply/i.test(item.status)).length;
+  const supplierIssues = items.filter((item) => categoryIs(item, 'Suppliers', 'Supplier') && ['High', 'Medium'].includes(item.priority)).length;
+  const financeEmails = items.filter((item) => categoryIs(item, 'Finance')).length;
+  const bookingRequests = items.filter((item) => categoryIs(item, 'Bookings', 'Booking')).length;
   const unreadCritical = items.filter((item) => item.unread && item.priority === 'High').length;
   const needsReply = items.filter((item) => /reply/i.test(item.status)).length;
   return {

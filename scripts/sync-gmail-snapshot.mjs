@@ -10,7 +10,19 @@ const outFile = path.join(outDir, 'gmail-live-snapshot.json');
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GMAIL_API_BASE = 'https://gmail.googleapis.com/gmail/v1/users';
 const SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
-const DEFAULT_ACCOUNT = 'me';
+const DEFAULT_ACCOUNT = 'info@epgolfstudios.co.uk';
+const WATCH_FOLDERS = ['INBOX', 'IMPORTANT', 'STARRED', 'SENT'];
+const CLASSIFICATION_CATEGORIES = ['Customers', 'Bookings', 'Finance', 'Suppliers', 'Marketing', 'Reviews', 'Internal', 'Partners', 'Other'];
+const OUTBOUND_ACTION_POLICY = Object.freeze({
+  mode: 'approval-first',
+  initialScope: 'Read-only inbox intelligence',
+  automaticSending: false,
+  automaticReplying: false,
+  automaticArchiving: false,
+  automaticDeleting: false,
+  automaticLabelling: false,
+  explicitApprovalRequired: true
+});
 
 function parseEnvLine(line) {
   const trimmed = line.trim();
@@ -86,31 +98,33 @@ function classifyEmail({ sender = '', senderEmail = '', subject = '', snippet = 
   const accountDomain = String(account || '').split('@')[1] || '';
   const internalDomainMatch = accountDomain && senderEmail.endsWith(`@${accountDomain}`);
 
-  if (/unsubscribe|newsletter|mailchimp|campaign monitor|substack|digest/.test(text)) return 'Newsletter';
-  if (/casino|crypto|forex|seo agency|viagra|loan|buy now/.test(text)) return 'Spam';
-  if (/booking|booked|appointment|availability|lesson request|fitting request|driver fitting|iron fitting/.test(text)) return 'Booking';
+  if (/casino|crypto|forex|seo agency|viagra|loan|buy now/.test(text)) return 'Other';
+  if (/booking|booked|appointment|availability|lesson request|fitting request|driver fitting|iron fitting/.test(text)) return 'Bookings';
   if (/invoice|vat|statement|payment|remittance|bill|overdue|receipt|quote approval/.test(text)) return 'Finance';
-  if (/supplier|wholesale|trade account|purchase order|delivery|shipment|trackman|foresight|titleist/.test(text)) return 'Supplier';
-  if (/campaign|partner|collaboration|press|youtube|instagram|facebook|linkedin|content|marketing/.test(text)) return 'Marketing';
-  if (/review|google review|testimonial|feedback/.test(text)) return 'Review';
+  if (/supplier|wholesale|trade account|purchase order|delivery|shipment|trackman|foresight|titleist/.test(text)) return 'Suppliers';
+  if (/review|google review|testimonial|feedback/.test(text)) return 'Reviews';
+  if (/partner|collaboration|affiliate|sponsor|sponsorship/.test(text)) return 'Partners';
+  if (/unsubscribe|newsletter|mailchimp|campaign monitor|substack|digest|campaign|press|youtube|instagram|facebook|linkedin|content|marketing/.test(text)) return 'Marketing';
   if (/ops|operations|rota|staff|team|internal|project/.test(text) || internalDomainMatch) return 'Internal';
-  return 'Customer';
+  return 'Customers';
 }
 
-function derivePriority({ category = 'Customer', subject = '', snippet = '', labels = [], unread = false, waitingHours = 0 }) {
+function derivePriority({ category = 'Customers', subject = '', snippet = '', labels = [], unread = false, waitingHours = 0 }) {
   const text = `${subject} ${snippet} ${(labels || []).join(' ')}`.toLowerCase();
+  const actionRequired = /action required|approval required|please confirm|needs approval|needs action|reply required|respond/i.test(text);
   if (/urgent|asap|today|immediately|overdue|failed|complaint|invoice dispute/.test(text)) return 'High';
-  if (category === 'Booking' || category === 'Finance') return waitingHours >= 12 || unread ? 'High' : 'Medium';
-  if (category === 'Supplier' && (waitingHours >= 24 || unread)) return 'High';
-  if (category === 'Customer' && waitingHours >= 24) return 'High';
-  if (category === 'Newsletter' || category === 'Spam') return 'Low';
+  if (category === 'Bookings') return 'High';
+  if (category === 'Finance') return 'High';
+  if (category === 'Suppliers') return 'Medium';
+  if (category === 'Customers' && waitingHours >= 24) return 'High';
+  if (category === 'Marketing') return actionRequired ? 'Medium' : 'Low';
   return unread ? 'Medium' : 'Low';
 }
 
 function deriveStatus({ labels = [], unread = false, waitingHours = 0, category = '' }) {
   const labelSet = new Set(labels || []);
   if (labelSet.has('SENT') || labelSet.has('ARCHIVED')) return 'Completed';
-  if (/newsletter|spam/i.test(category)) return unread ? 'Review' : 'Completed';
+  if (/marketing|other/i.test(category)) return unread ? 'Review' : 'Completed';
   if (unread) return 'Needs Reply';
   if (waitingHours >= 24) return 'Follow-up due';
   return 'Review';
@@ -120,11 +134,11 @@ function executiveSummary({ category, subject, snippet, waitingHours, sender }) 
   const waitText = waitingHours >= 24 ? `It has been waiting ${waitingHours} hours.` : waitingHours > 0 ? `It arrived ${waitingHours} hours ago.` : 'It is new in the inbox.';
   const trimmedSnippet = String(snippet || '').trim();
   switch (category) {
-    case 'Booking':
+    case 'Bookings':
       return `${sender} is asking about a fitting or appointment. ${waitText} ${trimmedSnippet || 'This likely affects near-term booking demand.'}`.trim();
     case 'Finance':
       return `${sender} is driving a finance-sensitive thread. ${waitText} ${trimmedSnippet || 'This may affect approvals, payment timing, or cash clarity.'}`.trim();
-    case 'Supplier':
+    case 'Suppliers':
       return `${sender} is raising a supplier-related issue or quote. ${waitText} ${trimmedSnippet || 'This may affect margin, timing, or delivery continuity.'}`.trim();
     case 'Marketing':
       return `${sender} is driving a marketing or partnership thread. ${waitText} ${trimmedSnippet || 'This may influence content, reach, or authority.'}`.trim();
@@ -223,9 +237,11 @@ async function fetchMessages({ account, accessToken, messages = [] }) {
       priority,
       status,
       aiSummary: executiveSummary({ category, subject: headers.subject || '(No subject)', snippet: message.snippet || '', waitingHours, sender }),
-      customer: category === 'Customer' || category === 'Booking' ? sender : '',
-      supplier: category === 'Supplier' ? sender : '',
-      action: category === 'Booking' || category === 'Customer' ? 'Reply' : category === 'Finance' ? 'Approve' : category === 'Supplier' ? 'Review' : 'Assess',
+      customer: category === 'Customers' || category === 'Bookings' ? sender : '',
+      supplier: category === 'Suppliers' ? sender : '',
+      action: category === 'Bookings' || category === 'Customers' ? 'Draft Reply' : category === 'Finance' ? 'Review Finance Action' : category === 'Suppliers' ? 'Review Supplier Issue' : 'Assess',
+      suggestedReply: buildSuggestedReply({ category, sender }),
+      requiresApproval: true,
       waitingHours,
       unread,
       labels: message.labelIds || [],
@@ -235,14 +251,22 @@ async function fetchMessages({ account, accessToken, messages = [] }) {
   return out;
 }
 
+function buildSuggestedReply(item = {}) {
+  if (item.category === 'Bookings') return `Hi ${item.sender}, thanks for getting in touch with EP Golf Studios. We can help with the fitting enquiry — could you share your preferred days/times and what part of the bag you would like to focus on?`;
+  if (item.category === 'Customers') return `Hi ${item.sender}, thanks for your message. I’ll review this properly and come back to you with the next best step shortly.`;
+  if (item.category === 'Finance') return `Hi ${item.sender}, thanks for sending this through. I’ll review the finance details and confirm the appropriate next step once approved.`;
+  if (item.category === 'Suppliers') return `Hi ${item.sender}, thanks for the update. I’ll review the supplier details and come back once the next action has been confirmed.`;
+  return `Hi ${item.sender}, thanks for your message. I’ll review and come back if any action is needed.`;
+}
+
 function buildApprovalCards(items = []) {
   const templates = [
-    { action: 'Reply', matcher: (item) => item.category === 'Customer' || item.category === 'Booking', impact: 'Customer trust / conversion' },
-    { action: 'Archive', matcher: (item) => item.category === 'Newsletter' || item.category === 'Spam', impact: 'Inbox hygiene' },
-    { action: 'Label', matcher: (item) => item.category === 'Finance' || item.category === 'Supplier', impact: 'Inbox classification' },
-    { action: 'Forward', matcher: (item) => item.category === 'Supplier' || item.category === 'Marketing', impact: 'Owner visibility' },
-    { action: 'Create Task', matcher: (item) => item.category === 'Finance' || item.category === 'Internal', impact: 'Operational follow-through' },
-    { action: 'Schedule Follow-up', matcher: (item) => /follow-up|reply/i.test(item.status) || item.waitingHours >= 24, impact: 'Response timing' }
+    { action: 'Draft Suggested Reply', matcher: (item) => item.category === 'Customers' || item.category === 'Bookings', impact: 'Customer trust / conversion' },
+    { action: 'Review Finance Action', matcher: (item) => item.category === 'Finance', impact: 'Cash timing / approval visibility' },
+    { action: 'Review Supplier Issue', matcher: (item) => item.category === 'Suppliers', impact: 'Operational continuity' },
+    { action: 'Prepare Follow-up', matcher: (item) => /follow-up|reply/i.test(item.status) || item.waitingHours >= 24, impact: 'Response timing' },
+    { action: 'Summarise Marketing Notification', matcher: (item) => item.category === 'Marketing', impact: 'Signal filtering' },
+    { action: 'Escalate for Approval', matcher: (item) => item.priority === 'High', impact: 'Executive oversight' }
   ];
 
   return templates
@@ -255,7 +279,10 @@ function buildApprovalCards(items = []) {
         why: item.aiSummary,
         impact: `${template.impact} · ${item.sender}`,
         risk: item.priority === 'High' ? 'High' : 'Medium',
-        confidence: item.priority === 'High' ? 'High' : 'Medium'
+        confidence: item.priority === 'High' ? 'High' : 'Medium',
+        suggestedReply: buildSuggestedReply(item),
+        requiresApproval: true,
+        executionPolicy: 'Preview only. Do not send, reply, archive, delete, or label without explicit approval.'
       };
     })
     .filter(Boolean);
@@ -267,16 +294,16 @@ function buildTimelineEvents(items = []) {
     id: `gmail-timeline-${index + 1}-${item.id}`,
     date: String(item.receivedAt || '').slice(0, 10),
     time: item.receivedTime,
-    title: item.category === 'Booking'
+    title: item.category === 'Bookings'
       ? 'High-value booking request received'
-      : item.category === 'Supplier'
+      : item.category === 'Suppliers'
         ? 'Major supplier conversation needs action'
         : item.category === 'Finance'
           ? 'Finance-sensitive email entered the executive queue'
           : 'Executive inbox priority escalated',
     body: `${item.subject} — ${item.aiSummary}`,
     category: `${item.category} email`,
-    department: item.category === 'Finance' ? 'Finance' : item.category === 'Supplier' ? 'Operations / Finance' : item.category === 'Booking' ? 'Sales / Customer' : 'Executive Inbox',
+    department: item.category === 'Finance' ? 'Finance' : item.category === 'Suppliers' ? 'Operations / Finance' : item.category === 'Bookings' ? 'Sales / Customer' : 'Executive Inbox',
     impact: item.priority,
     relatedEntities: ['goal-booking-conversion', 'decision-ga4-live-snapshot'],
     status: item.status,
@@ -286,7 +313,7 @@ function buildTimelineEvents(items = []) {
 
 function buildMemoryCandidates(items = []) {
   return items
-    .filter((item) => item.priority === 'High' && /Customer|Supplier|Finance|Booking/.test(item.category))
+    .filter((item) => item.priority === 'High' && /(Customers|Suppliers|Finance|Bookings)/.test(item.category))
     .slice(0, 4)
     .map((item, index) => ({
       id: `gmail-memory-${index + 1}-${item.id}`,
@@ -295,7 +322,7 @@ function buildMemoryCandidates(items = []) {
       title: item.subject,
       body: item.aiSummary,
       category: `${item.category} conversation`,
-      department: item.category === 'Finance' ? 'Finance' : item.category === 'Supplier' ? 'Operations / Finance' : 'Customer',
+      department: item.category === 'Finance' ? 'Finance' : item.category === 'Suppliers' ? 'Operations / Finance' : 'Customer',
       impact: item.priority,
       relatedEntities: ['goal-booking-conversion'],
       status: item.status,
@@ -333,10 +360,10 @@ function buildSearchIndex(items = []) {
 function buildMetrics(items = [], completed = []) {
   return {
     unreadCritical: items.filter((item) => item.unread && item.priority === 'High').length,
-    waitingCustomerReplies: items.filter((item) => item.category === 'Customer' && /reply/i.test(item.status)).length,
-    supplierIssues: items.filter((item) => item.category === 'Supplier' && item.priority === 'High').length,
+    waitingCustomerReplies: items.filter((item) => item.category === 'Customers' && /reply/i.test(item.status)).length,
+    supplierIssues: items.filter((item) => item.category === 'Suppliers' && item.priority === 'High').length,
     financeEmails: items.filter((item) => item.category === 'Finance').length,
-    bookingRequests: items.filter((item) => item.category === 'Booking').length,
+    bookingRequests: items.filter((item) => item.category === 'Bookings').length,
     needsReply: items.filter((item) => /reply|follow-up/i.test(item.status)).length,
     recentlyCompleted: completed.length
   };
@@ -384,7 +411,7 @@ async function main() {
     const inboxList = await listMessages({
       account,
       accessToken,
-      query: 'newer_than:14d in:inbox -category:promotions -category:social',
+      query: 'newer_than:14d {in:inbox is:important is:starred} -category:promotions -category:social',
       maxResults: 18
     });
 
@@ -412,7 +439,7 @@ async function main() {
       source: 'Gmail API',
       account,
       syncedAt: new Date().toISOString(),
-      notes: 'Executive Inbox is live through generated Gmail snapshots. All actions remain approval-first and no outbound automation is enabled.',
+      notes: 'Executive Inbox is live through generated read-only Gmail snapshots. Suggested replies are preview-only. Sending, replying, archiving, deleting, and labelling are disabled unless explicitly approved through a future execution gateway.',
       meta: {
         providerHealth: 'Healthy',
         syncIntervalMinutes,
@@ -421,7 +448,19 @@ async function main() {
         repliedCount: recentlyCompleted.length,
         olderThan24Hours: inboxItems.filter((item) => item.waitingHours >= 24).length,
         scope: SCOPE,
-        classificationVersion: 'gmail-provider-v1'
+        initialScope: OUTBOUND_ACTION_POLICY.initialScope,
+        watchFolders: WATCH_FOLDERS,
+        classificationCategories: CLASSIFICATION_CATEGORIES,
+        priorityRules: [
+          'Customer enquiries over 24 hours old = High',
+          'Booking enquiries = High',
+          'Supplier issues = Medium',
+          'Finance actions = High',
+          'Marketing notifications = Low unless action required'
+        ],
+        outboundActionPolicy: OUTBOUND_ACTION_POLICY,
+        suggestedRepliesEnabled: true,
+        classificationVersion: 'gmail-provider-v2-epgs-readonly'
       },
       communications: {
         providerSummary: {

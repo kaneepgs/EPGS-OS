@@ -293,8 +293,8 @@ function marketingActions({ marketing, intelligence }) {
 }
 
 function communicationsActions({ communications }) {
-  const customer = communications.inboxItems?.find((item) => item.category === 'Customer') || communications.inboxItems?.[0] || {};
-  const booking = communications.inboxItems?.find((item) => item.category === 'Booking') || {};
+  const customer = communications.inboxItems?.find((item) => ['Customer', 'Customers'].includes(item.category)) || communications.inboxItems?.[0] || {};
+  const booking = communications.inboxItems?.find((item) => ['Booking', 'Bookings'].includes(item.category)) || {};
   const complaint = communications.inboxItems?.find((item) => /complaint|issue/i.test(`${item.subject} ${item.aiSummary}`)) || customer;
   return [
     createAction({
