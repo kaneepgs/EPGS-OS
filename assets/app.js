@@ -3644,6 +3644,176 @@ function settingsIntegrationStatusView() {
   };
 }
 
+function toolConnectionTone(status = '') {
+  const value = String(status).toLowerCase();
+  if (value.includes('active') || value.includes('ready')) return 'good';
+  if (value.includes('live-capable')) return 'info';
+  if (value.includes('blocked') || value.includes('credential')) return 'warn';
+  if (value.includes('future')) return 'neutral';
+  return 'info';
+}
+
+function getToolConnectionPlan() {
+  const liveData = APP_RUNTIME.config.liveData;
+  return [
+    {
+      group: 'Marketing & analytics',
+      tools: [
+        {
+          name: 'Google Analytics 4',
+          status: liveData.ga4.available ? 'Active snapshot' : 'Live-capable · needs credentials/sync',
+          provider: 'AnalyticsProvider',
+          feeds: 'Website Analytics, CMO reports, CEO demand signals, Marketing Health Score',
+          needs: 'GA4_PROPERTY_ID, GA4_CLIENT_EMAIL, GA4_PRIVATE_KEY, GA4_PROJECT_ID',
+          command: 'npm run ga4:sync',
+          action: 'Validate property/events, then run snapshot sync server-side only.'
+        },
+        {
+          name: 'YouTube',
+          status: liveData.youtube.available ? 'Active snapshot' : 'Live-capable · needs API key/channel sync',
+          provider: 'YouTubeProvider',
+          feeds: 'YouTube page, CMO social overview, CEO marketing momentum, content recommendations',
+          needs: 'YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID',
+          command: 'npm run youtube:sync',
+          action: 'Confirm channel ID and run snapshot sync.'
+        },
+        {
+          name: 'Instagram / Facebook / LinkedIn / X',
+          status: liveData.social?.available ? 'Active snapshot' : 'Live-capable · snapshot source required',
+          provider: 'UnifiedSocialProvider',
+          feeds: 'Unified social score, platform rankings, social attribution, competitor benchmarking',
+          needs: 'SOCIAL_SNAPSHOT_SOURCE or approved platform export/API bridge',
+          command: 'npm run social:sync',
+          action: 'Choose whether to use manual exports first or official platform APIs later.'
+        },
+        {
+          name: 'Mailchimp / email marketing',
+          status: 'Future provider · not connected',
+          provider: 'MarketingProvider',
+          feeds: 'Email Marketing, campaign performance, audience health, weekly marketing reports',
+          needs: 'MAILCHIMP_API_KEY and audience/campaign mapping once provider is built',
+          command: 'Not built yet',
+          action: 'Build MailchimpProvider after core Google/social data is stable.'
+        }
+      ]
+    },
+    {
+      group: 'Communications & operations',
+      tools: [
+        {
+          name: 'Gmail',
+          status: liveData.gmail.available ? 'Active snapshot' : 'Live-capable · OAuth required',
+          provider: 'GmailProvider',
+          feeds: 'Executive Inbox, customer/supplier/finance triage, approval-first reply actions',
+          needs: 'GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_ACCOUNT',
+          command: 'npm run gmail:sync',
+          action: 'Complete OAuth server-side and sync a local inbox snapshot.'
+        },
+        {
+          name: 'Google Calendar',
+          status: liveData.calendar.available ? 'Active snapshot' : 'Live-capable · OAuth required',
+          provider: 'CalendarProvider',
+          feeds: 'Operations Calendar, schedule pressure, fitting capacity, executive timeline',
+          needs: 'GOOGLE_CALENDAR_CLIENT_ID, GOOGLE_CALENDAR_CLIENT_SECRET, GOOGLE_CALENDAR_REFRESH_TOKEN, GOOGLE_CALENDAR_ID',
+          command: 'npm run calendar:sync',
+          action: 'Complete OAuth server-side and sync an operations calendar snapshot.'
+        }
+      ]
+    },
+    {
+      group: 'Finance, sales & workflow',
+      tools: [
+        {
+          name: 'QuickBooks / Xero',
+          status: 'Future provider · not connected',
+          provider: 'FinanceProvider',
+          feeds: 'CFO workspace, cash flow, VAT, supplier spend, profitability, board reporting',
+          needs: 'Accounting provider choice, OAuth/API credentials, chart-of-accounts mapping',
+          command: 'Not built yet',
+          action: 'Pick Xero or QuickBooks first, then build AccountingProvider v1.0.'
+        },
+        {
+          name: 'Stripe / payments',
+          status: 'Future provider · not connected',
+          provider: 'FinanceProvider',
+          feeds: 'Payment timing, deposit visibility, revenue confidence, conversion quality',
+          needs: 'STRIPE_SECRET_KEY or approved payments export once provider is built',
+          command: 'Not built yet',
+          action: 'Connect after accounting/booking priorities are clear.'
+        },
+        {
+          name: 'Booking / fitting system',
+          status: 'Priority future provider · not connected',
+          provider: 'BookingProvider',
+          feeds: 'Primary conversion, fitting capacity, sales quality, marketing attribution',
+          needs: 'Booking platform/API/export format and final conversion event names',
+          command: 'Not built yet',
+          action: 'This should be the next major connector because fittings are the primary conversion.'
+        },
+        {
+          name: 'OpenClaw / approval workflow',
+          status: 'Prepared · execution locked',
+          provider: 'AIProvider / ActionService',
+          feeds: 'Executive Copilot, action queues, approval history, future orchestration metadata',
+          needs: 'Approval-first policy, execution adapters, optional server-side action gateway',
+          command: 'No automatic execution',
+          action: 'Keep execution locked until each live action path has explicit approval and audit logging.'
+        }
+      ]
+    }
+  ];
+}
+
+function settingsToolConnectionsView() {
+  const groups = getToolConnectionPlan();
+  const allTools = groups.flatMap((group) => group.tools);
+  const activeCount = allTools.filter((tool) => tool.status.toLowerCase().includes('active')).length;
+  const liveCapableCount = allTools.filter((tool) => tool.status.toLowerCase().includes('live-capable')).length;
+  const futureCount = allTools.filter((tool) => tool.status.toLowerCase().includes('future')).length;
+  return {
+    html: `
+      <div class="page-grid">
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Tool Connections', title: 'Connect the rest of the business safely', body: 'This is the Hub-native checklist for turning external tools into provider snapshots, executive insight, and approval-first actions without putting credentials in the browser.' })}
+          ${renderRoutePillbar(SUBNAV.settings)}
+          <div class="grid-4">
+            ${statCard({ iconName: 'check-circle', label: 'Active snapshots', value: String(activeCount), body: 'Provider snapshots currently available to the runtime.' })}
+            ${statCard({ iconName: 'settings', label: 'Live-capable tools', value: String(liveCapableCount), body: 'Tools with provider/sync paths already prepared.' })}
+            ${statCard({ iconName: 'grid', label: 'Future providers', value: String(futureCount), body: 'Business tools that need a provider build before activation.' })}
+            ${statCard({ iconName: 'shield', label: 'Execution policy', value: 'Approval-first', body: 'No emails, posts, calendar changes, or finance actions execute automatically.' })}
+          </div>
+        </section>
+
+        <section class="panel">
+          ${sectionHeader({ eyebrow: 'Credential safety', title: 'Server-side snapshots only', body: 'EP Hub is still a static frontend. Live credentials must stay in Replit secrets or a server-side sync environment, then write sanitized snapshots into the provider layer.' })}
+          <div class="grid-3">
+            ${insightCard({ eyebrow: 'Do', title: 'Use environment secrets', body: 'Keep API keys, OAuth refresh tokens, and private keys in server-side secrets only.', tone: 'good' })}
+            ${insightCard({ eyebrow: 'Do not', title: 'Never ship secrets to assets/', body: 'Anything in assets/ is browser-readable after deployment, so only sanitized snapshot outputs belong there.', tone: 'risk' })}
+            ${insightCard({ eyebrow: 'Approval-first', title: 'Actions remain locked', body: 'The Hub can recommend, preview, and queue actions. Execution still needs explicit approval and a future backend action gateway.', tone: 'warn' })}
+          </div>
+        </section>
+
+        <div class="settings-grid">
+          ${groups.map((group) => `
+            <section class="panel">
+              ${sectionHeader({ eyebrow: 'Connection group', title: group.group, body: 'Each row explains what the tool feeds, what it needs, and the safe activation path.' })}
+              <div class="section-stack">
+                ${group.tools.map((tool) => registerRow({
+                  kicker: `${pill(tool.status, toolConnectionTone(tool.status))}${pill(tool.provider, 'neutral')}`,
+                  title: tool.name,
+                  body: `${tool.feeds} Needs: ${tool.needs}`,
+                  meta: `${tool.command} · ${tool.action}`
+                })).join('')}
+              </div>
+            </section>
+          `).join('')}
+        </div>
+      </div>
+    `,
+    charts: []
+  };
+}
+
 function settingsConfigurationView() {
   const config = WORKSPACE_DATA.settings.configuration;
   const memory = WORKSPACE_DATA.settings.memory;
@@ -3882,6 +4052,7 @@ const routeRenderers = {
   '/settings': settingsView,
   '/settings/action-centre': settingsActionCentreView,
   '/settings/integrations': settingsIntegrationStatusView,
+  '/settings/tool-connections': settingsToolConnectionsView,
   '/settings/configuration': settingsConfigurationView,
   '/settings/provider-architecture': settingsProviderArchitectureView,
   '/settings/about': settingsAboutView

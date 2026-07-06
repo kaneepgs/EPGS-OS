@@ -97,6 +97,7 @@ export const SUBNAV = {
   settings: [
     ['/settings', 'Overview'],
     ['/settings/integrations', 'Integration Status'],
+    ['/settings/tool-connections', 'Tool Connections'],
     ['/settings/configuration', 'Demo Mode Configuration'],
     ['/settings/action-centre', 'Action Centre Settings'],
     ['/settings/provider-architecture', 'Provider Architecture'],
@@ -190,6 +191,7 @@ export const ROUTE_META = {
 
   '/settings': { title: 'Settings', subtitle: 'Prototype controls for shell behaviour, preferences, and future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/integrations': { title: 'Integration Status', subtitle: 'Live, demo, and readiness status for registered executive integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
+  '/settings/tool-connections': { title: 'Tool Connections', subtitle: 'Activation checklist for the business tools that can feed EP Hub safely.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/configuration': { title: 'Demo Mode Configuration', subtitle: 'Runtime mode, provider bindings, and service activation overview.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/action-centre': { title: 'Action Centre Settings', subtitle: 'Priority rules, confidence thresholds, approval defaults, routing, and retention for the executive operating system.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
   '/settings/provider-architecture': { title: 'Provider Architecture', subtitle: 'Presentation, service, and provider layer overview for future integrations.', module: 'Settings', sidebarKey: '/settings', parentLabel: 'Settings' },
