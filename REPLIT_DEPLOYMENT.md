@@ -30,12 +30,12 @@ npm run vendor:chart
 
 For a Static deployment:
 
-- Build command: `npm install && npm run vendor:chart`
+- Build command: `npm install && npm run vendor:chart && npm run live:sync`
 - Public directory: `/`
 
 For a Reserved VM / Autoscale-style deployment:
 
-- Build command: `npm install && npm run vendor:chart`
+- Build command: `npm install && npm run vendor:chart && npm run live:sync`
 - Run command: `python3 -m http.server 3000`
 
 ## Custom domain
@@ -50,4 +50,4 @@ Then copy the exact DNS records Replit provides into the DNS manager for `epgolf
 
 ## Security note
 
-Do not upload `.env` to Replit for the current static prototype. Browser-side files cannot safely hold private API credentials. Live credentials should only be added later through a backend/server provider layer.
+Do not upload `.env` to Replit for the current static prototype. Browser-side files cannot safely hold private API credentials. Add live credentials as Replit Secrets so `npm run live:sync` can generate sanitized build-time snapshots without committing secrets.

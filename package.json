@@ -12,7 +12,8 @@
     "youtube:sync": "node scripts/sync-youtube-snapshot.mjs",
     "social:sync": "node scripts/sync-social-snapshot.mjs",
     "gmail:sync": "node scripts/sync-gmail-snapshot.mjs",
-    "calendar:sync": "node scripts/sync-calendar-snapshot.mjs"
+    "calendar:sync": "node scripts/sync-calendar-snapshot.mjs",
+    "live:sync": "node scripts/sync-live-snapshots.mjs"
   },
   "keywords": [
     "executive-workspace",

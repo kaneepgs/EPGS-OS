@@ -2,7 +2,7 @@ entrypoint = "index.html"
 run = "npm install && npm run vendor:chart && npm run serve"
 
 [deployment]
-build = "npm install && npm run vendor:chart"
+build = "npm install && npm run vendor:chart && npm run live:sync"
 run = "python3 -m http.server 3000"
 
 [[deployment.rewrites]]
