@@ -1,6 +1,6 @@
 # EP Intelligence
 
-EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios.
+EP Intelligence is a frontend-only AI Executive Operating System prototype for EP Golf Studios. The GitHub repository is named **EPGS-OS**.
 
 It has now moved beyond a CFO-first prototype into a true **Executive Operating System** with a CEO-level intelligence layer, a new **Executive Action Centre**, and a new **Executive Copilot**.
 
