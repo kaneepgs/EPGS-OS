@@ -3687,13 +3687,13 @@ function getToolConnectionPlan() {
           action: 'Choose whether to use manual exports first or official platform APIs later.'
         },
         {
-          name: 'Mailchimp / email marketing',
-          status: 'Future provider · not connected',
+          name: 'Mailchimp',
+          status: 'Confirmed future provider · not connected',
           provider: 'MarketingProvider',
           feeds: 'Email Marketing, campaign performance, audience health, weekly marketing reports',
           needs: 'MAILCHIMP_API_KEY and audience/campaign mapping once provider is built',
           command: 'Not built yet',
-          action: 'Build MailchimpProvider after core Google/social data is stable.'
+          action: 'Build MailchimpProvider once Gmail and Calendar snapshots are activated.'
         }
       ]
     },
@@ -3707,7 +3707,7 @@ function getToolConnectionPlan() {
           feeds: 'Executive Inbox, customer/supplier/finance triage, approval-first reply actions',
           needs: 'GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_ACCOUNT',
           command: 'npm run gmail:sync',
-          action: 'Complete OAuth server-side and sync a local inbox snapshot.'
+          action: 'Connect the EP Golf Studios Gmail account through server-side OAuth and sync a local inbox snapshot.'
         },
         {
           name: 'Google Calendar',
@@ -3724,13 +3724,13 @@ function getToolConnectionPlan() {
       group: 'Finance, sales & workflow',
       tools: [
         {
-          name: 'QuickBooks / Xero',
-          status: 'Future provider · not connected',
+          name: 'QuickBooks',
+          status: 'Confirmed future provider · not connected',
           provider: 'FinanceProvider',
           feeds: 'CFO workspace, cash flow, VAT, supplier spend, profitability, board reporting',
-          needs: 'Accounting provider choice, OAuth/API credentials, chart-of-accounts mapping',
+          needs: 'QuickBooks OAuth/API credentials, company ID, chart-of-accounts mapping',
           command: 'Not built yet',
-          action: 'Pick Xero or QuickBooks first, then build AccountingProvider v1.0.'
+          action: 'Build QuickBooksProvider v1.0 after booking/fitting source is confirmed.'
         },
         {
           name: 'Stripe / payments',

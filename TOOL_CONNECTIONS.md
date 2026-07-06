@@ -25,9 +25,9 @@ EP Hub is a static frontend with provider-based live overlays. Real credentials 
 | Tool | Future provider | Why it matters |
 | --- | --- | --- |
 | Booking / fitting system | `BookingProvider` | Primary conversion source for fittings and marketing attribution |
-| Xero or QuickBooks | `AccountingProvider` / `FinanceProvider` | CFO, cash flow, VAT, supplier spend, profitability |
+| QuickBooks | `AccountingProvider` / `FinanceProvider` | Confirmed accounting platform for CFO, cash flow, VAT, supplier spend, profitability |
 | Stripe / payment provider | `FinanceProvider` | Deposits, payment timing, checkout quality |
-| Mailchimp | `MarketingProvider` | Email campaigns, audience health, weekly marketing reporting |
+| Mailchimp | `MarketingProvider` | Confirmed email marketing platform for campaigns, audience health, weekly marketing reporting |
 | OpenClaw action gateway | `AIProvider` / `ActionService` | Future execution only after explicit approval and audit logging |
 
 ## Current safety boundary
@@ -43,7 +43,12 @@ EP Hub is a static frontend with provider-based live overlays. Real credentials 
 2. Activate Gmail and Google Calendar through OAuth snapshots.
 3. Decide the booking/fitting platform and conversion event names.
 4. Build Booking Provider v1.0.
-5. Choose accounting platform: Xero or QuickBooks.
-6. Build Accounting Provider v1.0.
-7. Add Mailchimp/email marketing.
-8. Add optional execution gateway only after approvals/audit are complete.
+5. Build QuickBooks Provider v1.0.
+6. Add Mailchimp/email marketing.
+7. Add optional execution gateway only after approvals/audit are complete.
+
+## Confirmed tool choices
+
+- Communications: EP Golf Studios Gmail
+- Accounting: QuickBooks
+- Email marketing: Mailchimp
